@@ -4,7 +4,7 @@
     <property name="test.dir" location="test"/>
     <property name="lib.dir" location="lib"/>
     <property name="app.classes.dir" location="${build.dir}/production/DNSResolver"/>
-    <property name="test.classes.dir" location="${build.dir}/test/DNSResolver"/>
+    <property name="test.classes.dir" location="${build.dir}/test/end-to-end/DNSResolver/"/>
 
     <path id="app.lib.path">
         <fileset dir="${lib.dir}/deploy" includes="*.jar"/>
@@ -42,7 +42,7 @@
     <target name="test.run" description="Run the tests" depends="test.compile">
         <property name="test.reports.dir" location="${build.dir}/testreports"/>
         <mkdir dir="${test.reports.dir}"/>
-        <junit fork="true" printsummary="true">
+        <junit fork="true">
             <batchtest todir="${test.reports.dir}" haltonfailure="true" haltonerror="true">
                 <formatter type="plain"/>
                 <fileset dir="${test.dir}/end-to-end" includes="**/*Test.java"/>
