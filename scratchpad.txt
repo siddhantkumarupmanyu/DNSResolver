@@ -1,0 +1,9 @@
+
+single resolver, valid domain
+
+multiple resolvers, valid domain
+
+
+=============================================================
+
+instead of using string create a DNS domain Value type; DNSMessage
