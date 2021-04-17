@@ -48,7 +48,7 @@ public class FakeServerThread extends Thread {
             @Override
             public void run() {
                 try {
-                    sendPacket();
+                    sendPacket(ipaddress);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -61,8 +61,8 @@ public class FakeServerThread extends Thread {
         sender.shutdown();
     }
 
-    private void sendPacket() throws IOException {
-        byte[] response = "test".getBytes();
+    private void sendPacket(String ipAddress) throws IOException {
+        byte[] response = ipAddress.getBytes();
         DatagramPacket packet = new DatagramPacket(response, response.length, lastSocketAddress);
         socket.send(packet);
     }

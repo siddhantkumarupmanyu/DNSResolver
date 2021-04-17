@@ -25,4 +25,8 @@ public class MainWindow extends JFrame {
         result.setBorder(new LineBorder(Color.BLACK));
         return result;
     }
+
+    public void setLabelText(String string) {
+        resolvedIp.setText(string);
+    }
 }

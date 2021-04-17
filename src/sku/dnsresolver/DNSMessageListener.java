@@ -1,5 +1,5 @@
 package sku.dnsresolver;
 
 public interface DNSMessageListener {
-    void message();
+    void message(String dnsMessage);
 }

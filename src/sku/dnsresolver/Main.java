@@ -1,31 +1,32 @@
 package sku.dnsresolver;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
+import java.net.SocketException;
 
-public class Main {
+public class Main implements DNSMessageListener {
+
+    public static final int DOMAIN_NAME = 0;
+    public static final int DNS_SERVER_IP = 1;
+    public static final int DNS_SERVER_PORT = 2;
 
     private MainWindow ui;
+    private DNSThread dnsThread;
 
-    public Main() {
+    public Main(String domain, String ip, String port) throws Exception {
+        startUserInterface();
+        startDnsThread();
+
+        DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(ip, port);
+        this.dnsThread.sendRequest(domain, dnsSocketAddress);
+    }
+
+    private void startDnsThread() throws SocketException {
+        this.dnsThread = new DNSThread(this);
+        this.dnsThread.start();
     }
 
     public static void main(String... args) throws Exception {
-        String domainName = args[0];
-        String dnsServerIp = args[1];
-        String dnsServerPort = args[2];
-
-        Main main = new Main();
-        main.startUserInterface();
-
-        try {
-            sendPacket(dnsServerIp, dnsServerPort);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Main main = new Main(args[DOMAIN_NAME], args[DNS_SERVER_IP], args[DNS_SERVER_PORT]);
     }
 
     private void startUserInterface() throws Exception {
@@ -37,19 +38,13 @@ public class Main {
         });
     }
 
-    private static void sendPacket(String ip, String portString) throws IOException {
-        DatagramSocket socket = new DatagramSocket();
-
-        int port = Integer.parseInt(portString);
-
-        byte[] buf;
-
-        buf = "A random value".getBytes();
-
-        InetAddress address = InetAddress.getByName(ip);
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
-
-        socket.send(packet);
-
+    @Override
+    public void message(String dnsMessage) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ui.setLabelText(dnsMessage);
+            }
+        });
     }
 }

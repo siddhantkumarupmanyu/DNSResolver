@@ -41,7 +41,7 @@ public class DNSThreadTest {
         return new DNSMessageListener() {
 
             @Override
-            public void message() {
+            public void message(String dnsMessage) {
                 countDownLatch.countDown();
             }
         };

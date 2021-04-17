@@ -31,9 +31,9 @@ public class DNSThread extends Thread {
                 DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                 socket.receive(packet);
 
-                String request = new String(packet.getData(), 0, packet.getLength());
+                String response = new String(packet.getData(), 0, packet.getLength());
 
-                messageListener.message();
+                messageListener.message(response);
 
             } catch (IOException e) {
                 e.printStackTrace();

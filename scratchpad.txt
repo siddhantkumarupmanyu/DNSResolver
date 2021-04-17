@@ -6,4 +6,10 @@ multiple resolvers, valid domain
 
 =============================================================
 
+since fakeServerThread and DNSThread is mostly same
+there should be a generic name for it.... Like NetworkThread yeah NetworkThread
+rename DNSThread to NetworkThread and replace fakeServerThread with NetworkThread
+
+replace ip and port pair with dns socket everywhere in tests too
+
 instead of using string create a DNS domain Value type; DNSMessage
