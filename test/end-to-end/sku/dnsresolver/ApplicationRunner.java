@@ -1,4 +1,4 @@
-import sku.dnsresolver.Main;
+package sku.dnsresolver;
 
 public class ApplicationRunner {
 
@@ -12,7 +12,11 @@ public class ApplicationRunner {
         Thread thread = new Thread("Test Application") {
             @Override
             public void run() {
-                Main.main(domainName, dnsServerIp, port);
+                try {
+                    Main.main(domainName, dnsServerIp, port);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
             }
         };
         thread.setDaemon(true);
@@ -22,6 +26,6 @@ public class ApplicationRunner {
     }
 
     public void hasReceivedResponse(String ipAddress) {
-
+        driver.hasLabelWithString(ipAddress);
     }
 }

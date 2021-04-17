@@ -1,3 +1,5 @@
+package sku.dnsresolver;
+
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -22,11 +24,11 @@ public class FakeDnsServer {
     }
 
     public void hasReceivedRequestFor(String domainName) throws InterruptedException {
-        messageListener.receivesAMessage();
+        messageListener.receivesAMessage(domainName);
     }
 
     public void respondWith(String s) {
-
+        serverThread.respondWith(s);
     }
 
     public String ipAddress() {
@@ -46,9 +48,8 @@ public class FakeDnsServer {
             messages.add(request);
         }
 
-        public void receivesAMessage() throws InterruptedException {
-//            assertThat("DNSMessage", messages.poll(5, TimeUnit.SECONDS), is(notNullValue()));
-            assertThat("DNSMessage", messages.poll(5, TimeUnit.SECONDS), is("A random value"));
+        public void receivesAMessage(String domainName) throws InterruptedException {
+            assertThat("DNS Message", messages.poll(5, TimeUnit.SECONDS), is(domainName));
         }
     }
 }

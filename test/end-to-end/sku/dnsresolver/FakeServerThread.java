@@ -1,13 +1,17 @@
+package sku.dnsresolver;
+
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FakeServerThread extends Thread {
 
     private final RequestListener requestListener;
     private final DatagramSocket socket;
+    private final ExecutorService sender = Executors.newSingleThreadExecutor();
+
+    private SocketAddress lastSocketAddress;
 
     private boolean active = true;
 
@@ -30,6 +34,8 @@ public class FakeServerThread extends Thread {
 
                 requestListener.newRequest(request);
 
+                lastSocketAddress = packet.getSocketAddress();
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -37,8 +43,28 @@ public class FakeServerThread extends Thread {
         socket.close();
     }
 
+    public void respondWith(String ipaddress) {
+        sender.submit(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    sendPacket();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     public void stopThread() {
         active = false;
+        sender.shutdown();
+    }
+
+    private void sendPacket() throws IOException {
+        byte[] response = "test".getBytes();
+        DatagramPacket packet = new DatagramPacket(response, response.length, lastSocketAddress);
+        socket.send(packet);
     }
 
     private int getPort() {
