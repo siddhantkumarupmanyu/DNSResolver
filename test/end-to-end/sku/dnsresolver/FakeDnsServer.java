@@ -1,6 +1,5 @@
 package sku.dnsresolver;
 
-import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -11,11 +10,12 @@ public class FakeDnsServer {
     public static final String FAKE_DNS_IP_ADDRESS = "127.0.0.1";
     public static final String FAKE_DNS_PORT = "5000";
 
-    private FakeServerThread serverThread;
+    private DNSThread serverThread;
     private final SingleMessageListener messageListener = new SingleMessageListener();
 
-    public void startServer() throws IOException {
-        serverThread = new FakeServerThread(messageListener);
+    public void startServer() throws Exception {
+        DNSSocketAddress socketAddress = new DNSSocketAddress(FAKE_DNS_IP_ADDRESS, FAKE_DNS_PORT);
+        serverThread = new DNSThread(messageListener, socketAddress);
         serverThread.start();
     }
 
@@ -28,7 +28,7 @@ public class FakeDnsServer {
     }
 
     public void respondWith(String s) {
-        serverThread.respondWith(s);
+        serverThread.sendRequest(s, messageListener.lastAddress);
     }
 
     public String ipAddress() {
@@ -40,12 +40,15 @@ public class FakeDnsServer {
         return FAKE_DNS_PORT;
     }
 
-    public static class SingleMessageListener implements RequestListener {
+    public static class SingleMessageListener implements DNSMessageListener {
         private final ArrayBlockingQueue<String> messages = new ArrayBlockingQueue<>(1);
 
+        private DNSSocketAddress lastAddress;
+
         @Override
-        public void newRequest(String request) {
-            messages.add(request);
+        public void message(DNSMessage message) {
+            messages.add(message.protocol.message);
+            lastAddress = message.from;
         }
 
         public void receivesAMessage(String domainName) throws InterruptedException {
