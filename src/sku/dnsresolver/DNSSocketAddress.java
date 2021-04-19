@@ -18,9 +18,21 @@ public final class DNSSocketAddress {
         this.port = port;
     }
 
+    public static DNSSocketAddress from(InetSocketAddress address) {
+        return new DNSSocketAddress(getRawIpFromInetSocketAddress(address), getPort(address));
+    }
+
     public final InetSocketAddress inetSocketAddress() throws UnknownHostException {
         int port = Integer.parseInt(this.port);
         return new InetSocketAddress(ipAddress, port);
+    }
+
+    private static String getPort(InetSocketAddress address) {
+        return String.valueOf(address.getPort());
+    }
+
+    private static String getRawIpFromInetSocketAddress(InetSocketAddress address) {
+        return address.getAddress().getHostAddress();
     }
 
     @Override

@@ -20,7 +20,15 @@ public class DNSSocketAddressTest {
     }
 
     @Test
-    public void toStringDoesNotCheckInetSocketAddress() {
+    public void createFromSocketAddress() {
+        InetSocketAddress inetSocketAddress = new InetSocketAddress("127.0.0.1", 5000);
+        DNSSocketAddress expected = new DNSSocketAddress("127.0.0.1", "5000");
+
+        assertThat(DNSSocketAddress.from(inetSocketAddress), is(equalTo(expected)));
+    }
+
+    @Test
+    public void toStringDoesNotCheckInetSocketAddressValidity() {
         DNSSocketAddress dnsSocketAddress = new DNSSocketAddress("127.0.0.1", "5000");
         assertThat(dnsSocketAddress.toString(), is("DNSSocketAddress[ipAddress=127.0.0.1,port=5000]"));
     }
