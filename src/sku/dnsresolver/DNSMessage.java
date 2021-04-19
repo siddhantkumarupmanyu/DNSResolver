@@ -5,22 +5,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
+public class DNSMessage {
 
-public final class DNSSocketAddress {
+    private final DNSSocketAddress socketAddress;
+    private final DNSProtocol protocol;
 
-    public final String ipAddress;
-    public final String port;
-
-    public DNSSocketAddress(String ipAddress, String port) {
-        this.ipAddress = ipAddress;
-        this.port = port;
-    }
-
-    public final InetSocketAddress inetSocketAddress() throws UnknownHostException {
-        int port = Integer.parseInt(this.port);
-        return new InetSocketAddress(ipAddress, port);
+    public DNSMessage(DNSSocketAddress socketAddress, DNSProtocol protocol) {
+        this.socketAddress = socketAddress;
+        this.protocol = protocol;
     }
 
     @Override
@@ -29,19 +21,19 @@ public final class DNSSocketAddress {
 
         if (obj == null || getClass() != obj.getClass()) return false;
 
-        DNSSocketAddress that = (DNSSocketAddress) obj;
+        DNSMessage that = (DNSMessage) obj;
 
         return new EqualsBuilder()
-                .append(ipAddress, that.ipAddress)
-                .append(port, that.port)
+                .append(socketAddress, that.socketAddress)
+                .append(protocol, that.protocol)
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-                .append(ipAddress)
-                .append(port)
+                .append(socketAddress)
+                .append(protocol)
                 .toHashCode();
     }
 

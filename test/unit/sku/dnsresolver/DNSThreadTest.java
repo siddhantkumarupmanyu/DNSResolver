@@ -25,7 +25,7 @@ public class DNSThreadTest {
     }
 
     @Test
-    public void receivesADatagramAfterSendingADatagram() throws Exception {
+    public void canSendAndReceiveADatagram() throws Exception {
         CountDownLatch datagramWasReceived = new CountDownLatch(1);
         DNSThread dnsThread = new DNSThread(createDnsMessageListener(datagramWasReceived));
 

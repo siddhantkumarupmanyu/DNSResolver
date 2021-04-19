@@ -52,7 +52,7 @@ public class DNSThread extends Thread {
             @Override
             public void run() {
                 try {
-                    sendPacket(domainName, dnsSocketAddress.socketAddress());
+                    sendPacket(domainName, dnsSocketAddress.inetSocketAddress());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

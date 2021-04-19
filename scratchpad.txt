@@ -6,6 +6,11 @@ multiple resolvers, valid domain
 
 =============================================================
 
+DNSMessage -> has DNSProtocol + DNSSocketAddress
+                DNSProtocol -> specifies all DNS protocol Related stuff
+
+i would definitely have to use builder for DNSProtocol, but let's wait till i actually start using it.
+
 since fakeServerThread and DNSThread is mostly same
 there should be a generic name for it.... Like NetworkThread yeah NetworkThread
 rename DNSThread to NetworkThread and replace fakeServerThread with NetworkThread

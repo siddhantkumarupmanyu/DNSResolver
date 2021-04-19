@@ -12,11 +12,17 @@ public class DNSSocketAddressTest {
 
     @Test
     public void socketAddressFromIpAndPort() throws Exception {
-        DNSSocketAddress server = new DNSSocketAddress("127.0.0.1", "5000");
-        InetSocketAddress socketAddress = server.socketAddress();
+        DNSSocketAddress dnsSocketAddress = new DNSSocketAddress("127.0.0.1", "5000");
+        InetSocketAddress inetSocketAddress = dnsSocketAddress.inetSocketAddress();
 
-        assertFalse("address should be resolved", socketAddress.isUnresolved());
-        assertThat("hostname/ipaddress:port", socketAddress.toString(), is(equalTo("/127.0.0.1:5000")));
+        assertFalse("address should be resolved", inetSocketAddress.isUnresolved());
+        assertThat("hostname/ipaddress:port", inetSocketAddress.toString(), is(equalTo("/127.0.0.1:5000")));
+    }
+
+    @Test
+    public void toStringDoesNotCheckInetSocketAddress() {
+        DNSSocketAddress dnsSocketAddress = new DNSSocketAddress("127.0.0.1", "5000");
+        assertThat(dnsSocketAddress.toString(), is("DNSSocketAddress[ipAddress=127.0.0.1,port=5000]"));
     }
 
     @Test
