@@ -6,11 +6,9 @@ multiple resolvers, valid domain
 
 =============================================================
 
+send DNSProtocol instead of message inside DNSProtocol
 
-Refactor DNSMessage creating in DNSThread to different method
-
-send DNSMessage instead of message in dns message
-
+call stopThread when application exits
 
 DNSMessage -> has DNSProtocol + DNSSocketAddress
                 DNSProtocol -> specifies all DNS protocol Related stuff
@@ -22,5 +20,3 @@ there should be a generic name for it.... Like NetworkThread yeah NetworkThread
 rename DNSThread to NetworkThread and replace fakeServerThread with NetworkThread
 
 replace ip and port pair with dns socket everywhere in tests too
-
-instead of using string create a DNS domain Value type; DNSMessage

@@ -26,30 +26,14 @@ public class DNSThread extends Thread {
     public void run() {
         while (active) {
             try {
-                byte[] buffer = new byte[1024];
-
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
-
-                String response = new String(packet.getData(), 0, packet.getLength());
-
-                DNSSocketAddress socketAddress = DNSSocketAddress.from((InetSocketAddress) packet.getSocketAddress());
-
-                DNSProtocol protocol = new DNSProtocol(response);
-                DNSMessage message = new DNSMessage(socketAddress, protocol);
-
-                messageListener.message(message);
-
+                DatagramPacket packet = receiveDatagramPacket();
+                DNSMessage message = createDNSMessageFromReceivedPacket(packet);
+                notifyMessageListener(message);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
         socket.close();
-    }
-
-    public void stopThread() {
-        active = false;
-        sender.shutdown();
     }
 
     public void sendRequest(String domainName, final DNSSocketAddress dnsSocketAddress) {
@@ -63,6 +47,33 @@ public class DNSThread extends Thread {
                 }
             }
         });
+    }
+
+    public void stopThread() {
+        active = false;
+        sender.shutdown();
+    }
+
+    private DatagramPacket receiveDatagramPacket() throws IOException {
+        byte[] buffer = new byte[1024];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+        socket.receive(packet);
+        return packet;
+    }
+
+    private DNSMessage createDNSMessageFromReceivedPacket(DatagramPacket packet) {
+        DNSProtocol protocol = createDNSProtocolFromPacket(packet);
+        DNSSocketAddress socketAddress = DNSSocketAddress.from((InetSocketAddress) packet.getSocketAddress());
+        return new DNSMessage(socketAddress, protocol);
+    }
+
+    private DNSProtocol createDNSProtocolFromPacket(DatagramPacket packet) {
+        String response = new String(packet.getData(), 0, packet.getLength());
+        return new DNSProtocol(response);
+    }
+
+    private void notifyMessageListener(DNSMessage message) {
+        messageListener.message(message);
     }
 
     private void sendPacket(String domainName, InetSocketAddress socketAddress) throws IOException {
