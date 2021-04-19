@@ -6,19 +6,15 @@ multiple resolvers, valid domain
 
 =============================================================
 
-send DNSProtocol instead of message inside DNSProtocol
+NetworkThread should send and receive DNSProtocol instead of message inside DNSProtocol
 
 call stopThread when application exits
 
-DNSMessage -> has DNSProtocol + DNSSocketAddress
-                DNSProtocol -> specifies all DNS protocol Related stuff
-
-i would definitely have to use builder for DNSProtocol, but let's wait till i actually start using it.
-
-since fakeServerThread and DNSThread is mostly same
-there should be a generic name for it.... Like NetworkThread yeah NetworkThread
-rename DNSThread to NetworkThread and replace fakeServerThread with NetworkThread
+DNSProtocol -> specifies all DNS protocol Related stuff
+    i would definitely have to use builder for DNSProtocol, but let's wait till i actually start using it.
 
 I have to do something with the exceptions
-
-replace ip and port pair with dns socket everywhere in tests too
+    -exceptions are mostly in Network thread
+    -one exception is in DNSSocketAddress, but only network thread will call InetAddress method so,
+        we can handle that
+    -also main have many exceptions but they will disappear as we improve the design
