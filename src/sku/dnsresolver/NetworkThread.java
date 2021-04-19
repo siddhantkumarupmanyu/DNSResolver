@@ -8,7 +8,7 @@ import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class DNSThread extends Thread {
+public class NetworkThread extends Thread {
 
     private final DatagramSocket socket;
 
@@ -17,12 +17,12 @@ public class DNSThread extends Thread {
 
     private boolean active = true;
 
-    public DNSThread(DNSMessageListener messageListener) throws SocketException {
+    public NetworkThread(DNSMessageListener messageListener) throws SocketException {
         this.socket = new DatagramSocket();
         this.messageListener = messageListener;
     }
 
-    public DNSThread(DNSMessageListener messageListener, DNSSocketAddress socketAddress) throws Exception {
+    public NetworkThread(DNSMessageListener messageListener, DNSSocketAddress socketAddress) throws Exception {
         this.messageListener = messageListener;
         this.socket = new DatagramSocket(socketAddress.inetSocketAddress());
     }

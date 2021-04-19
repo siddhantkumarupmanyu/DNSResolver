@@ -10,12 +10,12 @@ public class FakeDnsServer {
     public static final String FAKE_DNS_IP_ADDRESS = "127.0.0.1";
     public static final String FAKE_DNS_PORT = "5000";
 
-    private DNSThread serverThread;
+    private NetworkThread serverThread;
     private final SingleMessageListener messageListener = new SingleMessageListener();
 
     public void startServer() throws Exception {
         DNSSocketAddress socketAddress = new DNSSocketAddress(FAKE_DNS_IP_ADDRESS, FAKE_DNS_PORT);
-        serverThread = new DNSThread(messageListener, socketAddress);
+        serverThread = new NetworkThread(messageListener, socketAddress);
         serverThread.start();
     }
 

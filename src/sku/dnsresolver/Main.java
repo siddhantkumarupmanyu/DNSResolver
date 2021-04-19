@@ -10,19 +10,19 @@ public class Main implements DNSMessageListener {
     public static final int DNS_SERVER_PORT = 2;
 
     private MainWindow ui;
-    private DNSThread dnsThread;
+    private NetworkThread networkThread;
 
     public Main(String domain, String ip, String port) throws Exception {
         startUserInterface();
         startDnsThread();
 
         DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(ip, port);
-        this.dnsThread.sendRequest(domain, dnsSocketAddress);
+        this.networkThread.sendRequest(domain, dnsSocketAddress);
     }
 
     private void startDnsThread() throws SocketException {
-        this.dnsThread = new DNSThread(this);
-        this.dnsThread.start();
+        this.networkThread = new NetworkThread(this);
+        this.networkThread.start();
     }
 
     public static void main(String... args) throws Exception {
