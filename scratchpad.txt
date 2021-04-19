@@ -6,6 +6,12 @@ multiple resolvers, valid domain
 
 =============================================================
 
+
+Refactor DNSMessage creating in DNSThread to different method
+
+send DNSMessage instead of message in dns message
+
+
 DNSMessage -> has DNSProtocol + DNSSocketAddress
                 DNSProtocol -> specifies all DNS protocol Related stuff
 

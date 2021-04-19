@@ -33,7 +33,12 @@ public class DNSThread extends Thread {
 
                 String response = new String(packet.getData(), 0, packet.getLength());
 
-                messageListener.message(response);
+                DNSSocketAddress socketAddress = DNSSocketAddress.from((InetSocketAddress) packet.getSocketAddress());
+
+                DNSProtocol protocol = new DNSProtocol(response);
+                DNSMessage message = new DNSMessage(socketAddress, protocol);
+
+                messageListener.message(message);
 
             } catch (IOException e) {
                 e.printStackTrace();

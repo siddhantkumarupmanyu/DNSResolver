@@ -7,7 +7,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 public class DNSProtocol {
 
-    private final String message;
+    final String message;
 
     public DNSProtocol(String message) {
         this.message = message;

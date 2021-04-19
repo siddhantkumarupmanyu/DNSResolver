@@ -39,11 +39,11 @@ public class Main implements DNSMessageListener {
     }
 
     @Override
-    public void message(String dnsMessage) {
+    public void message(DNSMessage dnsMessage) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ui.setLabelText(dnsMessage);
+                ui.setLabelText(dnsMessage.protocol.message);
             }
         });
     }
