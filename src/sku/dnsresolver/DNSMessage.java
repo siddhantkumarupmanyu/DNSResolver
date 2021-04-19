@@ -7,11 +7,11 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 public class DNSMessage {
 
-    private final DNSSocketAddress socketAddress;
-    private final DNSProtocol protocol;
+    final DNSSocketAddress from;
+    final DNSProtocol protocol;
 
-    public DNSMessage(DNSSocketAddress socketAddress, DNSProtocol protocol) {
-        this.socketAddress = socketAddress;
+    public DNSMessage(DNSSocketAddress from, DNSProtocol protocol) {
+        this.from = from;
         this.protocol = protocol;
     }
 
@@ -24,7 +24,7 @@ public class DNSMessage {
         DNSMessage that = (DNSMessage) obj;
 
         return new EqualsBuilder()
-                .append(socketAddress, that.socketAddress)
+                .append(from, that.from)
                 .append(protocol, that.protocol)
                 .isEquals();
     }
@@ -32,7 +32,7 @@ public class DNSMessage {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
-                .append(socketAddress)
+                .append(from)
                 .append(protocol)
                 .toHashCode();
     }
