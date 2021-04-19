@@ -17,9 +17,14 @@ public class DNSThread extends Thread {
 
     private boolean active = true;
 
-    public DNSThread(DNSMessageListener dnsMessageListener) throws SocketException {
+    public DNSThread(DNSMessageListener messageListener) throws SocketException {
         this.socket = new DatagramSocket();
-        this.messageListener = dnsMessageListener;
+        this.messageListener = messageListener;
+    }
+
+    public DNSThread(DNSMessageListener messageListener, DNSSocketAddress socketAddress) throws Exception {
+        this.messageListener = messageListener;
+        this.socket = new DatagramSocket(socketAddress.inetSocketAddress());
     }
 
     @Override
@@ -29,11 +34,12 @@ public class DNSThread extends Thread {
                 DatagramPacket packet = receiveDatagramPacket();
                 DNSMessage message = createDNSMessageFromReceivedPacket(packet);
                 notifyMessageListener(message);
+            } catch (SocketException e) {
+                // not implemented
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        socket.close();
     }
 
     public void sendRequest(String domainName, final DNSSocketAddress dnsSocketAddress) {
@@ -51,6 +57,7 @@ public class DNSThread extends Thread {
 
     public void stopThread() {
         active = false;
+        socket.close();
         sender.shutdown();
     }
 

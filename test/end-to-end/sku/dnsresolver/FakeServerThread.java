@@ -36,11 +36,12 @@ public class FakeServerThread extends Thread {
 
                 lastSocketAddress = packet.getSocketAddress();
 
+            } catch (SocketException e) {
+                // not implemented
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        socket.close();
     }
 
     public void respondWith(String ipaddress) {
@@ -58,6 +59,7 @@ public class FakeServerThread extends Thread {
 
     public void stopThread() {
         active = false;
+        socket.close();
         sender.shutdown();
     }
 
