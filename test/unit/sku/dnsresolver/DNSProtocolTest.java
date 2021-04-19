@@ -11,7 +11,7 @@ public class DNSProtocolTest {
     public void testToString() {
         DNSProtocol protocol = new DNSProtocol("message");
 
-        assertThat(protocol.toString(), is("DNSProtocol[message=message]"));
+        assertThat(protocol, hasToString("DNSProtocol[message=message]"));
     }
 
     @Test

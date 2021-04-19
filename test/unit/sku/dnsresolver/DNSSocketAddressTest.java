@@ -30,7 +30,7 @@ public class DNSSocketAddressTest {
     @Test
     public void toStringDoesNotCheckInetSocketAddressValidity() {
         DNSSocketAddress dnsSocketAddress = new DNSSocketAddress("127.0.0.1", "5000");
-        assertThat(dnsSocketAddress.toString(), is("DNSSocketAddress[ipAddress=127.0.0.1,port=5000]"));
+        assertThat(dnsSocketAddress, hasToString("DNSSocketAddress[ipAddress=127.0.0.1,port=5000]"));
     }
 
     @Test
