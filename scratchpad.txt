@@ -7,6 +7,7 @@ multiple resolvers, valid domain
 =============================================================
 
 NetworkThread should send and receive DNSProtocol instead of message inside DNSProtocol
+    -we only need DNSProtocol fields bytes in order they declared, but java serialization adds a lot of other stuff
 
 call stopThread when application exits
 

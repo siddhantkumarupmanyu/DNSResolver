@@ -15,6 +15,14 @@ public class DNSProtocolTest {
     }
 
     @Test
+    public void dnsProtocolBuilder() {
+        DNSProtocol.DNSProtocolBuilder builder = new DNSProtocol.DNSProtocolBuilder();
+        builder = builder.withMessage("message");
+
+        assertThat(builder.build(), is(equalTo(new DNSProtocol("message"))));
+    }
+
+    @Test
     public void valueObject() {
         DNSProtocol protocol1a = new DNSProtocol("message");
         DNSProtocol protocol1b = new DNSProtocol("message");

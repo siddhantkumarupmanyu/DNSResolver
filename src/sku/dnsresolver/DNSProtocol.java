@@ -38,4 +38,21 @@ public class DNSProtocol {
         return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
                 .toString();
     }
+
+    public static class DNSProtocolBuilder {
+
+        private String message;
+
+        public DNSProtocolBuilder() {
+        }
+
+        public DNSProtocolBuilder withMessage(String message) {
+            this.message = message;
+            return this;
+        }
+
+        public DNSProtocol build() {
+            return new DNSProtocol(this.message);
+        }
+    }
 }
