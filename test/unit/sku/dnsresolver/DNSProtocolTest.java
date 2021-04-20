@@ -8,10 +8,10 @@ import static org.junit.Assert.assertThat;
 public class DNSProtocolTest {
 
     @Test
-    public void testToString() {
+    public void canBeWrittenToAndConstructedFromBytes() {
         DNSProtocol protocol = new DNSProtocol("message");
 
-        assertThat(protocol, hasToString("DNSProtocol[message=message]"));
+        assertThat(DNSProtocol.from(protocol.getBytes()), is(equalTo(protocol)));
     }
 
     @Test
@@ -20,6 +20,13 @@ public class DNSProtocolTest {
         builder = builder.withMessage("message");
 
         assertThat(builder.build(), is(equalTo(new DNSProtocol("message"))));
+    }
+
+    @Test
+    public void testToString() {
+        DNSProtocol protocol = new DNSProtocol("message");
+
+        assertThat(protocol, hasToString("DNSProtocol[message=message]"));
     }
 
     @Test

@@ -14,6 +14,9 @@ call stopThread when application exits
 DNSProtocol -> specifies all DNS protocol Related stuff
     i would definitely have to use builder for DNSProtocol, but let's wait till i actually start using it.
 
+Add isValid method in DNSProtocol
+    -builder should call isValid()
+
 I have to do something with the exceptions
     -exceptions are mostly in Network thread
     -one exception is in DNSSocketAddress, but only network thread will call InetAddress method so,

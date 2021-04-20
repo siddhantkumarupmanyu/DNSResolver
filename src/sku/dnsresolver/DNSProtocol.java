@@ -5,12 +5,18 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
+import java.nio.charset.StandardCharsets;
+
 public class DNSProtocol {
 
     final String message;
 
     public DNSProtocol(String message) {
         this.message = message;
+    }
+
+    public byte[] getBytes() {
+        return message.getBytes(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -39,8 +45,13 @@ public class DNSProtocol {
                 .toString();
     }
 
-    public static class DNSProtocolBuilder {
+    public static DNSProtocol from(byte[] bytes) {
+        return new DNSProtocolBuilder()
+                .withMessage(new String(bytes, 0, bytes.length, StandardCharsets.UTF_8))
+                .build();
+    }
 
+    public static class DNSProtocolBuilder {
         private String message;
 
         public DNSProtocolBuilder() {
