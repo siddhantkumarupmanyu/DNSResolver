@@ -6,15 +6,15 @@ multiple resolvers, valid domain
 
 =============================================================
 
-NetworkThread should send and receive DNSProtocol instead of message inside DNSProtocol
-    -we only need DNSProtocol fields bytes in order they declared, but java serialization adds a lot of other stuff
+NetworkThread should send and receive DNSExchange instead of message inside DNSExchange
+    -we only need DNSExchange fields bytes in order they declared, but java serialization adds a lot of other stuff
 
 call stopThread when application exits
 
-DNSProtocol -> specifies all DNS protocol Related stuff
-    i would definitely have to use builder for DNSProtocol, but let's wait till i actually start using it.
+DNSExchange -> specifies all DNS protocol Related stuff
+    i would definitely have to use builder for DNSExchange, but let's wait till i actually start using it.
 
-Add isValid method in DNSProtocol
+Add isValid method in DNSExchange
     -builder should call isValid()
 
 I have to do something with the exceptions
@@ -24,8 +24,8 @@ I have to do something with the exceptions
     -also main have many exceptions but they will disappear as we improve the design
 
 length of byte buffer to be given to receiving datagram packet.
-    -DNSProtocol should have something called DNSHeader which is always of constant length
+    -DNSExchange should have something called DNSHeader which is always of constant length
     -And DNSBody which can vary
     -See if this kind of specification  exist in Dns Protocol
     -Also if there isn't we should specify the max length in receiving datagram
-    -and check DNSProtocol if it isValid()
+    -and check DNSExchange if it isValid()
