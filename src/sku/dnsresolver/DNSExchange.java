@@ -7,11 +7,11 @@ import org.apache.commons.lang.builder.ToStringStyle;
 
 import java.nio.charset.StandardCharsets;
 
-public class DNSProtocol {
+public class DNSExchange {
 
     final String message;
 
-    public DNSProtocol(String message) {
+    public DNSExchange(String message) {
         this.message = message;
     }
 
@@ -25,7 +25,7 @@ public class DNSProtocol {
 
         if (obj == null || getClass() != obj.getClass()) return false;
 
-        DNSProtocol that = (DNSProtocol) obj;
+        DNSExchange that = (DNSExchange) obj;
 
         return new EqualsBuilder()
                 .append(message, that.message)
@@ -45,7 +45,7 @@ public class DNSProtocol {
                 .toString();
     }
 
-    public static DNSProtocol from(byte[] bytes) {
+    public static DNSExchange from(byte[] bytes) {
         return new DNSProtocolBuilder()
                 .withMessage(new String(bytes, 0, bytes.length, StandardCharsets.UTF_8))
                 .build();
@@ -62,8 +62,8 @@ public class DNSProtocol {
             return this;
         }
 
-        public DNSProtocol build() {
-            return new DNSProtocol(this.message);
+        public DNSExchange build() {
+            return new DNSExchange(this.message);
         }
     }
 }

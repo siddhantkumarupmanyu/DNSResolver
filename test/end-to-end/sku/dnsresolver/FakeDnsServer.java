@@ -24,7 +24,7 @@ public class FakeDnsServer {
     }
 
     public void hasReceivedRequestFor(String domainName) throws InterruptedException {
-        DNSProtocol protocol = new DNSProtocol.DNSProtocolBuilder()
+        DNSExchange protocol = new DNSExchange.DNSProtocolBuilder()
                 .withMessage(domainName)
                 .build();
         messageListener.receivesAMessageWith(protocol);
@@ -44,7 +44,7 @@ public class FakeDnsServer {
     }
 
     public static class SingleMessageListener implements DNSMessageListener {
-        private final ArrayBlockingQueue<DNSProtocol> messages = new ArrayBlockingQueue<>(1);
+        private final ArrayBlockingQueue<DNSExchange> messages = new ArrayBlockingQueue<>(1);
 
         private DNSSocketAddress lastAddress;
 
@@ -54,8 +54,8 @@ public class FakeDnsServer {
             lastAddress = message.from;
         }
 
-        public void receivesAMessageWith(DNSProtocol dnsProtocol) throws InterruptedException {
-            assertThat("DNS Protocol", messages.poll(5, TimeUnit.SECONDS), is(dnsProtocol));
+        public void receivesAMessageWith(DNSExchange dnsExchange) throws InterruptedException {
+            assertThat("DNS Protocol", messages.poll(5, TimeUnit.SECONDS), is(dnsExchange));
         }
     }
 }

@@ -8,9 +8,9 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public class DNSMessage {
 
     final DNSSocketAddress from;
-    final DNSProtocol protocol;
+    final DNSExchange protocol;
 
-    public DNSMessage(DNSSocketAddress from, DNSProtocol protocol) {
+    public DNSMessage(DNSSocketAddress from, DNSExchange protocol) {
         this.from = from;
         this.protocol = protocol;
     }

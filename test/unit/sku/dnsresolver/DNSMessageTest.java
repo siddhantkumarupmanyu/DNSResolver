@@ -10,8 +10,8 @@ public class DNSMessageTest {
     private final DNSSocketAddress SOCKET_ADDRESS_1 = new DNSSocketAddress("127.0.0.1", "5000");
     private final DNSSocketAddress SOCKET_ADDRESS_2 = new DNSSocketAddress("127.0.0.1", "6000");
 
-    private final DNSProtocol PROTOCOL_1 = new DNSProtocol("message");
-    private final DNSProtocol PROTOCOL_2 = new DNSProtocol("message2");
+    private final DNSExchange PROTOCOL_1 = new DNSExchange("message");
+    private final DNSExchange PROTOCOL_2 = new DNSExchange("message2");
 
 
     @Test
