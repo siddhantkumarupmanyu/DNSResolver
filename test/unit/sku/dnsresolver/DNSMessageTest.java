@@ -17,7 +17,7 @@ public class DNSMessageTest {
     @Test
     public void testToString() {
         DNSMessage message = new DNSMessage(SOCKET_ADDRESS_1, PROTOCOL_1);
-        assertThat(message, hasToString("DNSMessage[from=" + SOCKET_ADDRESS_1 + ",protocol=" + PROTOCOL_1 + "]"));
+        assertThat(message, hasToString("DNSMessage[from=" + SOCKET_ADDRESS_1 + ",exchange=" + PROTOCOL_1 + "]"));
     }
 
 

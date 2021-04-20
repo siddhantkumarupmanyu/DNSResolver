@@ -46,18 +46,18 @@ public class DNSExchange {
     }
 
     public static DNSExchange from(byte[] bytes) {
-        return new DNSProtocolBuilder()
+        return new DNSExchangeBuilder()
                 .withMessage(new String(bytes, 0, bytes.length, StandardCharsets.UTF_8))
                 .build();
     }
 
-    public static class DNSProtocolBuilder {
+    public static class DNSExchangeBuilder {
         private String message;
 
-        public DNSProtocolBuilder() {
+        public DNSExchangeBuilder() {
         }
 
-        public DNSProtocolBuilder withMessage(String message) {
+        public DNSExchangeBuilder withMessage(String message) {
             this.message = message;
             return this;
         }

@@ -24,10 +24,10 @@ public class FakeDnsServer {
     }
 
     public void hasReceivedRequestFor(String domainName) throws InterruptedException {
-        DNSExchange protocol = new DNSExchange.DNSProtocolBuilder()
+        DNSExchange exchange = new DNSExchange.DNSExchangeBuilder()
                 .withMessage(domainName)
                 .build();
-        messageListener.receivesAMessageWith(protocol);
+        messageListener.receivesAMessageWith(exchange);
     }
 
     public void respondWith(String s) {
@@ -50,7 +50,7 @@ public class FakeDnsServer {
 
         @Override
         public void message(DNSMessage message) {
-            messages.add(message.protocol);
+            messages.add(message.exchange);
             lastAddress = message.from;
         }
 

@@ -16,7 +16,7 @@ public class DNSExchangeTest {
 
     @Test
     public void dnsProtocolBuilder() {
-        DNSExchange.DNSProtocolBuilder builder = new DNSExchange.DNSProtocolBuilder();
+        DNSExchange.DNSExchangeBuilder builder = new DNSExchange.DNSExchangeBuilder();
         builder = builder.withMessage("message");
 
         assertThat(builder.build(), is(equalTo(new DNSExchange("message"))));
