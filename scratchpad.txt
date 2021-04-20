@@ -22,3 +22,10 @@ I have to do something with the exceptions
     -one exception is in DNSSocketAddress, but only network thread will call InetAddress method so,
         we can handle that
     -also main have many exceptions but they will disappear as we improve the design
+
+length of byte buffer to be given to receiving datagram packet.
+    -DNSProtocol should have something called DNSHeader which is always of constant length
+    -And DNSBody which can vary
+    -See if this kind of specification  exist in Dns Protocol
+    -Also if there isn't we should specify the max length in receiving datagram
+    -and check DNSProtocol if it isValid()
