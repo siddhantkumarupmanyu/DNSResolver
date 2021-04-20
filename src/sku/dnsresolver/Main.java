@@ -1,6 +1,8 @@
 package sku.dnsresolver;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.net.SocketException;
 
 public class Main implements DNSMessageListener {
@@ -14,15 +16,21 @@ public class Main implements DNSMessageListener {
 
     public Main(String domain, String ip, String port) throws Exception {
         startUserInterface();
-        startDnsThread();
+        startNetworkThread();
+        stopNetworkThreadWhenUICloses();
 
         DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(ip, port);
         this.networkThread.sendRequest(domain, dnsSocketAddress);
     }
 
-    private void startDnsThread() throws SocketException {
-        this.networkThread = new NetworkThread(this);
-        this.networkThread.start();
+    @Override
+    public void message(DNSMessage dnsMessage) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ui.setLabelText(dnsMessage.exchange.message);
+            }
+        });
     }
 
     public static void main(String... args) throws Exception {
@@ -38,12 +46,16 @@ public class Main implements DNSMessageListener {
         });
     }
 
-    @Override
-    public void message(DNSMessage dnsMessage) {
-        SwingUtilities.invokeLater(new Runnable() {
+    private void startNetworkThread() throws SocketException {
+        this.networkThread = new NetworkThread(this);
+        this.networkThread.start();
+    }
+
+    private void stopNetworkThreadWhenUICloses() {
+        ui.addWindowListener(new WindowAdapter() {
             @Override
-            public void run() {
-                ui.setLabelText(dnsMessage.exchange.message);
+            public void windowClosed(WindowEvent e) {
+                networkThread.stopThread();
             }
         });
     }

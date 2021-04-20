@@ -9,8 +9,6 @@ multiple resolvers, valid domain
 NetworkThread should send and receive DNSExchange instead of message inside DNSExchange
     -we only need DNSExchange fields bytes in order they declared, but java serialization adds a lot of other stuff
 
-call stopThread when application exits
-
 DNSExchange -> specifies all DNS protocol Related stuff
     i would definitely have to use builder for DNSExchange, but let's wait till i actually start using it.
 
