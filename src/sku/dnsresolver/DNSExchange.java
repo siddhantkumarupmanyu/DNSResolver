@@ -12,20 +12,20 @@ public class DNSExchange {
     final String message;
     final short id;
     final boolean recursion;
-    final String question;
+    final String query;
 
     public DNSExchange(String message) {
         this.message = message;
         this.id = 0;
         this.recursion = false;
-        this.question = null;
+        this.query = null;
     }
 
-    public DNSExchange(short id, boolean recursion, String question) {
+    public DNSExchange(short id, boolean recursion, String query) {
         this.message = "message";
         this.id = id;
         this.recursion = recursion;
-        this.question = question;
+        this.query = query;
     }
 
     public byte[] getBytes() {
