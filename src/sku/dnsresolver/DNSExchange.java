@@ -68,7 +68,7 @@ public class DNSExchange {
         private String message;
         private short id;
         private boolean recursion;
-        private String question;
+        private String query;
 
         public DNSExchangeBuilder() {
         }
@@ -88,8 +88,8 @@ public class DNSExchange {
             return this;
         }
 
-        public DNSExchangeBuilder setQuestion(String question) {
-            this.question = question;
+        public DNSExchangeBuilder setQuery(String query) {
+            this.query = query;
             return this;
         }
 
@@ -98,7 +98,7 @@ public class DNSExchange {
         }
 
         public DNSExchange build2() {
-            return new DNSExchange(id, recursion, question);
+            return new DNSExchange(id, recursion, query);
         }
     }
 }
