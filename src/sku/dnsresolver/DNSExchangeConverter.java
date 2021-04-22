@@ -7,9 +7,9 @@ public class DNSExchangeConverter {
         return generator.getBytes();
     }
 
-    public static DNSExchange generateDNSExchangeFromBytes(byte[] bytes){
-        DNSPacketParser parser = new DNSPacketParser(bytes);
-        return parser.getDNSExchange();
-    }
+//    public static DNSExchange generateDNSExchangeFromBytes(byte[] bytes){
+//        DNSPacketParser parser = new DNSPacketParser(transceiver, bytes);
+//        return parser.getDNSExchange();
+//    }
 
 }

@@ -48,6 +48,9 @@ public class DNSExchange {
 
         return new EqualsBuilder()
                 .append(message, that.message)
+                .append(id, that.id)
+                .append(recursion, that.recursion)
+                .append(query, that.query)
                 .isEquals();
     }
 

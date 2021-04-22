@@ -2,14 +2,15 @@ package sku.dnsresolver;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class DNSPacketParserTest {
 
-
-    // TODO
+    private final PacketTransceiver transceiver = createAFakeTransceiver();
 
     @Test
     public void parseWhenResponseIsOfGoogle() {
@@ -19,11 +20,26 @@ public class DNSPacketParserTest {
                 .setRecursion(true)
                 .build2();
 
-        byte[] response = googleResponsePacket();
-
-        DNSPacketParser parser = new DNSPacketParser(response);
+        DNSPacketParser parser = new DNSPacketParser(transceiver);
 
         assertThat(parser.getDNSExchange(), is(equalTo(expected)));
+    }
+
+    private PacketTransceiver createAFakeTransceiver() {
+        return new PacketTransceiver() {
+            private final byte[] response = googleResponsePacket();
+            private int currentByteIndex = 12;
+
+            @Override
+            public byte readNextByte() {
+                return response[currentByteIndex++];
+            }
+
+            @Override
+            public byte[] readHeaderBytes() {
+                return Arrays.copyOf(response, 12);
+            }
+        };
     }
 
     private byte[] googleResponsePacket() {

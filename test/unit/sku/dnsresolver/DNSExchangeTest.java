@@ -8,14 +8,6 @@ import static org.junit.Assert.assertThat;
 
 public class DNSExchangeTest {
 
-    // TODO: remove this test as we are covering it in DNSExchangeParser
-    @Test
-    public void canBeWrittenToAndConstructedFromBytes() {
-        DNSExchange protocol = new DNSExchange("message");
-
-        assertThat(DNSExchange.from(protocol.getBytes()), is(equalTo(protocol)));
-    }
-
     @Test
     public void dnsProtocolBuilder() {
         DNSExchange.DNSExchangeBuilder builder = new DNSExchange.DNSExchangeBuilder();
@@ -24,7 +16,7 @@ public class DNSExchangeTest {
         assertThat(builder.build(), is(equalTo(new DNSExchange("message"))));
     }
 
-    // TODO:
+    // TODO
     @Ignore
     @Test
     public void testToString() {
