@@ -11,6 +11,7 @@ DNSPacket -> specifies all DNS protocol Related stuff
 
 Add isValid method in DNSPacket
     -builder should call isValid()
+    -isValid method should check ot see of All RRs matches as specified by their counts
 
 I have to do something with the exceptions
     -exceptions are mostly in Network thread
