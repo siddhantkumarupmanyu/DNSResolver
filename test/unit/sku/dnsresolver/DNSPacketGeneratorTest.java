@@ -10,23 +10,23 @@ public class DNSPacketGeneratorTest {
 
     @Test
     public void generateBytesWhenQueryIsGoogle() {
-        DNSExchange exchange = new DNSExchange.DNSExchangeBuilder()
+        DNSPacket packet = new DNSQueryBuilder()
                 .setId((short) 10)
-                .setQuery("www.google.com")
-                .setRecursion(true)
-                .build2();
+                .setRecursionDesired(true)
+                .setQueries(new DNSPacket.DNSQuery("www.google.com", (short) 1, (short) 1))
+                .build();
 
-        DNSPacketGenerator generator = new DNSPacketGenerator(exchange);
+        DNSPacketGenerator generator = new DNSPacketGenerator(packet);
         assertThat(generator.getBytes(), is(equalTo(googleRequestPacket())));
     }
 
     @Test
     public void generateBytesWhenQueryIsExample() {
-        DNSExchange exchange = new DNSExchange.DNSExchangeBuilder()
+        DNSPacket exchange = new DNSQueryBuilder()
                 .setId((short) 28000)
-                .setQuery("edge.example.com")
-                .setRecursion(false)
-                .build2();
+                .setRecursionDesired(false)
+                .setQueries(new DNSPacket.DNSQuery("edge.example.com", (short) 1, (short) 1))
+                .build();
 
         DNSPacketGenerator generator = new DNSPacketGenerator(exchange);
 

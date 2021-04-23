@@ -6,12 +6,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 class DNSPacketGenerator {
-    private final DNSExchange exchange;
-    private final ArrayList<Byte> packet;
+    private final DNSPacket packet;
+    private final ArrayList<Byte> bytes;
 
-    public DNSPacketGenerator(DNSExchange exchange) {
-        this.exchange = exchange;
-        this.packet = new ArrayList<>();
+    public DNSPacketGenerator(DNSPacket packet) {
+        this.packet = packet;
+        this.bytes = new ArrayList<>();
     }
 
     public byte[] getBytes() {
@@ -25,84 +25,68 @@ class DNSPacketGenerator {
     }
 
     private void generateHeader() {
-        insertId(exchange.id);
-        insert_QR_OPCode_AA_TC_RD(exchange.recursion);
+        insertShort(packet.id);
+        insert_QR_OPCode_AA_TC_RD();
         insert_RA_Z_RCode();
-        insertQDCount((short) 1);
-        insertANCount();
-        insertNSCount();
-        insertARCount();
+        insertShort(packet.questionCount);
+        insertShort(packet.answerRRCount);
+        insertShort(packet.authorityRRCount);
+        insertShort(packet.additionalRRCount);
     }
 
     private void generateBody() {
-        insertQuery(exchange.query);
-        insertQType((short) 1);
-        insertQClass((short) 1);
+        insertQuery();
+        insertShort(packet.queries[0].qType);
+        insertShort(packet.queries[0].qClass);
     }
 
-    private void insertId(short id) {
-        byte upperByte = (byte) (id >>> 8);
-        byte lowerByte = (byte) id;
-        packet.add(upperByte);
-        packet.add(lowerByte);
-    }
+    private void insert_QR_OPCode_AA_TC_RD() {
+        byte response = (byte) (intFromBoolean(packet.response) << 7); // 1 bit
+        byte opCode = (byte) (packet.opCode << 3); // 4 bit
+        byte authoritative = (byte) (intFromBoolean(packet.authoritative) << 2); // 1 bit
+        byte truncated = (byte) (intFromBoolean(packet.truncated) << 1); // 1 bit
+        byte recursionDesired = (byte) (intFromBoolean(packet.recursionDesired)); // 1 bit
 
-    private void insert_QR_OPCode_AA_TC_RD(boolean recursion) {
-        byte defaultCodes = 0x00;
-        if (recursion) {
-            defaultCodes = (byte) (defaultCodes | 0x1);
-        }
-        packet.add(defaultCodes);
+        byte finalByte = (byte) (response | opCode | authoritative | truncated | recursionDesired);
+        bytes.add(finalByte);
     }
 
     private void insert_RA_Z_RCode() {
-        packet.add((byte) 0x00);
+        byte recursionAvailable = (byte) (intFromBoolean(packet.response) << 7); // 1 bit
+        byte z = (byte) (intFromBoolean(packet.z) << 6); // 4 bit
+        byte answerAuthenticated = (byte) (intFromBoolean(packet.answerAuthenticated) << 5); // 1 bit
+        byte nonAuthenticatedData = (byte) (intFromBoolean(packet.nonAuthenticatedData) << 4); // 1 bit
+        byte replyCode = (byte) (packet.replyCode); // 4 bit
+
+        byte finalByte = (byte) (recursionAvailable | z | answerAuthenticated | nonAuthenticatedData | replyCode);
+        bytes.add(finalByte);
     }
 
-    private void insertQDCount(short queryCount) {
-        packet.add((byte) 0x00);
-        packet.add((byte) queryCount);
-    }
-
-    private void insertANCount() {
-        packet.add((byte) 0x00);
-        packet.add((byte) 0x00);
-    }
-
-    private void insertNSCount() {
-        packet.add((byte) 0x00);
-        packet.add((byte) 0x00);
-    }
-
-    private void insertARCount() {
-        packet.add((byte) 0x00);
-        packet.add((byte) 0x00);
-    }
-
-    private void insertQuery(String query) {
-        String[] labels = query.split("\\.");
+    private void insertQuery() {
+        String[] labels = packet.queries[0].query.split("\\.");
 
         for (String label : labels) {
-            packet.add((byte) label.length());
+            bytes.add((byte) label.length());
             for (byte b : label.getBytes(StandardCharsets.UTF_8)) {
-                packet.add(b);
+                bytes.add(b);
             }
         }
 
-        packet.add((byte) 0x00); // termination
-    }
-
-    private void insertQClass(short qClass) {
-        packet.add((byte) 0x00);
-        packet.add((byte) qClass);
-    }
-
-    private void insertQType(short type) {
-        packet.add((byte) 0x00);
-        packet.add((byte) type);
+        bytes.add((byte) 0x00); // termination
     }
 
     private byte[] toPrimitiveArray() {
-        return ArrayUtils.toPrimitive(packet.toArray(new Byte[0]));
+        return ArrayUtils.toPrimitive(bytes.toArray(new Byte[0]));
+    }
+
+    private void insertShort(short number) {
+        byte upperByte = (byte) (number >>> 8);
+        byte lowerByte = (byte) number;
+        bytes.add(upperByte);
+        bytes.add(lowerByte);
+    }
+
+    private int intFromBoolean(boolean bool) {
+        return bool ? 1 : 0;
     }
 }
