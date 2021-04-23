@@ -24,6 +24,7 @@ public class DNSPacketBuilderTest {
                 .setZ(true)
                 .setAnswerAuthenticated(true)
                 .setNonAuthenticatedData(true)
+                .setReplyCode(1)
                 .setQuestionCount((short) 1)
                 .setAnswerRRCount((short) 1)
                 .setAuthorityRRCount((short) 1)
@@ -48,6 +49,7 @@ public class DNSPacketBuilderTest {
                 true,
                 true,
                 true,
+                1,
                 (short) 1,
                 (short) 1,
                 (short) 1,

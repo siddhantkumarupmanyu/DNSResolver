@@ -37,6 +37,7 @@ public class DNSQueryBuilder {
                 .setAnswerRRCount((short) 0)
                 .setAuthorityRRCount((short) 0)
                 .setAdditionalRRCount((short) 0)
+                .setReplyCode(0)
                 .setQueries(queries)
                 .setAnswers()
                 .build();

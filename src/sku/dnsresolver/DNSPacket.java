@@ -17,6 +17,7 @@ public class DNSPacket {
     public final boolean z; // 1 bit
     public final boolean answerAuthenticated; // 1 bit
     public final boolean nonAuthenticatedData; // 1 bit
+    public final int replyCode; // 4 bit
     public final short questionCount; // 16 bit
     public final short answerRRCount; // 16 bit
     public final short authorityRRCount; // 16 bit
@@ -37,6 +38,7 @@ public class DNSPacket {
             boolean z,
             boolean answerAuthenticated,
             boolean nonAuthenticatedData,
+            int replyCode,
             short questionCount,
             short answerRRCount,
             short authorityRRCount,
@@ -54,6 +56,7 @@ public class DNSPacket {
         this.z = z;
         this.answerAuthenticated = answerAuthenticated;
         this.nonAuthenticatedData = nonAuthenticatedData;
+        this.replyCode = replyCode;
         this.questionCount = questionCount;
         this.answerRRCount = answerRRCount;
         this.authorityRRCount = authorityRRCount;
@@ -81,6 +84,7 @@ public class DNSPacket {
                 .append(z, that.z)
                 .append(answerAuthenticated, that.answerAuthenticated)
                 .append(nonAuthenticatedData, that.nonAuthenticatedData)
+                .append(replyCode, that.replyCode)
                 .append(questionCount, that.questionCount)
                 .append(answerRRCount, that.answerRRCount)
                 .append(authorityRRCount, that.authorityRRCount)
@@ -103,6 +107,7 @@ public class DNSPacket {
                 .append(z)
                 .append(answerAuthenticated)
                 .append(nonAuthenticatedData)
+                .append(replyCode)
                 .append(questionCount)
                 .append(answerRRCount)
                 .append(authorityRRCount)

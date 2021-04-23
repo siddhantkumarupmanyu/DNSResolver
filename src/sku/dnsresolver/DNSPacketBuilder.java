@@ -11,6 +11,7 @@ public class DNSPacketBuilder {
     private boolean z;
     private boolean answerAuthenticated;
     private boolean nonAuthenticatedData;
+    private int replyCode;
     private short questionCount;
     private short answerRRCount;
     private short authorityRRCount;
@@ -64,8 +65,13 @@ public class DNSPacketBuilder {
         return this;
     }
 
-    public DNSPacketBuilder setNonAuthenticatedData(boolean nonAuthencatedData) {
-        this.nonAuthenticatedData = nonAuthencatedData;
+    public DNSPacketBuilder setNonAuthenticatedData(boolean nonAuthenticatedData) {
+        this.nonAuthenticatedData = nonAuthenticatedData;
+        return this;
+    }
+
+    public DNSPacketBuilder setReplyCode(int replyCode) {
+        this.replyCode = replyCode;
         return this;
     }
 
@@ -111,6 +117,7 @@ public class DNSPacketBuilder {
                 z,
                 answerAuthenticated,
                 nonAuthenticatedData,
+                replyCode,
                 questionCount,
                 answerRRCount,
                 authorityRRCount,
