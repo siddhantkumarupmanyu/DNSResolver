@@ -6,10 +6,10 @@ multiple resolvers, valid domain
 
 =============================================================
 
-DNSExchange -> specifies all DNS protocol Related stuff
-    i would definitely have to use builder for DNSExchange, but let's wait till i actually start using it.
+DNSPacket -> specifies all DNS protocol Related stuff
+    i would definitely have to use builder for DNSPacket, but let's wait till i actually start using it.
 
-Add isValid method in DNSExchange
+Add isValid method in DNSPacket
     -builder should call isValid()
 
 I have to do something with the exceptions
@@ -18,9 +18,5 @@ I have to do something with the exceptions
         we can handle that
     -also main have many exceptions but they will disappear as we improve the design
 
-length of byte buffer to be given to receiving datagram packet.
-    -DNSExchange should have something called DNSHeader which is always of constant length
-    -And DNSBody which can vary
-    -See if this kind of specification  exist in Dns Protocol
-    -Also if there isn't we should specify the max length in receiving datagram
-    -and check DNSExchange if it isValid()
+
+Add support for CNAME and NS in DNSPacket
