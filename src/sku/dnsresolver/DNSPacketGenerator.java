@@ -35,9 +35,7 @@ class DNSPacketGenerator {
     }
 
     private void generateBody() {
-        insertQuery();
-        insertShort(packet.queries[0].qType);
-        insertShort(packet.queries[0].qClass);
+        generateQuery();
     }
 
     private void insert_QR_OPCode_AA_TC_RD() {
@@ -53,7 +51,7 @@ class DNSPacketGenerator {
 
     private void insert_RA_Z_RCode() {
         byte recursionAvailable = (byte) (intFromBoolean(packet.response) << 7); // 1 bit
-        byte z = (byte) (intFromBoolean(packet.z) << 6); // 4 bit
+        byte z = (byte) (intFromBoolean(packet.z) << 6); // 1 bit
         byte answerAuthenticated = (byte) (intFromBoolean(packet.answerAuthenticated) << 5); // 1 bit
         byte nonAuthenticatedData = (byte) (intFromBoolean(packet.nonAuthenticatedData) << 4); // 1 bit
         byte replyCode = (byte) (packet.replyCode); // 4 bit
@@ -62,7 +60,13 @@ class DNSPacketGenerator {
         bytes.add(finalByte);
     }
 
-    private void insertQuery() {
+    private void generateQuery() {
+        insertQueryLabels();
+        insertShort(packet.queries[0].qType);
+        insertShort(packet.queries[0].qClass);
+    }
+
+    private void insertQueryLabels() {
         String[] labels = packet.queries[0].query.split("\\.");
 
         for (String label : labels) {

@@ -69,14 +69,16 @@ public class NetworkThread extends Thread {
     }
 
     private DNSMessage createDNSMessageFromReceivedPacket(DatagramPacket packet) {
-        DNSExchange dnsExchange = createDNSExchangeFromPacket(packet);
+        DNSPacket dnsPacket = createDNSExchangeFromPacket(packet);
         DNSSocketAddress socketAddress = DNSSocketAddress.from((InetSocketAddress) packet.getSocketAddress());
-        return new DNSMessage(socketAddress, dnsExchange);
+        return new DNSMessage(socketAddress, dnsPacket);
     }
 
-    private DNSExchange createDNSExchangeFromPacket(DatagramPacket packet) {
+    private DNSPacket createDNSExchangeFromPacket(DatagramPacket packet) {
         String response = new String(packet.getData(), 0, packet.getLength());
-        return new DNSExchange(response);
+        // TODO:
+        return null;
+//        return new DNSPacket(response);
     }
 
     private void notifyMessageListener(DNSMessage message) {

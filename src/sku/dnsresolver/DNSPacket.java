@@ -218,7 +218,7 @@ public class DNSPacket {
                     .append(".")
                     .append((address >>> 8) & 0x000000ff)
                     .append(".")
-                    .append((address) & 0xff)
+                    .append((address) & 0x000000ff)
                     .toString();
         }
     }

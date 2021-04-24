@@ -10,42 +10,59 @@ import static org.hamcrest.Matchers.is;
 
 public class DNSPacketParserTest {
 
-    private final PacketTransceiver transceiver = createAFakeTransceiver();
-
     @Test
     public void parseWhenResponseIsOfGoogle() {
-        DNSExchange expected = new DNSExchange.DNSExchangeBuilder()
-                .setId((short) 1)
-                .setQuery("www.google.com")
-                .setRecursion(true)
-                .build2();
+        short id = -21332;
+        DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("www.google.com", (short) 1, (short) 1);
+        DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 115, (short) 4, address_172_217_160_196_inBytes());
+        DNSPacket packet = new DNSPacketBuilder()
+                .setId(id)
+                .setResponse(true)
+                .setOpCode(0)
+                .setAuthoritative(false)
+                .setTruncated(false)
+                .setRecursionDesired(true)
+                .setRecursionAvailable(true)
+                .setZ(false)
+                .setAnswerAuthenticated(false)
+                .setNonAuthenticatedData(false)
+                .setReplyCode(0)
+                .setQuestionCount((short) 1)
+                .setAnswerRRCount((short) 1)
+                .setAuthorityRRCount((short) 0)
+                .setAdditionalRRCount((short) 0)
+                .setQueries(query)
+                .setAnswers(answer)
+                .build();
 
+        final PacketTransceiver transceiver = createAFakeTransceiverWith(googleResponsePacket());
         DNSPacketParser parser = new DNSPacketParser(transceiver);
 
-        assertThat(parser.getDNSExchange(), is(equalTo(expected)));
+        assertThat(parser.getDNSPacket(), is(equalTo(packet)));
     }
 
-    private PacketTransceiver createAFakeTransceiver() {
+    private PacketTransceiver createAFakeTransceiverWith(final byte[] responseOf) {
         return new PacketTransceiver() {
-            private final byte[] response = googleResponsePacket();
-            private int currentByteIndex = 12;
+            private final byte[] response = responseOf;
+            private int currentByteIndex = 0;
 
             @Override
-            public byte readNextByte() {
-                return response[currentByteIndex++];
-            }
-
-            @Override
-            public byte[] readHeaderBytes() {
-                return Arrays.copyOf(response, 12);
+            public byte[] readNextBytes(int number) {
+                byte[] array = Arrays.copyOfRange(response, currentByteIndex, currentByteIndex + number);
+                currentByteIndex += number;
+                return array;
             }
         };
+    }
+
+    private int address_172_217_160_196_inBytes() {
+        return 0xac_d9_a0_c4;
     }
 
     private byte[] googleResponsePacket() {
         return new byte[]{
                 // header
-                0x00, 0x01, // id
+                (byte) 0xac, (byte) 0xac, // id
                 (byte) 0x81, // QR = 1, OP Code = 0000, AA = 0, TC = 0, RD = 1
                 (byte) 0x80, // RA = 1, Z = 0, 0, 0, RCode = 0000
                 0x00, 0x01, // QDCount

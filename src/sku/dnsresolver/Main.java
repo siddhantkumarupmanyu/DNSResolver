@@ -28,7 +28,8 @@ public class Main implements DNSMessageListener {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                ui.setLabelText(dnsMessage.exchange.message);
+                // TODO:
+//                ui.setLabelText(dnsMessage.exchange.message);
             }
         });
     }
