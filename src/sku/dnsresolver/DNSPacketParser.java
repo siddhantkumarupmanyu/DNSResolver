@@ -2,8 +2,12 @@ package sku.dnsresolver;
 
 import org.apache.commons.lang.ArrayUtils;
 
+import java.nio.charset.StandardCharsets;
+
 public class DNSPacketParser {
     private static final int HEADER_SIZE = 12;
+    public static final int NULL_TERMINATOR = 0x00;
+    public static final int POINTER_TYPE = 0xc0;
 
 
     private final PacketTransceiver transceiver;
@@ -113,7 +117,7 @@ public class DNSPacketParser {
     }
 
     private boolean queryIsAPointer(byte currentByte) {
-        return currentByte == ((byte) 0xc0);
+        return currentByte == ((byte) POINTER_TYPE);
     }
 
     private String parseQueryLabels() {
@@ -121,19 +125,20 @@ public class DNSPacketParser {
 
         byte currentCharacter = nextByteFromBuffer();
 
-        while (currentCharacter != 0x00) {
+        while (!nullTerminator(currentCharacter)) {
             int labelCount = currentCharacter;
+
+            byte[] label = new byte[labelCount];
             for (int i = 0; i < labelCount; i++) {
-                stringBuilder.append((char) nextByteFromBuffer());
+                label[i] = nextByteFromBuffer();
             }
+            stringBuilder.append(new String(label, 0, labelCount, StandardCharsets.UTF_8));
 
             currentCharacter = nextByteFromBuffer();
 
-            if (currentCharacter == 0x00) {
-                break;
+            if (!nullTerminator(currentCharacter)) {
+                stringBuilder.append(".");
             }
-
-            stringBuilder.append(".");
         }
 
         return stringBuilder.toString();
@@ -160,12 +165,18 @@ public class DNSPacketParser {
         return buffer[currentBufferIndex++];
     }
 
-    private boolean booleanFromInt(int value) {
-        return value == 0 ? false : true;
-    }
-
     private void addBytesFromTransceiver(int numberOfBytes) {
         this.buffer = ArrayUtils.addAll(this.buffer, transceiver.readNextBytes(numberOfBytes));
+    }
+
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    private boolean nullTerminator(byte currentCharacter) {
+        return currentCharacter == NULL_TERMINATOR;
+    }
+
+    @SuppressWarnings("SimplifiableConditionalExpression")
+    private boolean booleanFromInt(int value) {
+        return value == 0 ? false : true;
     }
 }
 

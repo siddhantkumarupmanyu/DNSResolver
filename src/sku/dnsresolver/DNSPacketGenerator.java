@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 class DNSPacketGenerator {
+    public static final int NULL_TERMINATOR = 0x00;
     private final DNSPacket packet;
     private final ArrayList<Byte> bytes;
 
@@ -76,7 +77,7 @@ class DNSPacketGenerator {
             }
         }
 
-        bytes.add((byte) 0x00); // termination
+        bytes.add((byte) NULL_TERMINATOR);
     }
 
     private byte[] toPrimitiveArray() {
