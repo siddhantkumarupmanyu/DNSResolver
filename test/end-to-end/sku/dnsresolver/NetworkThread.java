@@ -54,10 +54,12 @@ public class NetworkThread extends Thread {
             public void run() {
                 try {
                     byte[] queryPacket = new DNSPacketGenerator(packet).getBytes();
-                    byte[] answer = {(byte) 0xc0, 0x0c, // Name, used pointer offset = 0x0c
+                    byte[] answer = {
+                            (byte) 0xc0, 0x0c, // Name, used pointer offset = 0x0c
                             0x00, 0x01, // Type
                             0x00, 0x01, // Class
                             0x00, 0x00, 0x00, 0x73, // TTL
+                            0x00, 0x04, // RDLength
                             ipAddress[0],
                             ipAddress[1],
                             ipAddress[2],
