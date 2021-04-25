@@ -68,21 +68,23 @@ public class NetworkThread extends Thread {
         return packet;
     }
 
-    private DNSMessage createDNSMessageFromReceivedPacket(DatagramPacket packet) {
-        DNSPacket dnsPacket = createDNSExchangeFromPacket(packet);
-        DNSSocketAddress socketAddress = DNSSocketAddress.from((InetSocketAddress) packet.getSocketAddress());
+    private DNSMessage createDNSMessageFromReceivedPacket(DatagramPacket datagramPacket) {
+        DNSPacket dnsPacket = createDNSPacketFrom(datagramPacket);
+        DNSSocketAddress socketAddress = DNSSocketAddress.from((InetSocketAddress) datagramPacket.getSocketAddress());
         return new DNSMessage(socketAddress, dnsPacket);
     }
 
-    private DNSPacket createDNSExchangeFromPacket(DatagramPacket packet) {
-        String response = new String(packet.getData(), 0, packet.getLength());
-        // TODO:
-        return null;
-//        return new DNSPacket(response);
+    private DNSPacket createDNSPacketFrom(DatagramPacket datagramPacket) {
+        String query = "test";
+        return new DNSQueryBuilder()
+                .setId(FakeDnsServer.DEFAULT_ID)
+                .setRecursionDesired(FakeDnsServer.DEFAULT_RECURSION)
+                .setQueries(new DNSPacket.DNSQuery(query, FakeDnsServer.DEFAULT_QTYPE, FakeDnsServer.DEFAULT_QCLASS))
+                .build();
     }
 
     private void notifyMessageListener(DNSMessage message) {
-        messageListener.message(message);
+        messageListener.receivedMessage(message);
     }
 
     private void sendPacket(String domainName, InetSocketAddress socketAddress) throws IOException {

@@ -5,6 +5,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.net.SocketException;
 
+// TODO:
 public class Main implements DNSMessageListener {
 
     public static final int DOMAIN_NAME = 0;
@@ -12,19 +13,19 @@ public class Main implements DNSMessageListener {
     public static final int DNS_SERVER_PORT = 2;
 
     private MainWindow ui;
-    private NetworkThread networkThread;
+    private NetworkManager networkThread;
 
     public Main(String domain, String ip, String port) throws Exception {
         startUserInterface();
         startNetworkThread();
         stopNetworkThreadWhenUICloses();
 
-        DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(ip, port);
-        this.networkThread.sendRequest(domain, dnsSocketAddress);
+//        DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(ip, port);
+//        this.networkThread.sendRequest(domain, dnsSocketAddress);
     }
 
     @Override
-    public void message(DNSMessage dnsMessage) {
+    public void receivedMessage(DNSMessage dnsMessage) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -48,15 +49,15 @@ public class Main implements DNSMessageListener {
     }
 
     private void startNetworkThread() throws SocketException {
-        this.networkThread = new NetworkThread(this);
-        this.networkThread.start();
+//        this.networkThread = new NetworkThread(this);
+//        this.networkThread.start();
     }
 
     private void stopNetworkThreadWhenUICloses() {
         ui.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                networkThread.stopThread();
+//                networkThread.stopThread();
             }
         });
     }

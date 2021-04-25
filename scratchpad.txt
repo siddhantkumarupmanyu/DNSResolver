@@ -16,6 +16,8 @@ I have to do something with the exceptions
         we can handle that
     -also main have many exceptions but they will disappear as we improve the design
 
+nextByte() in parse can be replace with an iterator.
+    -but nextByte gives more readability, so let it remain
 
 Add support for CNAME and NS in DNSPacket
     -i do not know what kind of special support do they need apart from what i already have in DNSPacket

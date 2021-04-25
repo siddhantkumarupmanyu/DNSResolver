@@ -9,7 +9,7 @@ import static org.junit.Assert.assertThat;
 public class DNSPacketGeneratorTest {
 
     @Test
-    public void generateBytesWhenQueryIsGoogle() {
+    public void generateBytesWhenQueryIsGoogleWithPositiveId() {
         DNSPacket packet = new DNSQueryBuilder()
                 .setId((short) 10)
                 .setRecursionDesired(true)
@@ -21,9 +21,9 @@ public class DNSPacketGeneratorTest {
     }
 
     @Test
-    public void generateBytesWhenQueryIsExample() {
+    public void generateBytesWhenQueryIsExampleWithNegativeId() {
         DNSPacket exchange = new DNSQueryBuilder()
-                .setId((short) 28000)
+                .setId((short) -21332)
                 .setRecursionDesired(false)
                 .setQueries(new DNSPacket.DNSQuery("edge.example.com", (short) 1, (short) 1))
                 .build();
@@ -56,7 +56,7 @@ public class DNSPacketGeneratorTest {
     private byte[] exampleRequestPacket() {
         return new byte[]{
                 // header
-                0x6d, 0x60, // id
+                (byte) 0xac, (byte) 0xac, // id
                 0x00, // QR, OP Code, AA, TC, RD = 0
                 0x00, // RA, Z, RCode
                 0x00, 0x01, // QDCount

@@ -10,6 +10,11 @@ public class FakeDnsServer {
     public static final String FAKE_DNS_IP_ADDRESS = "127.0.0.1";
     public static final String FAKE_DNS_PORT = "5000";
 
+    public static final short DEFAULT_ID = 1;
+    public static final boolean DEFAULT_RECURSION = true;
+    public static final short DEFAULT_QTYPE = 1;
+    public static final short DEFAULT_QCLASS = 1;
+
     private NetworkThread serverThread;
     private final SingleMessageListener messageListener = new SingleMessageListener();
 
@@ -23,40 +28,44 @@ public class FakeDnsServer {
         serverThread.stopThread();
     }
 
-    // TODO:
-    public void hasReceivedRequestFor(String domainName) throws InterruptedException {
-//        DNSPacket exchange = new DNSPacket.DNSExchangeBuilder()
-//                .withMessage(domainName)
-//                .build();
-//        messageListener.receivesAMessageWith(exchange);
+    public void hasReceivedRequestFor(String query) throws InterruptedException {
+        DNSPacket packet = queryFor(query);
+        messageListener.receivesAMessageWith(packet);
     }
 
     public void respondWith(String s) {
         serverThread.sendRequest(s, messageListener.lastAddress);
     }
 
+    private DNSPacket queryFor(String query) {
+        return new DNSQueryBuilder()
+                .setId(DEFAULT_ID)
+                .setRecursionDesired(DEFAULT_RECURSION)
+                .setQueries(new DNSPacket.DNSQuery(query, DEFAULT_QTYPE, DEFAULT_QCLASS))
+                .build();
+    }
+
     public String ipAddress() {
         return FAKE_DNS_IP_ADDRESS;
     }
-
 
     public String port() {
         return FAKE_DNS_PORT;
     }
 
     public static class SingleMessageListener implements DNSMessageListener {
-        private final ArrayBlockingQueue<DNSPacket> messages = new ArrayBlockingQueue<>(1);
+        private final ArrayBlockingQueue<DNSPacket> packets = new ArrayBlockingQueue<>(1);
 
         private DNSSocketAddress lastAddress;
 
         @Override
-        public void message(DNSMessage message) {
-            messages.add(message.exchange);
+        public void receivedMessage(DNSMessage message) {
+            packets.add(message.packet);
             lastAddress = message.from;
         }
 
         public void receivesAMessageWith(DNSPacket dnsPacket) throws InterruptedException {
-            assertThat("DNS Protocol", messages.poll(5, TimeUnit.SECONDS), is(dnsPacket));
+            assertThat("DNS Packet", packets.poll(5, TimeUnit.SECONDS), is(dnsPacket));
         }
     }
 }

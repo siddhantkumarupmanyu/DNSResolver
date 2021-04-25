@@ -5,6 +5,12 @@ import org.apache.commons.lang.ArrayUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
+/**
+ * This class only supports generating byte from request or query DNSPacket.
+ * <br />
+ * Since, the program will never act as a server,
+ * this functionality(generation of response) is excluded.
+ */
 class DNSPacketGenerator {
     public static final int NULL_TERMINATOR = 0x00;
     private final DNSPacket packet;

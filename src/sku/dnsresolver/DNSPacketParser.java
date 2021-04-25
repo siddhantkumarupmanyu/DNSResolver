@@ -1,23 +1,26 @@
 package sku.dnsresolver;
 
-import org.apache.commons.lang.ArrayUtils;
-
 import java.nio.charset.StandardCharsets;
+import java.util.Iterator;
 
+/**
+ * This class only supports parsing response bytes to DNSPacket.
+ * <br />
+ * Since, the program will never act as a server,
+ * this functionality(parsing a request) is excluded.
+ */
 public class DNSPacketParser {
     private static final int HEADER_SIZE = 12;
     public static final int NULL_TERMINATOR = 0x00;
     public static final int POINTER_TYPE = 0xc0;
 
-
-    private final PacketTransceiver transceiver;
     private final DNSPacketBuilder builder;
 
-    private byte[] buffer;
+    private final byte[] response;
     private int currentBufferIndex = 0;
 
-    public DNSPacketParser(PacketTransceiver transceiver) {
-        this.transceiver = transceiver;
+    public DNSPacketParser(byte[] response) {
+        this.response = response;
         this.builder = new DNSPacketBuilder();
     }
 
@@ -32,8 +35,6 @@ public class DNSPacketParser {
     }
 
     private void parseHeader() {
-        addBytesFromTransceiver(HEADER_SIZE);
-
         builder.setId(getNextShortFromBuffer());
         parse_QR_OPCode_AA_TC_RD();
         parse_RA_Z_RCode();
@@ -49,7 +50,7 @@ public class DNSPacketParser {
     }
 
     private void parse_QR_OPCode_AA_TC_RD() {
-        final byte value = nextByteFromBuffer();
+        final byte value = nextByte();
         boolean response = booleanFromInt((value >>> 7) & 0x01); // 1 bit
         int opCode = (value >>> 3) & 0b0000_1111; // 4 bit
         boolean authoritative = booleanFromInt((value >> 2) & 0x01); // 1 bit
@@ -64,7 +65,7 @@ public class DNSPacketParser {
     }
 
     private void parse_RA_Z_RCode() {
-        final byte value = nextByteFromBuffer();
+        final byte value = nextByte();
         boolean recursionAvailable = booleanFromInt((value >>> 7) & 0x01); // 1 bit
         boolean z = booleanFromInt((value >>> 6) & 0x01); // 1 bit
         boolean answerAuthenticated = booleanFromInt((value >>> 5) & 0x01); // 1 bit
@@ -81,7 +82,6 @@ public class DNSPacketParser {
     private DNSPacket.DNSQuery parseQuery() {
         String query = parseQueryLabels();
 
-        addBytesFromTransceiver(4);
         short qType = getNextShortFromBuffer();
         short qClass = getNextShortFromBuffer();
 
@@ -89,29 +89,25 @@ public class DNSPacketParser {
     }
 
     private DNSPacket.DNSAnswer parseAnswer() {
-        addBytesFromTransceiver(2);
         DNSPacket.DNSQuery query;
 
-        if (queryIsAPointer(nextByteFromBuffer())) {
-            int offset = nextByteFromBuffer();
+        if (queryIsAPointer(nextByte())) {
+            int offset = nextByte();
             int oldIndex = this.currentBufferIndex;
             this.currentBufferIndex = offset;
             query = parseQuery();
             this.currentBufferIndex = oldIndex;
-            addBytesFromTransceiver(4);
-            nextByteFromBuffer();
-            nextByteFromBuffer();
-            nextByteFromBuffer();
-            nextByteFromBuffer();
+            nextByte();
+            nextByte();
+            nextByte();
+            nextByte();
         } else {
             query = parseQuery();
         }
 
-        addBytesFromTransceiver(6);
         int ttl = getNextIntFromBuffer();
         short dataLength = getNextShortFromBuffer();
 
-        addBytesFromTransceiver(dataLength);
         int address = getNextIntFromBuffer();
         return new DNSPacket.DNSAnswer(query, ttl, dataLength, address);
     }
@@ -123,18 +119,18 @@ public class DNSPacketParser {
     private String parseQueryLabels() {
         StringBuilder stringBuilder = new StringBuilder();
 
-        byte currentCharacter = nextByteFromBuffer();
+        byte currentCharacter = nextByte();
 
         while (!nullTerminator(currentCharacter)) {
             int labelCount = currentCharacter;
 
             byte[] label = new byte[labelCount];
             for (int i = 0; i < labelCount; i++) {
-                label[i] = nextByteFromBuffer();
+                label[i] = nextByte();
             }
             stringBuilder.append(new String(label, 0, labelCount, StandardCharsets.UTF_8));
 
-            currentCharacter = nextByteFromBuffer();
+            currentCharacter = nextByte();
 
             if (!nullTerminator(currentCharacter)) {
                 stringBuilder.append(".");
@@ -145,28 +141,21 @@ public class DNSPacketParser {
     }
 
     private short getNextShortFromBuffer() {
-        int upperByte = nextByteFromBuffer() & 0x000000ff;
-        int lowerByte = nextByteFromBuffer() & 0x000000ff;
+        int upperByte = nextByte() & 0x000000ff;
+        int lowerByte = nextByte() & 0x000000ff;
         return (short) ((upperByte << 8) | (lowerByte));
     }
 
     private int getNextIntFromBuffer() {
-        int upperByte = nextByteFromBuffer() & 0x000000ff;
-        int upperMiddle = nextByteFromBuffer() & 0x000000ff;
-        int lowerMiddle = nextByteFromBuffer() & 0x000000ff;
-        int lowerByte = nextByteFromBuffer() & 0x000000ff;
+        int upperByte = nextByte() & 0x000000ff;
+        int upperMiddle = nextByte() & 0x000000ff;
+        int lowerMiddle = nextByte() & 0x000000ff;
+        int lowerByte = nextByte() & 0x000000ff;
         return ((upperByte << 24) | (upperMiddle << 16) | (lowerMiddle << 8) | (lowerByte));
     }
 
-    private byte nextByteFromBuffer() {
-        if (currentBufferIndex == buffer.length) {
-            addBytesFromTransceiver(1);
-        }
-        return buffer[currentBufferIndex++];
-    }
-
-    private void addBytesFromTransceiver(int numberOfBytes) {
-        this.buffer = ArrayUtils.addAll(this.buffer, transceiver.readNextBytes(numberOfBytes));
+    private byte nextByte() {
+        return response[currentBufferIndex++];
     }
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")

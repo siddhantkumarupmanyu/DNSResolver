@@ -2,8 +2,6 @@ package sku.dnsresolver;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -11,7 +9,7 @@ import static org.hamcrest.Matchers.is;
 public class DNSPacketParserTest {
 
     @Test
-    public void parseWhenResponseIsOfGoogle() {
+    public void parseWhenResponseIsOfGoogleWithNegativeId() {
         short id = -21332;
         DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("www.google.com", (short) 1, (short) 1);
         DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 115, (short) 4, address_172_217_160_196_inBytes());
@@ -35,31 +33,16 @@ public class DNSPacketParserTest {
                 .setAnswers(answer)
                 .build();
 
-        final PacketTransceiver transceiver = createAFakeTransceiverWith(googleResponsePacket());
-        DNSPacketParser parser = new DNSPacketParser(transceiver);
+        DNSPacketParser parser = new DNSPacketParser(googleResponse());
 
         assertThat(parser.getDNSPacket(), is(equalTo(packet)));
-    }
-
-    private PacketTransceiver createAFakeTransceiverWith(final byte[] responseOf) {
-        return new PacketTransceiver() {
-            private final byte[] response = responseOf;
-            private int currentByteIndex = 0;
-
-            @Override
-            public byte[] readNextBytes(int number) {
-                byte[] array = Arrays.copyOfRange(response, currentByteIndex, currentByteIndex + number);
-                currentByteIndex += number;
-                return array;
-            }
-        };
     }
 
     private int address_172_217_160_196_inBytes() {
         return 0xac_d9_a0_c4;
     }
 
-    private byte[] googleResponsePacket() {
+    private byte[] googleResponse() {
         return new byte[]{
                 // header
                 (byte) 0xac, (byte) 0xac, // id

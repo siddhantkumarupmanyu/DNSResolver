@@ -8,11 +8,11 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public class DNSMessage {
 
     final DNSSocketAddress from;
-    final DNSPacket exchange;
+    final DNSPacket packet;
 
-    public DNSMessage(DNSSocketAddress from, DNSPacket exchange) {
+    public DNSMessage(DNSSocketAddress from, DNSPacket packet) {
         this.from = from;
-        this.exchange = exchange;
+        this.packet = packet;
     }
 
     @Override
@@ -25,7 +25,7 @@ public class DNSMessage {
 
         return new EqualsBuilder()
                 .append(from, that.from)
-                .append(exchange, that.exchange)
+                .append(packet, that.packet)
                 .isEquals();
     }
 
@@ -33,7 +33,7 @@ public class DNSMessage {
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(from)
-                .append(exchange)
+                .append(packet)
                 .toHashCode();
     }
 
