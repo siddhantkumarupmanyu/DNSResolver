@@ -1,9 +1,5 @@
 package sku.dnsresolver;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -19,39 +15,20 @@ public class NetworkManager {
         this.messageListener = dnsMessageListener;
     }
 
-    public void query(final DNSSocketAddress serverAddress, final DNSPacket dnsPacket) {
-        Runnable runnable = new QueryRunnable(serverAddress, dnsPacket);
-        executor.submit(runnable);
-    }
+    public void query(final DNSSocketAddress serverAddress, final DNSPacket query) {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                byte[] queryPacket = new DNSPacketGenerator(query).getBytes();
+                transceiver.sendPacket(queryPacket, serverAddress.inetSocketAddress());
 
-    private static class QueryRunnable implements Runnable {
+                byte[] responsePacket = transceiver.receivePacket();
+                DNSPacket response = new DNSPacketParser(responsePacket).getDNSPacket();
 
-        private final DNSSocketAddress serverAddress;
-        private final DNSPacket dnsPacket;
-
-        public QueryRunnable(DNSSocketAddress serverAddress, DNSPacket dnsPacket) {
-            this.serverAddress = serverAddress;
-            this.dnsPacket = dnsPacket;
-        }
-
-        @Override
-        public void run() {
-            try {
-                DatagramSocket socket = createSocket();
-
-                byte[] request = new DNSPacketGenerator(dnsPacket).getBytes();
-                DatagramPacket datagramPacket = new DatagramPacket(request, request.length, serverAddress.inetSocketAddress());
-                socket.send(datagramPacket);
-
-                socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+                messageListener.receivedMessage(new DNSMessage(null, response));
             }
-        }
-
-        private DatagramSocket createSocket() throws SocketException {
-            return new DatagramSocket();
-        }
+        };
+        executor.submit(runnable);
     }
 
 }

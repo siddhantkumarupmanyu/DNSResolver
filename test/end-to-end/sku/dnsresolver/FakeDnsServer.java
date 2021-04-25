@@ -17,6 +17,7 @@ public class FakeDnsServer {
 
     private NetworkThread serverThread;
     private final SingleMessageListener messageListener = new SingleMessageListener();
+    private DNSPacket queryDnsPacket;
 
     public void startServer() throws Exception {
         DNSSocketAddress socketAddress = new DNSSocketAddress(FAKE_DNS_IP_ADDRESS, FAKE_DNS_PORT);
@@ -28,13 +29,14 @@ public class FakeDnsServer {
         serverThread.stopThread();
     }
 
-    public void hasReceivedRequestFor(String query) throws InterruptedException {
+    public void hasReceivedPacket(String query) throws InterruptedException {
         DNSPacket packet = queryFor(query);
         messageListener.receivesAMessageWith(packet);
+        this.queryDnsPacket = packet;
     }
 
-    public void respondWith(String s) {
-        serverThread.sendRequest(s, messageListener.lastAddress);
+    public void respondWith(byte[] ipAddress) {
+        serverThread.sendDNSPacketWithAnswer(queryDnsPacket, ipAddress ,messageListener.lastAddress);
     }
 
     private DNSPacket queryFor(String query) {

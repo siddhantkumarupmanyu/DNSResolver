@@ -6,7 +6,6 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 
 public final class DNSSocketAddress {
 
@@ -22,7 +21,7 @@ public final class DNSSocketAddress {
         return new DNSSocketAddress(getRawIpFromInetSocketAddress(address), getPort(address));
     }
 
-    public final InetSocketAddress inetSocketAddress() throws UnknownHostException {
+    public final InetSocketAddress inetSocketAddress() {
         int port = Integer.parseInt(this.port);
         return new InetSocketAddress(ipAddress, port);
     }

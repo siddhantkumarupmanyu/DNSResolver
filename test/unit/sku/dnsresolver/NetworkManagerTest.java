@@ -3,7 +3,6 @@ package sku.dnsresolver;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.concurrent.CountDownLatch;
@@ -11,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-// TODO:
 public class NetworkManagerTest {
 
     private final FakeDnsServer fakeDnsServer = new FakeDnsServer();
@@ -30,15 +28,14 @@ public class NetworkManagerTest {
     }
 
     @Test
-    @Ignore
     public void queryDnsPacket() throws Exception {
         final CountDownLatch messageWasReceived = new CountDownLatch(1);
         NetworkManager networkManager = new NetworkManager(transceiver, createDNSMessageListener(messageWasReceived));
 
         networkManager.query(fakeServerAddress, queryFor("www.example.com"));
 
-        fakeDnsServer.hasReceivedRequestFor("www.example.com");
-        fakeDnsServer.respondWith("127.0.0.1");
+        fakeDnsServer.hasReceivedPacket("www.example.com");
+        fakeDnsServer.respondWith(address_172_217_160_196_inBytes());
 
         assertThat("should have received response", messageWasReceived.await(4, TimeUnit.SECONDS));
     }
@@ -59,6 +56,10 @@ public class NetworkManagerTest {
                 .setRecursionDesired(FakeDnsServer.DEFAULT_RECURSION)
                 .setQueries(new DNSPacket.DNSQuery(query, FakeDnsServer.DEFAULT_QTYPE, FakeDnsServer.DEFAULT_QCLASS))
                 .build();
+    }
+
+    private byte[] address_172_217_160_196_inBytes() {
+        return new byte[]{(byte) 0xac, (byte) 0xd9, (byte) 0xa0, (byte) 0xc4};
     }
 }
 

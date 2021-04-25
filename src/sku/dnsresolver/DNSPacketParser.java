@@ -1,7 +1,6 @@
 package sku.dnsresolver;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Iterator;
 
 /**
  * This class only supports parsing response bytes to DNSPacket.

@@ -6,14 +6,16 @@ multiple resolvers, valid domain
 
 =============================================================
 
+DNSAnswer should take byte[] for address not int
+
+Change NetworkManager name to something more suitable
+
 Add isValid method in DNSPacket
     -builder should call isValid()
     -isValid method should check ot see of All RRs matches as specified by their counts
 
 I have to do something with the exceptions
-    -exceptions are mostly in Network thread
-    -one exception is in DNSSocketAddress, but only network thread will call InetAddress method so,
-        we can handle that
+    -exceptions are in DatagramPacketTransceiver
     -also main have many exceptions but they will disappear as we improve the design
 
 nextByte() in parse can be replace with an iterator.

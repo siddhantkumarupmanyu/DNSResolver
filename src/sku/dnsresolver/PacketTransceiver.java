@@ -1,5 +1,9 @@
 package sku.dnsresolver;
 
+import java.net.InetSocketAddress;
+
 public interface PacketTransceiver {
-    byte[] readNextBytes(int number);
+    void sendPacket(byte[] packet, InetSocketAddress socketAddress);
+
+    byte[] receivePacket();
 }

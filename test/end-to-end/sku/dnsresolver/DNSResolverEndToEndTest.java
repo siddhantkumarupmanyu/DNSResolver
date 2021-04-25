@@ -19,11 +19,12 @@ public class DNSResolverEndToEndTest {
         fakeDnsServer.stopServer();
     }
 
+    // TODO:
     @Test
     public void resolvesDomainName() throws Exception {
         application.resolve("example.com", fakeDnsServer);
-        fakeDnsServer.hasReceivedRequestFor("example.com");
-        fakeDnsServer.respondWith("127.0.0.1");
+        fakeDnsServer.hasReceivedPacket("example.com");
+//        fakeDnsServer.respondWith("127.0.0.1");
         application.hasReceivedResponse("127.0.0.1");
     }
 }
