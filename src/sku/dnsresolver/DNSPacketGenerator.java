@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * Since, the program will never act as a server,
  * this functionality(generation of response) is excluded.
  */
-class DNSPacketGenerator {
+public class DNSPacketGenerator {
     public static final int NULL_TERMINATOR = 0x00;
     private final DNSPacket packet;
     private final ArrayList<Byte> bytes;

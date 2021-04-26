@@ -1,6 +1,7 @@
 package sku.dnsresolver;
 
 import org.junit.Test;
+import sku.dnsresolver.network.DNSSocketAddress;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;

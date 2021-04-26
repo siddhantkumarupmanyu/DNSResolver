@@ -1,4 +1,6 @@
-package sku.dnsresolver;
+package sku.dnsresolver.network;
+
+import sku.dnsresolver.*;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

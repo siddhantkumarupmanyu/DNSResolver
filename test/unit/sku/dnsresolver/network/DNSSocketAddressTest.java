@@ -1,4 +1,4 @@
-package sku.dnsresolver;
+package sku.dnsresolver.network;
 
 import org.junit.Test;
 

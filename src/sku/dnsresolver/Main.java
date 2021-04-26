@@ -1,5 +1,10 @@
 package sku.dnsresolver;
 
+import sku.dnsresolver.network.DNSSocketAddress;
+import sku.dnsresolver.network.DatagramPacketTransceiver;
+import sku.dnsresolver.network.NetworkManager;
+import sku.dnsresolver.ui.MainWindow;
+
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;

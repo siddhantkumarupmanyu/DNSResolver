@@ -5,7 +5,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
-public class DNSPacket {
+public final class DNSPacket {
     // header
     public final short id; // 16 bit
     public final boolean response; // 1 bit

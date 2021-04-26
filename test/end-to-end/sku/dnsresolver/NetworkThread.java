@@ -1,6 +1,7 @@
 package sku.dnsresolver;
 
 import org.apache.commons.lang.ArrayUtils;
+import sku.dnsresolver.network.DNSSocketAddress;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -11,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import static sku.dnsresolver.DatagramPacketTransceiver.UDP_MAX_BYTES;
+import static sku.dnsresolver.network.DatagramPacketTransceiver.UDP_MAX_BYTES;
 
 public class NetworkThread extends Thread {
 

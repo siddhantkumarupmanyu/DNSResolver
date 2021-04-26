@@ -4,8 +4,9 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
+import sku.dnsresolver.network.DNSSocketAddress;
 
-public class DNSMessage {
+public final class DNSMessage {
 
     final DNSSocketAddress from;
     final DNSPacket packet;

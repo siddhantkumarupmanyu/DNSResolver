@@ -4,7 +4,7 @@ import com.objogate.wl.swing.AWTEventQueueProber;
 import com.objogate.wl.swing.driver.JFrameDriver;
 import com.objogate.wl.swing.driver.JLabelDriver;
 import com.objogate.wl.swing.gesture.GesturePerformer;
-import sku.dnsresolver.MainWindow;
+import sku.dnsresolver.ui.MainWindow;
 
 import static org.hamcrest.Matchers.equalTo;
 

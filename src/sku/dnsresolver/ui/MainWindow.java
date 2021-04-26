@@ -1,4 +1,4 @@
-package sku.dnsresolver;
+package sku.dnsresolver.ui;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;

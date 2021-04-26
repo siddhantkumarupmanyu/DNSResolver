@@ -1,4 +1,4 @@
-package sku.dnsresolver;
+package sku.dnsresolver.network;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
