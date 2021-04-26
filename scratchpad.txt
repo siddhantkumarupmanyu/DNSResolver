@@ -1,12 +1,12 @@
 
-single resolver, valid domain
-
-multiple resolvers, valid domain
-
+domain name, with recursion ==> done
+domain name, with cname
+domain name, without recursion
+    -requires support for NS
 
 =============================================================
 
-how should I get socketAddress from PacketTransceiver.response()
+how should I get socketAddress from PacketTransceiver.receivePacket()
 
 Change NetworkManager name to something more suitable
 

@@ -12,36 +12,39 @@ public class DatagramPacketTransceiver implements PacketTransceiver {
 
     private DatagramSocket socket;
 
-
     @Override
     public void sendPacket(byte[] packetInBytes, InetSocketAddress socketAddress) {
         try {
             createSocket();
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
 
-        DatagramPacket datagramPacket = new DatagramPacket(packetInBytes, packetInBytes.length, socketAddress);
-        try {
+            DatagramPacket datagramPacket = new DatagramPacket(packetInBytes, packetInBytes.length, socketAddress);
             socket.send(datagramPacket);
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            throw new NetworkException("Unable to Send Packet", e);
         }
     }
 
     @Override
     public byte[] receivePacket() {
-        byte[] receiveBuffer = new byte[UDP_MAX_BYTES];
-        DatagramPacket packet = new DatagramPacket(receiveBuffer, UDP_MAX_BYTES);
         try {
+            byte[] receiveBuffer = new byte[UDP_MAX_BYTES];
+            DatagramPacket packet = new DatagramPacket(receiveBuffer, UDP_MAX_BYTES);
             socket.receive(packet);
+            return packet.getData();
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            throw new NetworkException("Unable to Receive Packet", e);
+        } finally {
+            closeSocket();
         }
-        return packet.getData();
     }
 
     private void createSocket() throws SocketException {
         socket = new DatagramSocket();
+    }
+
+    private void closeSocket() {
+        socket.close();
     }
 }
