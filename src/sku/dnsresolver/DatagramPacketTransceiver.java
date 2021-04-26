@@ -7,8 +7,6 @@ import java.net.InetSocketAddress;
 import java.net.SocketException;
 
 
-// TODO: refactor this class after end to end tests start passing
-
 public class DatagramPacketTransceiver implements PacketTransceiver {
     public static final int UDP_MAX_BYTES = 1400;
 

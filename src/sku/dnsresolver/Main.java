@@ -3,9 +3,7 @@ package sku.dnsresolver;
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.net.SocketException;
 
-// TODO:
 public class Main implements DNSMessageListener {
 
     public static final int DOMAIN_NAME = 0;
@@ -13,15 +11,23 @@ public class Main implements DNSMessageListener {
     public static final int DNS_SERVER_PORT = 2;
 
     private MainWindow ui;
-    private NetworkManager networkThread;
+    private final NetworkManager networkManager;
 
     public Main(String domain, String ip, String port) throws Exception {
         startUserInterface();
-        startNetworkThread();
-        stopNetworkThreadWhenUICloses();
+        shutdownNetworkManagerWhenUICloses();
 
-//        DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(ip, port);
-//        this.networkThread.sendRequest(domain, dnsSocketAddress);
+        this.networkManager = new NetworkManager(new DatagramPacketTransceiver(), this);
+
+        DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(ip, port);
+
+        DNSPacket packet = new DNSQueryBuilder()
+                .setId((short) 1)
+                .setRecursionDesired(true)
+                .setQueries(new DNSPacket.DNSQuery(domain, (short) 1, (short) 1))
+                .build();
+
+        this.networkManager.query(dnsSocketAddress, packet);
     }
 
     @Override
@@ -29,8 +35,8 @@ public class Main implements DNSMessageListener {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                // TODO:
-//                ui.setLabelText(dnsMessage.exchange.message);
+                DNSPacket.DNSAnswer answer = dnsMessage.packet.answers[0];
+                ui.setLabelText(answer.readableAddress());
             }
         });
     }
@@ -48,16 +54,11 @@ public class Main implements DNSMessageListener {
         });
     }
 
-    private void startNetworkThread() throws SocketException {
-//        this.networkThread = new NetworkThread(this);
-//        this.networkThread.start();
-    }
-
-    private void stopNetworkThreadWhenUICloses() {
+    private void shutdownNetworkManagerWhenUICloses() {
         ui.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-//                networkThread.stopThread();
+                networkManager.shutdown();
             }
         });
     }

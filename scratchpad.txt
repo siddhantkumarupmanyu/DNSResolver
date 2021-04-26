@@ -6,7 +6,7 @@ multiple resolvers, valid domain
 
 =============================================================
 
-DNSAnswer should take byte[] for address not int
+how should I get socketAddress from PacketTransceiver.response()
 
 Change NetworkManager name to something more suitable
 
@@ -14,13 +14,9 @@ Add isValid method in DNSPacket
     -builder should call isValid()
     -isValid method should check ot see of All RRs matches as specified by their counts
 
-I have to do something with the exceptions
-    -exceptions are in DatagramPacketTransceiver
-    -also main have many exceptions but they will disappear as we improve the design
-
-nextByte() in parse can be replace with an iterator.
+nextByte() in DNSPacketParser can be replace with an iterator.
     -but nextByte gives more readability, so let it remain
 
 Add support for CNAME and NS in DNSPacket
-    -i do not know what kind of special support do they need apart from what i already have in DNSPacket
     -DNSPacketParser should support CNAME with current code, but i have to do a unit test to be sure
+    -i do not know what kind of special support do NS need apart from what i already have in DNSPacket

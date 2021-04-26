@@ -12,7 +12,7 @@ public class DNSPacketParserTest {
     public void parseWhenResponseIsOfGoogleWithNegativeId() {
         short id = -21332;
         DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("www.google.com", (short) 1, (short) 1);
-        DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 115, (short) 4, address_172_217_160_196_inBytes());
+        DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 115, (short) 4, address_172_217_160_196_inInt());
         DNSPacket packet = new DNSPacketBuilder()
                 .setId(id)
                 .setResponse(true)
@@ -38,7 +38,7 @@ public class DNSPacketParserTest {
         assertThat(parser.getDNSPacket(), is(equalTo(packet)));
     }
 
-    private int address_172_217_160_196_inBytes() {
+    private int address_172_217_160_196_inInt() {
         return 0xac_d9_a0_c4;
     }
 

@@ -25,7 +25,7 @@ public class ApplicationRunner {
         driver = new ApplicationDriver(1000);
     }
 
-    public void hasReceivedResponse(String ipAddress) {
+    public void hasReceivedResponseWith(String ipAddress) {
         driver.hasLabelWithString(ipAddress);
     }
 }

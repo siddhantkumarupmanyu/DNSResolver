@@ -31,4 +31,7 @@ public class NetworkManager {
         executor.submit(runnable);
     }
 
+    public void shutdown() {
+        executor.shutdownNow();
+    }
 }

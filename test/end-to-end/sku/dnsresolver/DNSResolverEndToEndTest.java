@@ -19,12 +19,15 @@ public class DNSResolverEndToEndTest {
         fakeDnsServer.stopServer();
     }
 
-    // TODO:
     @Test
     public void resolvesDomainName() throws Exception {
         application.resolve("example.com", fakeDnsServer);
         fakeDnsServer.hasReceivedPacket("example.com");
-//        fakeDnsServer.respondWith("127.0.0.1");
-        application.hasReceivedResponse("127.0.0.1");
+        fakeDnsServer.respondWith(address_127_0_0_1_inBytes());
+        application.hasReceivedResponseWith("127.0.0.1");
+    }
+
+    private byte[] address_127_0_0_1_inBytes() {
+        return new byte[]{0x7f, 0x00, 0x00, 0x01};
     }
 }
