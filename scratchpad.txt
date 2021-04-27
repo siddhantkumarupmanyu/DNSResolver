@@ -6,16 +6,9 @@ domain name, without recursion
 
 =============================================================
 
-how should I get socketAddress from PacketTransceiver.receivePacket()
-
-UDPPacketTransceiver will suffer concurrency problems when queries starts executing parallel
-    -i.e now DatagramPacketTransceiver depends on implementation of Network manager to work effectively
-    -it's so a we are only creating socket when sending data and closing it when receiving.
-    -if in between we re called sendPacket the previous socket will be gone, yielding unexpected results.
-    -there is coupling between DatagramPacketTransceiver and NetworkManager; fix this
-    -we need other class in DatagramPacketTransceiver that will manage the sockets for each query. (hint: use map)
-
-Change NetworkManager name to something more suitable
+Add support for CNAME and NS in DNSPacket
+    -DNSPacketParser should support CNAME with current code, but i have to do a unit test to be sure
+    -i do not know what kind of special support do NS need apart from what i already have in DNSPacket
 
 Add isValid method in DNSPacket
     -builder should call isValid()
@@ -23,7 +16,3 @@ Add isValid method in DNSPacket
 
 nextByte() in DNSPacketParser can be replace with an iterator.
     -but nextByte gives more readability, so let it remain
-
-Add support for CNAME and NS in DNSPacket
-    -DNSPacketParser should support CNAME with current code, but i have to do a unit test to be sure
-    -i do not know what kind of special support do NS need apart from what i already have in DNSPacket
