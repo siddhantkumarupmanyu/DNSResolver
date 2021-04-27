@@ -1,6 +1,7 @@
 package sku.dnsresolver;
 
 import sku.dnsresolver.network.DNSSocketAddress;
+import sku.dnsresolver.network.DatagramFactory;
 import sku.dnsresolver.network.DatagramPacketTransceiver;
 import sku.dnsresolver.network.NetworkManager;
 import sku.dnsresolver.ui.MainWindow;
@@ -22,7 +23,7 @@ public class Main implements DNSMessageListener {
         startUserInterface();
         shutdownNetworkManagerWhenUICloses();
 
-        this.networkManager = new NetworkManager(new DatagramPacketTransceiver(), this);
+        this.networkManager = new NetworkManager(new DatagramFactory(), this);
 
         DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(ip, port);
 

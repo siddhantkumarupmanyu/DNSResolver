@@ -13,11 +13,11 @@ public class DatagramPacketTransceiver implements PacketTransceiver {
     private DatagramSocket socket;
 
     @Override
-    public void sendPacket(byte[] packetInBytes, InetSocketAddress socketAddress) {
+    public void sendPacket(PacketTransceiver.Packet packet) {
         try {
             createSocket();
 
-            DatagramPacket datagramPacket = new DatagramPacket(packetInBytes, packetInBytes.length, socketAddress);
+            DatagramPacket datagramPacket = new DatagramPacket(packet.data, packet.data.length, packet.address);
             socket.send(datagramPacket);
         } catch (IOException e) {
 //            e.printStackTrace();
@@ -26,12 +26,13 @@ public class DatagramPacketTransceiver implements PacketTransceiver {
     }
 
     @Override
-    public byte[] receivePacket() {
+    public PacketTransceiver.Packet receivePacket() {
         try {
             byte[] receiveBuffer = new byte[UDP_MAX_BYTES];
-            DatagramPacket packet = new DatagramPacket(receiveBuffer, UDP_MAX_BYTES);
-            socket.receive(packet);
-            return packet.getData();
+            DatagramPacket datagramPacket = new DatagramPacket(receiveBuffer, UDP_MAX_BYTES);
+            socket.receive(datagramPacket);
+
+            return new Packet((InetSocketAddress) datagramPacket.getSocketAddress(), datagramPacket.getData());
         } catch (IOException e) {
 //            e.printStackTrace();
             throw new NetworkException("Unable to Receive Packet", e);

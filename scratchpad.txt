@@ -8,6 +8,13 @@ domain name, without recursion
 
 how should I get socketAddress from PacketTransceiver.receivePacket()
 
+UDPPacketTransceiver will suffer concurrency problems when queries starts executing parallel
+    -i.e now DatagramPacketTransceiver depends on implementation of Network manager to work effectively
+    -it's so a we are only creating socket when sending data and closing it when receiving.
+    -if in between we re called sendPacket the previous socket will be gone, yielding unexpected results.
+    -there is coupling between DatagramPacketTransceiver and NetworkManager; fix this
+    -we need other class in DatagramPacketTransceiver that will manage the sockets for each query. (hint: use map)
+
 Change NetworkManager name to something more suitable
 
 Add isValid method in DNSPacket

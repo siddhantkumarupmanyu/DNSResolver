@@ -9,11 +9,11 @@ public class NetworkManager {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
-    private final PacketTransceiver transceiver;
+    private final PacketTransceiverFactory factory;
     private final DNSMessageListener messageListener;
 
-    public NetworkManager(PacketTransceiver transceiver, DNSMessageListener dnsMessageListener) {
-        this.transceiver = transceiver;
+    public NetworkManager(PacketTransceiverFactory factory, DNSMessageListener dnsMessageListener) {
+        this.factory = factory;
         this.messageListener = dnsMessageListener;
     }
 
@@ -21,13 +21,10 @@ public class NetworkManager {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                byte[] queryPacket = new DNSPacketGenerator(query).getBytes();
-                transceiver.sendPacket(queryPacket, serverAddress.inetSocketAddress());
-
-                byte[] responsePacket = transceiver.receivePacket();
-                DNSPacket response = new DNSPacketParser(responsePacket).getDNSPacket();
-
-                messageListener.receivedMessage(new DNSMessage(null, response));
+                PacketTransceiver transceiver = createTransceiver();
+                sendQuery(transceiver, query, serverAddress);
+                DNSMessage message = receiveResponse(transceiver);
+                notifyListener(message);
             }
         };
         executor.submit(runnable);
@@ -35,5 +32,26 @@ public class NetworkManager {
 
     public void shutdown() {
         executor.shutdownNow();
+    }
+
+    private PacketTransceiver createTransceiver() {
+        return factory.createTransceiver();
+    }
+
+    private void sendQuery(PacketTransceiver transceiver, DNSPacket query, DNSSocketAddress serverAddress) {
+        byte[] queryInBytes = new DNSPacketGenerator(query).getBytes();
+        PacketTransceiver.Packet queryPacket = new PacketTransceiver.Packet(serverAddress.inetSocketAddress(), queryInBytes);
+        transceiver.sendPacket(queryPacket);
+    }
+
+    private DNSMessage receiveResponse(PacketTransceiver transceiver) {
+        PacketTransceiver.Packet responsePacket = transceiver.receivePacket();
+        DNSSocketAddress serverAddress = DNSSocketAddress.from(responsePacket.address);
+        DNSPacket response = new DNSPacketParser(responsePacket.data).getDNSPacket();
+        return new DNSMessage(serverAddress, response);
+    }
+
+    private void notifyListener(DNSMessage message) {
+        messageListener.receivedMessage(message);
     }
 }

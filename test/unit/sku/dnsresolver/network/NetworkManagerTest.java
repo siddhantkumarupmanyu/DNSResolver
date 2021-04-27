@@ -16,7 +16,8 @@ public class NetworkManagerTest {
     private final FakeDnsServer fakeDnsServer = new FakeDnsServer();
     private final DNSSocketAddress fakeServerAddress = new DNSSocketAddress(fakeDnsServer.ipAddress(), fakeDnsServer.port());
 
-    private final PacketTransceiver transceiver = new DatagramPacketTransceiver();
+    //    private final PacketTransceiver transceiver = new DatagramPacketTransceiver();
+    private final PacketTransceiverFactory factory = new DatagramFactory();
 
     @Before
     public void setUp() throws Exception {
@@ -31,7 +32,7 @@ public class NetworkManagerTest {
     @Test
     public void queryDnsPacket() throws Exception {
         final CountDownLatch messageWasReceived = new CountDownLatch(1);
-        NetworkManager networkManager = new NetworkManager(transceiver, createDNSMessageListener(messageWasReceived));
+        NetworkManager networkManager = new NetworkManager(factory, createDNSMessageListener(messageWasReceived));
 
         networkManager.query(fakeServerAddress, queryFor("www.example.com"));
 
