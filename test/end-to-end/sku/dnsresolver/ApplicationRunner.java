@@ -29,4 +29,10 @@ public class ApplicationRunner {
     public void hasReceivedResponseWith(String ipAddress) {
         driver.hasLabelWithString(ipAddress);
     }
+
+    public void stop() {
+        if (driver != null) {
+            driver.dispose();
+        }
+    }
 }

@@ -17,6 +17,7 @@ public class DNSResolverEndToEndTest {
     @After
     public void tearDown() {
         fakeDnsServer.stopServer();
+        application.stop();
     }
 
     @Test
@@ -28,10 +29,11 @@ public class DNSResolverEndToEndTest {
     }
 
     @Test
-    public void resolvesDomainNameWithCNAME() {
-
+    public void resolvesDomainNameWithCNAME() throws Exception {
+        application.resolve("cname.example.com", fakeDnsServer);
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_CNAME_EXAMPLE_COM);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_CNAME_EXAMPLE_COM);
+        application.hasReceivedResponseWith("127.0.0.2");
     }
-
-    // 000181800001000200000000037777770866616365626f6f6b03636f6d0000010001c00c0005000100000408001109737461722d6d696e690463313072c010c02e000100010000000e00049df01423
 
 }
