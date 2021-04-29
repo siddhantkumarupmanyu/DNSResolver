@@ -11,7 +11,7 @@ import static org.junit.Assert.assertThat;
 public class DNSSocketAddressTest {
 
     @Test
-    public void socketAddressFromIpAndPort() throws Exception {
+    public void inetSocketAddressFromIpAndPort() {
         DNSSocketAddress dnsSocketAddress = new DNSSocketAddress("127.0.0.1", "5000");
         InetSocketAddress inetSocketAddress = dnsSocketAddress.inetSocketAddress();
 
@@ -20,7 +20,7 @@ public class DNSSocketAddressTest {
     }
 
     @Test
-    public void createFromSocketAddress() {
+    public void createFromInetSocketAddress() {
         InetSocketAddress inetSocketAddress = new InetSocketAddress("127.0.0.1", 5000);
         DNSSocketAddress expected = new DNSSocketAddress("127.0.0.1", "5000");
 

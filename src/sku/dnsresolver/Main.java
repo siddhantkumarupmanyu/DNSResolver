@@ -2,7 +2,6 @@ package sku.dnsresolver;
 
 import sku.dnsresolver.network.DNSSocketAddress;
 import sku.dnsresolver.network.DatagramFactory;
-import sku.dnsresolver.network.DatagramPacketTransceiver;
 import sku.dnsresolver.network.NetworkManager;
 import sku.dnsresolver.ui.MainWindow;
 
@@ -12,9 +11,9 @@ import java.awt.event.WindowEvent;
 
 public class Main implements DNSMessageListener {
 
-    public static final int DOMAIN_NAME = 0;
-    public static final int DNS_SERVER_IP = 1;
-    public static final int DNS_SERVER_PORT = 2;
+    public static final int DOMAIN_NAME_ARG = 0;
+    public static final int DNS_SERVER_IP_ARG = 1;
+    public static final int DNS_SERVER_PORT_ARG = 2;
 
     private MainWindow ui;
     private final NetworkManager networkManager;
@@ -48,7 +47,7 @@ public class Main implements DNSMessageListener {
     }
 
     public static void main(String... args) throws Exception {
-        Main main = new Main(args[DOMAIN_NAME], args[DNS_SERVER_IP], args[DNS_SERVER_PORT]);
+        Main main = new Main(args[DOMAIN_NAME_ARG], args[DNS_SERVER_IP_ARG], args[DNS_SERVER_PORT_ARG]);
     }
 
     private void startUserInterface() throws Exception {

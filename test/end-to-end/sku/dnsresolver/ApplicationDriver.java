@@ -1,10 +1,11 @@
 package sku.dnsresolver;
 
 import com.objogate.wl.swing.AWTEventQueueProber;
-import com.objogate.wl.swing.driver.JFrameDriver;
-import com.objogate.wl.swing.driver.JLabelDriver;
+import com.objogate.wl.swing.driver.*;
 import com.objogate.wl.swing.gesture.GesturePerformer;
 import sku.dnsresolver.ui.MainWindow;
+
+import javax.swing.*;
 
 import static org.hamcrest.Matchers.equalTo;
 
@@ -20,5 +21,23 @@ public class ApplicationDriver extends JFrameDriver {
     public void hasLabelWithString(String ipAddress) {
         new JLabelDriver(this, named(MainWindow.RESOLVED_LABEL_NAME))
                 .hasText(equalTo(ipAddress));
+    }
+
+    public void resolveDomainName(String domainName, String serverIp, String serverPort) {
+        textField(MainWindow.DOMAIN_TEXTFIELD_NAME).replaceAllText(domainName);
+        textField(MainWindow.SERVER_IP_TEXTFIELD_NAME).replaceAllText(serverIp);
+        textField(MainWindow.SERVER_PORT_TEXTFIELD_NAME).replaceAllText(serverPort);
+        resolveButton().click();
+    }
+
+    private JTextFieldDriver textField(String fieldName) {
+        JTextFieldDriver newItemId =
+                new JTextFieldDriver(this, JTextField.class, named(fieldName));
+        newItemId.focusWithMouse();
+        return newItemId;
+    }
+
+    private JButtonDriver resolveButton() {
+        return new JButtonDriver(this, JButton.class, named(MainWindow.RESOLVE_BUTTON_NAME));
     }
 }

@@ -12,7 +12,7 @@ Add support for CNAME and NS in DNSPacket
 
 Add isValid method in DNSPacket
     -builder should call isValid()
-    -isValid method should check ot see of All RRs matches as specified by their counts
+    -isValid method should check to see of All RRs matches as specified by their counts
 
 nextByte() in DNSPacketParser can be replace with an iterator.
     -but nextByte gives more readability, so let it remain

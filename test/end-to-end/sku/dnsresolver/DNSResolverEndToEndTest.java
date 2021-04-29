@@ -20,11 +20,16 @@ public class DNSResolverEndToEndTest {
     }
 
     @Test
-    public void resolvesDomainName() throws Exception {
+    public void resolvesDomainNameWithRecursion() throws Exception {
         application.resolve("example.com", fakeDnsServer);
         fakeDnsServer.hasReceivedPacket("example.com");
         fakeDnsServer.respondWith(address_127_0_0_1_inBytes());
         application.hasReceivedResponseWith("127.0.0.1");
+    }
+
+    @Test
+    public void resolvesDomainNameWithCNAME() {
+        
     }
 
     private byte[] address_127_0_0_1_inBytes() {

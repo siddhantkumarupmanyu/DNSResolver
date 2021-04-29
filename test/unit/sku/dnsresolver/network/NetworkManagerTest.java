@@ -16,7 +16,6 @@ public class NetworkManagerTest {
     private final FakeDnsServer fakeDnsServer = new FakeDnsServer();
     private final DNSSocketAddress fakeServerAddress = new DNSSocketAddress(fakeDnsServer.ipAddress(), fakeDnsServer.port());
 
-    //    private final PacketTransceiver transceiver = new DatagramPacketTransceiver();
     private final PacketTransceiverFactory factory = new DatagramFactory();
 
     @Before
