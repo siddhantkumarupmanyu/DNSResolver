@@ -4,11 +4,21 @@ domain name, with cname
 domain name, without recursion
     -requires support for NS
 
+reply code: 0011 no such name
+
 =============================================================
+
+change address from int to bytes as it can be cname or better change it to String,
+
+add timeout in Network manager so other requests are made if one blocked executor for response but it never arrived
 
 Add support for CNAME and NS in DNSPacket
     -DNSPacketParser should support CNAME with current code, but i have to do a unit test to be sure
     -i do not know what kind of special support do NS need apart from what i already have in DNSPacket
+
+add noRandomId Arg to main; if it's given id will always be 1;
+    - it will be useful in testing but it production. No need to give this arg and a random id will be used
+    - add a random id generator; only unit testing it will be enough; no need to end to end test it.
 
 Add isValid method in DNSPacket
     -builder should call isValid()

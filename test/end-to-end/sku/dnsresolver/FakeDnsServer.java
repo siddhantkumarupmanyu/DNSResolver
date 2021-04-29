@@ -6,19 +6,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 
 public class FakeDnsServer {
     public static final String FAKE_DNS_IP_ADDRESS = "127.0.0.1";
     public static final String FAKE_DNS_PORT = "5000";
 
-    public static final short DEFAULT_ID = 1;
-    public static final boolean DEFAULT_RECURSION = true;
-    public static final short DEFAULT_QTYPE = 1;
-    public static final short DEFAULT_QCLASS = 1;
-
     private NetworkThread serverThread;
-    private final SingleMessageListener messageListener = new SingleMessageListener();
+    private final SinglePacketReceiver messageListener = new SinglePacketReceiver();
     private DNSPacket queryDnsPacket;
 
     public void startServer() throws Exception {
@@ -31,22 +27,12 @@ public class FakeDnsServer {
         serverThread.stopThread();
     }
 
-    public void hasReceivedPacket(String query) throws InterruptedException {
-        DNSPacket packet = queryFor(query);
-        messageListener.receivesAMessageWith(packet);
-        this.queryDnsPacket = packet;
+    public void hasReceivedPacket(byte[] packet) throws InterruptedException {
+        messageListener.receivedAPacket(packet);
     }
 
-    public void respondWith(byte[] ipAddress) {
-        serverThread.sendDNSPacketWithAnswer(queryDnsPacket, ipAddress ,messageListener.lastAddress);
-    }
-
-    private DNSPacket queryFor(String query) {
-        return new DNSQueryBuilder()
-                .setId(DEFAULT_ID)
-                .setRecursionDesired(DEFAULT_RECURSION)
-                .setQueries(new DNSPacket.DNSQuery(query, DEFAULT_QTYPE, DEFAULT_QCLASS))
-                .build();
+    public void respondWith(byte[] packet) {
+        serverThread.sendPacket(packet, messageListener.lastAddress);
     }
 
     public String ipAddress() {
@@ -57,19 +43,18 @@ public class FakeDnsServer {
         return FAKE_DNS_PORT;
     }
 
-    public static class SingleMessageListener implements DNSMessageListener {
-        private final ArrayBlockingQueue<DNSPacket> packets = new ArrayBlockingQueue<>(1);
+    public static class SinglePacketReceiver {
+        private final ArrayBlockingQueue<byte[]> packets = new ArrayBlockingQueue<>(1);
 
         private DNSSocketAddress lastAddress;
 
-        @Override
-        public void receivedMessage(DNSMessage message) {
-            packets.add(message.packet);
-            lastAddress = message.from;
+        public void receivedPacket(byte[] packet, DNSSocketAddress address) {
+            packets.add(packet);
+            lastAddress = address;
         }
 
-        public void receivesAMessageWith(DNSPacket dnsPacket) throws InterruptedException {
-            assertThat("DNS Packet", packets.poll(5, TimeUnit.SECONDS), is(dnsPacket));
+        public void receivedAPacket(byte[] packet) throws InterruptedException {
+            assertThat("Packet in Bytes", packets.poll(5, TimeUnit.SECONDS), is(equalTo(packet)));
         }
     }
 }

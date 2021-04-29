@@ -35,8 +35,8 @@ public class NetworkManagerTest {
 
         networkManager.query(fakeServerAddress, queryFor("www.example.com"));
 
-        fakeDnsServer.hasReceivedPacket("www.example.com");
-        fakeDnsServer.respondWith(address_172_217_160_196_inBytes());
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_WWW_EXAMPLE_COM);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_WWW_EXAMPLE_COM);
 
         assertThat("should have received response", messageWasReceived.await(4, TimeUnit.SECONDS));
     }
@@ -53,15 +53,12 @@ public class NetworkManagerTest {
 
     private DNSPacket queryFor(String query) {
         return new DNSQueryBuilder()
-                .setId(FakeDnsServer.DEFAULT_ID)
-                .setRecursionDesired(FakeDnsServer.DEFAULT_RECURSION)
-                .setQueries(new DNSPacket.DNSQuery(query, FakeDnsServer.DEFAULT_QTYPE, FakeDnsServer.DEFAULT_QCLASS))
+                .setId(SamplePackets.DEFAULT_ID)
+                .setRecursionDesired(SamplePackets.DEFAULT_RECURSION)
+                .setQueries(new DNSPacket.DNSQuery(query, SamplePackets.DEFAULT_QTYPE, SamplePackets.DEFAULT_QCLASS))
                 .build();
     }
 
-    private byte[] address_172_217_160_196_inBytes() {
-        return new byte[]{(byte) 0xac, (byte) 0xd9, (byte) 0xa0, (byte) 0xc4};
-    }
 }
 
 // this is an integration test

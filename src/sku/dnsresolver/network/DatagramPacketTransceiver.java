@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetSocketAddress;
 import java.net.SocketException;
+import java.util.Arrays;
 
 
 public class DatagramPacketTransceiver implements PacketTransceiver {
@@ -32,7 +33,8 @@ public class DatagramPacketTransceiver implements PacketTransceiver {
             DatagramPacket datagramPacket = new DatagramPacket(receiveBuffer, UDP_MAX_BYTES);
             socket.receive(datagramPacket);
 
-            return new Packet((InetSocketAddress) datagramPacket.getSocketAddress(), datagramPacket.getData());
+            byte[] packetInBytes = Arrays.copyOf(datagramPacket.getData(), datagramPacket.getLength());
+            return new Packet((InetSocketAddress) datagramPacket.getSocketAddress(), packetInBytes);
         } catch (IOException e) {
 //            e.printStackTrace();
             throw new NetworkException("Unable to Receive Packet", e);
