@@ -5,15 +5,16 @@ public class ApplicationRunner {
     private ApplicationDriver driver;
 
     public void resolve(String domainName, FakeDnsServer dnsServer) {
-        startApplication(domainName, dnsServer.ipAddress(), dnsServer.port());
+        startApplication();
+        driver.resolveDomainName(domainName, dnsServer.ipAddress(), dnsServer.port());
     }
 
-    private void startApplication(String domainName, String dnsServerIp, String port) {
+    private void startApplication() {
         Thread thread = new Thread("Test Application") {
             @Override
             public void run() {
                 try {
-                    Main.main(domainName, dnsServerIp, port);
+                    Main.main();
                 } catch (Exception exception) {
                     exception.printStackTrace();
                 }

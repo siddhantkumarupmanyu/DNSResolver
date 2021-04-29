@@ -4,35 +4,22 @@ import sku.dnsresolver.network.DNSSocketAddress;
 import sku.dnsresolver.network.DatagramFactory;
 import sku.dnsresolver.network.NetworkManager;
 import sku.dnsresolver.ui.MainWindow;
+import sku.dnsresolver.ui.UserRequestListener;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class Main implements DNSMessageListener {
-
-    public static final int DOMAIN_NAME_ARG = 0;
-    public static final int DNS_SERVER_IP_ARG = 1;
-    public static final int DNS_SERVER_PORT_ARG = 2;
+public class Main implements DNSMessageListener, UserRequestListener {
 
     private MainWindow ui;
     private final NetworkManager networkManager;
 
-    public Main(String domain, String ip, String port) throws Exception {
+    public Main() throws Exception {
         startUserInterface();
         shutdownNetworkManagerWhenUICloses();
 
         this.networkManager = new NetworkManager(new DatagramFactory(), this);
-
-        DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(ip, port);
-
-        DNSPacket packet = new DNSQueryBuilder()
-                .setId((short) 1)
-                .setRecursionDesired(true)
-                .setQueries(new DNSPacket.DNSQuery(domain, (short) 1, (short) 1))
-                .build();
-
-        this.networkManager.query(dnsSocketAddress, packet);
     }
 
     @Override
@@ -47,7 +34,7 @@ public class Main implements DNSMessageListener {
     }
 
     public static void main(String... args) throws Exception {
-        Main main = new Main(args[DOMAIN_NAME_ARG], args[DNS_SERVER_IP_ARG], args[DNS_SERVER_PORT_ARG]);
+        Main main = new Main();
     }
 
     private void startUserInterface() throws Exception {
@@ -55,8 +42,22 @@ public class Main implements DNSMessageListener {
             @Override
             public void run() {
                 ui = new MainWindow();
+                ui.addUserRequestListener(Main.this);
             }
         });
+    }
+
+    @Override
+    public void resolve(String domainName, String serverIp, String serverPort) {
+        DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(serverIp, serverPort);
+
+        DNSPacket packet = new DNSQueryBuilder()
+                .setId((short) 1)
+                .setRecursionDesired(true)
+                .setQueries(new DNSPacket.DNSQuery(domainName, (short) 1, (short) 1))
+                .build();
+
+        this.networkManager.query(dnsSocketAddress, packet);
     }
 
     private void shutdownNetworkManagerWhenUICloses() {
