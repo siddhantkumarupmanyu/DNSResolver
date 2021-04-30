@@ -169,9 +169,9 @@ public final class DNSPacket {
         public final DNSQuery query;
         public final int timeToLive; // 32 bits
         public final short dataLength; // 16 bits
-        public final int address; // 32 bits
+        public final String address; // variable - depends on dataLength
 
-        public DNSAnswer(DNSQuery query, int timeToLive, short dataLength, int address) {
+        public DNSAnswer(DNSQuery query, int timeToLive, short dataLength, String address) {
             this.query = query;
             this.timeToLive = timeToLive;
             this.dataLength = dataLength;
@@ -207,18 +207,6 @@ public final class DNSPacket {
         @Override
         public String toString() {
             return new ReflectionToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE)
-                    .toString();
-        }
-
-        public String readableAddress() {
-            return new StringBuilder()
-                    .append((address >>> 24) & 0x000000ff)
-                    .append(".")
-                    .append((address >>> 16) & 0x000000ff)
-                    .append(".")
-                    .append((address >>> 8) & 0x000000ff)
-                    .append(".")
-                    .append((address) & 0x000000ff)
                     .toString();
         }
     }

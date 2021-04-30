@@ -12,7 +12,7 @@ public class DNSPacketBuilderTest {
     public void ableToBuildADNSPacket() {
         short id = 1;
         DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("www.example.com", (short) 1, (short) 1);
-        DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 256, (short) 4, address_127_0_0_1_inBytes());
+        DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 256, (short) 4, "127.0.0.1");
         DNSPacketBuilder builder = new DNSPacketBuilder()
                 .setId(id)
                 .setResponse(true)
@@ -37,7 +37,7 @@ public class DNSPacketBuilderTest {
 
     private DNSPacket dnsPacketWithValuesMoreThanZeroAndId(int id) {
         DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("www.example.com", (short) 1, (short) 1);
-        DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 256, (short) 4, address_127_0_0_1_inBytes());
+        DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 256, (short) 4, "127.0.0.1");
         return new DNSPacket(
                 (short) id,
                 true,
@@ -57,10 +57,6 @@ public class DNSPacketBuilderTest {
                 new DNSPacket.DNSQuery[]{query},
                 new DNSPacket.DNSAnswer[]{answer}
         );
-    }
-
-    private int address_127_0_0_1_inBytes() {
-        return 0x7f000001;
     }
 
 }

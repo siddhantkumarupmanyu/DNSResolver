@@ -1,5 +1,6 @@
 package sku.dnsresolver;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -12,7 +13,7 @@ public class DNSPacketParserTest {
     public void parseWhenResponseIsOfGoogleWithNegativeId() {
         short id = -21332;
         DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("www.google.com", (short) 1, (short) 1);
-        DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 115, (short) 4, address_172_217_160_196_inInt());
+        DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 115, (short) 4, "172.217.160.196");
         DNSPacket packet = new DNSPacketBuilder()
                 .setId(id)
                 .setResponse(true)
@@ -33,16 +34,47 @@ public class DNSPacketParserTest {
                 .setAnswers(answer)
                 .build();
 
-        DNSPacketParser parser = new DNSPacketParser(googleResponse());
+        DNSPacketParser parser = new DNSPacketParser(googleResponseWithNegativeAddress());
 
         assertThat(parser.getDNSPacket(), is(equalTo(packet)));
     }
 
-    private int address_172_217_160_196_inInt() {
-        return 0xac_d9_a0_c4;
+    @Test
+    public void parseWhenResponseContainsCName() {
+        DNSPacket.DNSQuery question = new DNSPacket.DNSQuery("cname.example.com", (short) 1, (short) 1);
+
+        DNSPacket.DNSQuery query1 = new DNSPacket.DNSQuery("cname.example.com", (short) 5, (short) 1);
+        DNSPacket.DNSAnswer answer1 = new DNSPacket.DNSAnswer(query1, 115, (short) 6, "www.example.com");
+
+        DNSPacket.DNSQuery query2 = new DNSPacket.DNSQuery("www.example.com", (short) 1, (short) 1);
+        DNSPacket.DNSAnswer answer2 = new DNSPacket.DNSAnswer(query2, 115, (short) 4, "127.0.0.2");
+
+        DNSPacket packet = new DNSPacketBuilder()
+                .setId(SamplePackets.DEFAULT_ID)
+                .setResponse(true)
+                .setOpCode(0)
+                .setAuthoritative(false)
+                .setTruncated(false)
+                .setRecursionDesired(true)
+                .setRecursionAvailable(true)
+                .setZ(false)
+                .setAnswerAuthenticated(false)
+                .setNonAuthenticatedData(false)
+                .setReplyCode(0)
+                .setQuestionCount((short) 1)
+                .setAnswerRRCount((short) 2)
+                .setAuthorityRRCount((short) 0)
+                .setAdditionalRRCount((short) 0)
+                .setQueries(question)
+                .setAnswers(answer1, answer2)
+                .build();
+
+        DNSPacketParser parser = new DNSPacketParser(SamplePackets.RESPONSE_CNAME_EXAMPLE_COM);
+
+        assertThat(parser.getDNSPacket(), is(equalTo(packet)));
     }
 
-    private byte[] googleResponse() {
+    private byte[] googleResponseWithNegativeAddress() {
         return new byte[]{
                 // header
                 (byte) 0xac, (byte) 0xac, // id

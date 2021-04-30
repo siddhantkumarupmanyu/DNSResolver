@@ -28,7 +28,7 @@ public class Main implements DNSMessageListener, UserRequestListener {
             @Override
             public void run() {
                 DNSPacket.DNSAnswer answer = dnsMessage.packet.answers[0];
-                ui.setLabelText(answer.readableAddress());
+                ui.setLabelText(answer.address);
             }
         });
     }
