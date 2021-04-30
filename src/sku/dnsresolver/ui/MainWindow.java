@@ -3,7 +3,6 @@ package sku.dnsresolver.ui;
 import sku.dnsresolver.util.Announcer;
 
 import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,7 +10,7 @@ import java.text.NumberFormat;
 
 public class MainWindow extends JFrame {
     public static final String MAIN_WINDOW_NAME = "DNS Resolver";
-    public static final String RESOLVED_LABEL_NAME = "resolved-label";
+    public static final String RESPONSE_TEXT_AREA = "response-text-area";
     public static final String DOMAIN_TEXTFIELD_NAME = "domain-name-textfield";
     public static final String SERVER_IP_TEXTFIELD_NAME = "server-ip-textfield";
     public static final String SERVER_PORT_TEXTFIELD_NAME = "server-port-textfield";
@@ -19,7 +18,7 @@ public class MainWindow extends JFrame {
 
     private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
 
-    private JLabel resolvedIp;
+    private JTextArea response;
 
     public MainWindow() {
         super("DNS Resolver");
@@ -75,14 +74,15 @@ public class MainWindow extends JFrame {
     }
 
     private JPanel responsePanel() {
-        JLabel label = new JLabel("Resolved Ip: ");
-        resolvedIp = new JLabel();
-        resolvedIp.setName(RESOLVED_LABEL_NAME);
-        resolvedIp.setBorder(new LineBorder(Color.BLACK));
+        response = new JTextArea();
+        response.setName(RESPONSE_TEXT_AREA);
+        response.setEditable(false);
+        response.setBackground(Color.WHITE);
+        response.setColumns(50);
+        response.setRows(25);
 
         JPanel response = new JPanel(new FlowLayout());
-        response.add(label);
-        response.add(resolvedIp);
+        response.add(this.response);
         return response;
     }
 
@@ -111,7 +111,7 @@ public class MainWindow extends JFrame {
         userRequests.addListener(userRequestListener);
     }
 
-    public void setLabelText(String string) {
-        resolvedIp.setText(string);
+    public void appendTextToResponse(String text) {
+        response.append(text);
     }
 }

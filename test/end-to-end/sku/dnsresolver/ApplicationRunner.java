@@ -27,7 +27,7 @@ public class ApplicationRunner {
     }
 
     public void hasReceivedResponseWith(String ipAddress) {
-        driver.hasLabelWithString(ipAddress);
+        driver.responseTextAreaContains(ipAddress);
     }
 
     public void stop() {

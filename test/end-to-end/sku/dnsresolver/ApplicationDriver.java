@@ -1,13 +1,16 @@
 package sku.dnsresolver;
 
 import com.objogate.wl.swing.AWTEventQueueProber;
-import com.objogate.wl.swing.driver.*;
+import com.objogate.wl.swing.driver.JButtonDriver;
+import com.objogate.wl.swing.driver.JFrameDriver;
+import com.objogate.wl.swing.driver.JTextComponentDriver;
+import com.objogate.wl.swing.driver.JTextFieldDriver;
 import com.objogate.wl.swing.gesture.GesturePerformer;
 import sku.dnsresolver.ui.MainWindow;
 
 import javax.swing.*;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.containsString;
 
 @SuppressWarnings("unchecked")
 public class ApplicationDriver extends JFrameDriver {
@@ -18,9 +21,9 @@ public class ApplicationDriver extends JFrameDriver {
                 new AWTEventQueueProber(timeoutMillis, 100));
     }
 
-    public void hasLabelWithString(String ipAddress) {
-        new JLabelDriver(this, named(MainWindow.RESOLVED_LABEL_NAME))
-                .hasText(equalTo(ipAddress));
+    public void responseTextAreaContains(String ipAddress) {
+        new JTextComponentDriver<>(this, JTextArea.class, named(MainWindow.RESPONSE_TEXT_AREA))
+                .hasText(containsString(ipAddress));
     }
 
     public void resolveDomainName(String domainName, String serverIp, String serverPort) {
