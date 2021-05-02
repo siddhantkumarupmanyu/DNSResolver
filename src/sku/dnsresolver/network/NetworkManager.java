@@ -39,6 +39,7 @@ public class NetworkManager {
     }
 
     private void sendQuery(PacketTransceiver transceiver, DNSPacket query, DNSSocketAddress serverAddress) {
+        // TODO: replace it with something like DNSPacketGenerator.packetInBytes(query);
         byte[] queryInBytes = new DNSPacketGenerator(query).getBytes();
         PacketTransceiver.Packet queryPacket = new PacketTransceiver.Packet(serverAddress.inetSocketAddress(), queryInBytes);
         transceiver.sendPacket(queryPacket);
@@ -47,6 +48,7 @@ public class NetworkManager {
     private DNSMessage receiveResponse(PacketTransceiver transceiver) {
         PacketTransceiver.Packet responsePacket = transceiver.receivePacket();
         DNSSocketAddress serverAddress = DNSSocketAddress.from(responsePacket.address);
+        // TODO: replace it with something like DNSPaketParser.parsePacket(response.data);
         DNSPacket response = new DNSPacketParser(responsePacket.data).getDNSPacket();
         return new DNSMessage(serverAddress, response);
     }

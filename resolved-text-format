@@ -1,0 +1,40 @@
+id: 1212
+response: true
+
+answers
+|-- answer 1
+|   |-- dsfdsfsefe
+|   `-- ffsf
+|
+|-- answer 2
+|   |-- adsasd
+|   |-- dsadas
+|   |-- awdadsad
+|   |-- sadsad
+|   `-- asdasd
+|
+`-- answer 3
+
+----------------------------------------- // for now lets go with this style
+id: 1212
+response: true
+query
++-- query 1
+    +-- question: wrarawr
+    +-- type: 1
+    +-- class: 1
+answers
++-- answer 1
+|   +-- dsfdsfsefe
+|   +-- ffsf
+|
++-- answer 2
+|   +-- adsasd
+|   +-- dsadas
+|   +-- awdadsad
+|   +-- sadsad
+|   +-- asdasd
+|
++-- answer 3
+
+-----------------------------------------
