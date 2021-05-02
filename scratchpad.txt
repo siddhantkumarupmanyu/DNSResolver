@@ -1,14 +1,10 @@
 
 domain name, with recursion ==> done
-domain name, with cname
+domain name, with cname ==> done
 domain name, without recursion
     -requires support for NS
 
-reply code: 0011 no such name
-
 =============================================================
-
-add PacketFormatter, so we can display response on screen
 
 DNSPacketParser: refactor ParseQuery and ParseAnswers have duplications
 
