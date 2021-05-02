@@ -1,5 +1,6 @@
 package sku.dnsresolver.ui;
 
+import org.apache.commons.lang.StringUtils;
 import sku.dnsresolver.util.Announcer;
 
 import javax.swing.*;
@@ -73,19 +74,6 @@ public class MainWindow extends JFrame {
         return controls;
     }
 
-    private JPanel responsePanel() {
-        response = new JTextArea();
-        response.setName(RESPONSE_TEXT_AREA);
-        response.setEditable(false);
-        response.setBackground(Color.WHITE);
-        response.setColumns(50);
-        response.setRows(25);
-
-        JPanel response = new JPanel(new FlowLayout());
-        response.add(this.response);
-        return response;
-    }
-
     private JTextField domainNameField() {
         JTextField domainNameField = new JTextField();
         domainNameField.setColumns(30);
@@ -107,11 +95,31 @@ public class MainWindow extends JFrame {
         return serverPortField;
     }
 
+    private JPanel responsePanel() {
+        response = new JTextArea();
+        response.setName(RESPONSE_TEXT_AREA);
+        response.setEditable(false);
+        response.setBackground(Color.WHITE);
+        response.setColumns(50);
+        response.setRows(25);
+
+        JScrollPane scroll = new JScrollPane(response);
+
+        JPanel response = new JPanel(new FlowLayout());
+        response.add(scroll);
+        return response;
+    }
+
     public void addUserRequestListener(UserRequestListener userRequestListener) {
         userRequests.addListener(userRequestListener);
     }
 
     public void appendTextToResponse(String text) {
+        response.append(horizontalLine());
         response.append(text);
+    }
+
+    private String horizontalLine() {
+        return StringUtils.repeat("=", 50);
     }
 }

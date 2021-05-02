@@ -28,8 +28,9 @@ public class Main implements DNSMessageListener, UserRequestListener {
             @Override
             public void run() {
                 for (DNSPacket.DNSAnswer answer : dnsMessage.packet.answers) {
-                    ui.appendTextToResponse(answer.toString());
-                    ui.appendTextToResponse("\n");
+                    // TODO: replace it with something like PacketFormatter.format(packet);
+                    PacketFormatter formatter = new PacketFormatter(dnsMessage.packet);
+                    ui.appendTextToResponse(formatter.getFormattedString());
                 }
             }
         });

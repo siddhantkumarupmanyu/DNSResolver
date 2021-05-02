@@ -23,7 +23,7 @@ public class ApplicationDriver extends JFrameDriver {
 
     public void responseTextAreaContains(String ipAddress) {
         new JTextComponentDriver<>(this, JTextArea.class, named(MainWindow.RESPONSE_TEXT_AREA))
-                .hasText(containsString(ipAddress));
+                .hasText(containsString("address: " + ipAddress));
     }
 
     public void resolveDomainName(String domainName, String serverIp, String serverPort) {
