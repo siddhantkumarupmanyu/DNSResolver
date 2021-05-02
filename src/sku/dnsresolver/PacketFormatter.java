@@ -73,6 +73,7 @@ public class PacketFormatter {
             builder.appendListItem(options, "answer", position);
             formatAnswer(packet.answers[i], options, position == packet.answerRRCount);
         }
+        builder.appendNewLine();
     }
 
     private void formatAnswer(DNSPacket.DNSAnswer answer, FormatterOptions parentOptions, boolean isLast) {
@@ -87,9 +88,7 @@ public class PacketFormatter {
         builder.appendListItem(options, "length", answer.dataLength);
         builder.appendListItem(options, "address", answer.address);
 
-        if (isLast) {
-            builder.appendNewLine();
-        } else {
+        if (!isLast) {
             builder.appendString(startingChar);
         }
     }

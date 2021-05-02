@@ -27,11 +27,9 @@ public class Main implements DNSMessageListener, UserRequestListener {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                for (DNSPacket.DNSAnswer answer : dnsMessage.packet.answers) {
-                    // TODO: replace it with something like PacketFormatter.format(packet);
-                    PacketFormatter formatter = new PacketFormatter(dnsMessage.packet);
-                    ui.appendTextToResponse(formatter.getFormattedString());
-                }
+                // TODO: replace it with something like PacketFormatter.format(packet);
+                PacketFormatter formatter = new PacketFormatter(dnsMessage.packet);
+                ui.appendTextToResponse(formatter.getFormattedString());
             }
         });
     }
