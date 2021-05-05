@@ -16,6 +16,7 @@ public class MainWindow extends JFrame {
     public static final String SERVER_IP_TEXTFIELD_NAME = "server-ip-textfield";
     public static final String SERVER_PORT_TEXTFIELD_NAME = "server-port-textfield";
     public static final String RESOLVE_BUTTON_NAME = "resolve-button";
+    public static final String RECURSIVE_CHECKBOX_NAME = "recursive-checkbox";
 
     private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
 
@@ -42,10 +43,15 @@ public class MainWindow extends JFrame {
         final JTextField serverIpField = serverIpField();
         final JFormattedTextField serverPortField = serverPortField();
 
-        JPanel controls = new JPanel(new FlowLayout());
-        controls.add(domainNameField);
-        controls.add(serverIpField);
-        controls.add(serverPortField);
+        JPanel requiredControls = new JPanel(new FlowLayout());
+        requiredControls.add(domainNameField);
+        requiredControls.add(serverIpField);
+        requiredControls.add(serverPortField);
+
+        final JCheckBox recursiveCheckbox = getRecursiveCheckbox();
+
+        JPanel options = new JPanel(new FlowLayout());
+        options.add(recursiveCheckbox);
 
         JButton resolveButton = new JButton("Resolve");
         resolveButton.setName(RESOLVE_BUTTON_NAME);
@@ -53,7 +59,7 @@ public class MainWindow extends JFrame {
         resolveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                userRequests.announce().resolve(domainName(), serverIp(), serverPort());
+                userRequests.announce().resolve(domainName(), serverIp(), serverPort(), recursion());
             }
 
             private String domainName() {
@@ -68,10 +74,26 @@ public class MainWindow extends JFrame {
                 return String.valueOf(serverPortField.getValue());
             }
 
+            private boolean recursion() {
+                return recursiveCheckbox.isSelected();
+            }
+
         });
-        controls.add(resolveButton);
+
+        requiredControls.add(resolveButton);
+
+        JPanel controls = new JPanel(new BorderLayout());
+        controls.add(requiredControls, BorderLayout.NORTH);
+        controls.add(options, BorderLayout.SOUTH);
 
         return controls;
+    }
+
+    private JCheckBox getRecursiveCheckbox() {
+        final JCheckBox checkBox = new JCheckBox("Recursive");
+        checkBox.setSelected(true);
+        checkBox.setName(RECURSIVE_CHECKBOX_NAME);
+        return checkBox;
     }
 
     private JTextField domainNameField() {

@@ -49,7 +49,7 @@ public class Main implements DNSMessageListener, UserRequestListener {
     }
 
     @Override
-    public void resolve(String domainName, String serverIp, String serverPort) {
+    public void resolve(String domainName, String serverIp, String serverPort, boolean recursion) {
         DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(serverIp, serverPort);
 
         DNSPacket packet = new DNSQueryBuilder()

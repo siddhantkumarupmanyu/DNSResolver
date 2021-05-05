@@ -100,4 +100,21 @@ public class SamplePackets {
             0x00, 0x04, // RDLength
             0x7f, 0x00, 0x00, 0x02 // RData
     };
+
+    // TODO:
+    public static final byte[] QUERY_ROOT_NS = {};
+    public static final byte[] RESPONSE_ROOT_NS = {};
+    public static final byte[] QUERY_ROOT_NS_IP_ADDRESS = {};
+    public static final byte[] RESPONSE_ROOT_NS_IP_ADDRESS = {};
+
+
+    public static final byte[] QUERY_COM_NS = {};
+    public static final byte[] RESPONSE_COM_NS = {};
+    public static final byte[] QUERY_COM_NS_IP_ADDRESS = {};
+    public static final byte[] RESPONSE_COM_NS_IP_ADDRESS = {};
+
+    public static final byte[] QUERY_EXAMPLE_NS = {};
+    public static final byte[] RESPONSE_EXAMPLE_NS = {};
+    public static final byte[] QUERY_EXAMPLE_NS_IP_ADDRESS = {};
+    public static final byte[] RESPONSE_EXAMPLE_NS_IP_ADDRESS = {};
 }

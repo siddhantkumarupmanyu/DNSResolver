@@ -6,7 +6,12 @@ public class ApplicationRunner {
 
     public void resolve(String domainName, FakeDnsServer dnsServer) {
         startApplication();
-        driver.resolveDomainName(domainName, dnsServer.ipAddress(), dnsServer.port());
+        driver.resolveDomainName(domainName, dnsServer.ipAddress(), dnsServer.port(), true);
+    }
+
+    public void resolveWithoutRecursion(String domainName, FakeDnsServer dnsServer) {
+        startApplication();
+        driver.resolveDomainName(domainName, dnsServer.ipAddress(), dnsServer.port(), false);
     }
 
     private void startApplication() {

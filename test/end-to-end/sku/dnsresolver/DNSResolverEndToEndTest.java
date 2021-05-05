@@ -36,4 +36,28 @@ public class DNSResolverEndToEndTest {
         application.hasReceivedResponseWith("127.0.0.2");
     }
 
+    @Test
+    public void resolvesDomainNameWithoutRecursion() throws InterruptedException {
+        application.resolveWithoutRecursion("www.example.com", fakeDnsServer);
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_ROOT_NS);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_ROOT_NS);
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_ROOT_NS_IP_ADDRESS);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_ROOT_NS_IP_ADDRESS);
+
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_COM_NS);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_COM_NS);
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_COM_NS_IP_ADDRESS);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_COM_NS_IP_ADDRESS);
+
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_EXAMPLE_NS);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_EXAMPLE_NS);
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_EXAMPLE_NS_IP_ADDRESS);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_EXAMPLE_NS_IP_ADDRESS);
+
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_WWW_EXAMPLE_COM);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_WWW_EXAMPLE_COM);
+
+        application.hasReceivedResponseWith("127.0.0.1");
+    }
+
 }
