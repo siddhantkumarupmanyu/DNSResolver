@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
-public class NetworkManagerTest {
+public class SingleThreadExecutorTest {
 
     private final FakeDnsServer fakeDnsServer = new FakeDnsServer();
     private final DNSSocketAddress fakeServerAddress = new DNSSocketAddress(fakeDnsServer.ipAddress(), fakeDnsServer.port());
@@ -31,9 +31,9 @@ public class NetworkManagerTest {
     @Test
     public void queryDnsPacket() throws Exception {
         final CountDownLatch messageWasReceived = new CountDownLatch(1);
-        NetworkManager networkManager = new NetworkManager(factory, createDNSMessageListener(messageWasReceived));
+        SingleThreadExecutor singleThreadExecutor = new SingleThreadExecutor(factory, createDNSMessageListener(messageWasReceived));
 
-        networkManager.query(fakeServerAddress, queryFor("www.example.com"));
+        singleThreadExecutor.query(fakeServerAddress, queryFor("www.example.com"));
 
         fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_WWW_EXAMPLE_COM);
         fakeDnsServer.respondWith(SamplePackets.RESPONSE_WWW_EXAMPLE_COM);

@@ -2,7 +2,8 @@ package sku.dnsresolver;
 
 import sku.dnsresolver.network.DNSSocketAddress;
 import sku.dnsresolver.network.DatagramFactory;
-import sku.dnsresolver.network.NetworkManager;
+import sku.dnsresolver.network.NetworkExecutor;
+import sku.dnsresolver.network.SingleThreadExecutor;
 import sku.dnsresolver.ui.MainWindow;
 import sku.dnsresolver.ui.UserRequestListener;
 
@@ -13,13 +14,13 @@ import java.awt.event.WindowEvent;
 public class Main implements DNSMessageListener, UserRequestListener {
 
     private MainWindow ui;
-    private final NetworkManager networkManager;
+    private final NetworkExecutor networkExecutor;
 
     public Main() throws Exception {
         startUserInterface();
         shutdownNetworkManagerWhenUICloses();
 
-        this.networkManager = new NetworkManager(new DatagramFactory(), this);
+        this.networkExecutor = new SingleThreadExecutor(new DatagramFactory(), this);
     }
 
     @Override
@@ -58,14 +59,14 @@ public class Main implements DNSMessageListener, UserRequestListener {
                 .setQueries(new DNSPacket.DNSQuery(domainName, (short) 1, (short) 1))
                 .build();
 
-        this.networkManager.query(dnsSocketAddress, packet);
+        this.networkExecutor.query(dnsSocketAddress, packet);
     }
 
     private void shutdownNetworkManagerWhenUICloses() {
         ui.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosed(WindowEvent e) {
-                networkManager.shutdown();
+                networkExecutor.shutdown();
             }
         });
     }

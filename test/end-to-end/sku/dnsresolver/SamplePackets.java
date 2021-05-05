@@ -117,4 +117,7 @@ public class SamplePackets {
     public static final byte[] RESPONSE_EXAMPLE_NS = {};
     public static final byte[] QUERY_EXAMPLE_NS_IP_ADDRESS = {};
     public static final byte[] RESPONSE_EXAMPLE_NS_IP_ADDRESS = {};
+
+    public static final byte[] QUERY_WWW_EXAMPLE_NS = {};
+    public static final byte[] RESPONSE_WWW_EXAMPLE_NS = {};
 }

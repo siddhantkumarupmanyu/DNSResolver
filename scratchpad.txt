@@ -6,6 +6,8 @@ domain name, without recursion
 
 =============================================================
 
+rename network manager to network worker
+
 DNSPacketParser: refactor ParseQuery and ParseAnswers have duplications
 
 PacketGenerator and PacketParser should go into network packages as they are used by network manager only,

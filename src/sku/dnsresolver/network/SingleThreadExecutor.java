@@ -5,18 +5,19 @@ import sku.dnsresolver.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class NetworkManager {
+public class SingleThreadExecutor implements NetworkExecutor {
 
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     private final PacketTransceiverFactory factory;
     private final DNSMessageListener messageListener;
 
-    public NetworkManager(PacketTransceiverFactory factory, DNSMessageListener dnsMessageListener) {
+    public SingleThreadExecutor(PacketTransceiverFactory factory, DNSMessageListener dnsMessageListener) {
         this.factory = factory;
         this.messageListener = dnsMessageListener;
     }
 
+    @Override
     public void query(final DNSSocketAddress serverAddress, final DNSPacket query) {
         Runnable runnable = new Runnable() {
             @Override
@@ -30,6 +31,7 @@ public class NetworkManager {
         executor.submit(runnable);
     }
 
+    @Override
     public void shutdown() {
         executor.shutdownNow();
     }

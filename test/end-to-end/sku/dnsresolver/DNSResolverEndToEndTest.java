@@ -54,6 +54,8 @@ public class DNSResolverEndToEndTest {
         fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_EXAMPLE_NS_IP_ADDRESS);
         fakeDnsServer.respondWith(SamplePackets.RESPONSE_EXAMPLE_NS_IP_ADDRESS);
 
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_WWW_EXAMPLE_NS);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_WWW_EXAMPLE_NS);
         fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_WWW_EXAMPLE_COM);
         fakeDnsServer.respondWith(SamplePackets.RESPONSE_WWW_EXAMPLE_COM);
 
