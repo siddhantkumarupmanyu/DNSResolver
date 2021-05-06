@@ -56,6 +56,6 @@ public class SingleThreadExecutor implements NetworkExecutor {
     }
 
     private void notifyListener(DNSMessage message) {
-        messageListener.receivedMessage(message);
+        messageListener.receiveMessage(message);
     }
 }

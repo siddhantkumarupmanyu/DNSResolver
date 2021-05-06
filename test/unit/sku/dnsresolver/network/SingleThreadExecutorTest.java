@@ -45,7 +45,7 @@ public class SingleThreadExecutorTest {
         return new DNSMessageListener() {
 
             @Override
-            public void receivedMessage(DNSMessage dnsMessage) {
+            public void receiveMessage(DNSMessage dnsMessage) {
                 countDownLatch.countDown();
             }
         };

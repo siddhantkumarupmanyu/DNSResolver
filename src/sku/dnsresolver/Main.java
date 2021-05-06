@@ -24,7 +24,7 @@ public class Main implements DNSMessageListener, UserRequestListener {
     }
 
     @Override
-    public void receivedMessage(DNSMessage dnsMessage) {
+    public void receiveMessage(DNSMessage dnsMessage) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {

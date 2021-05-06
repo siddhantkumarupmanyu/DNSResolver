@@ -6,7 +6,8 @@ domain name, without recursion
 
 =============================================================
 
-rename network manager to network worker
+no need to match id's in end to end test.
+    -Should use Arrays.copyOf() to neglect first two bytes;
 
 DNSPacketParser: refactor ParseQuery and ParseAnswers have duplications
 
