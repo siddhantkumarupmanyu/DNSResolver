@@ -1,7 +1,5 @@
 package sku.dnsresolver;
 
-import org.apache.commons.lang.StringUtils;
-
 public class PacketFormatter {
 
     private final static String listItemPrefix = "+-- ";
@@ -116,9 +114,7 @@ public class PacketFormatter {
         public void appendListItemWithoutNewLine(FormatterOptions options, String key, Object value) {
             String spaceStr = getStringWithSpaces(options.space);
             builder.append(options.startingChar).append(spaceStr).append(options.listItemPrefix).append(key);
-            if (!StringUtils.isEmpty(value.toString())) {
-                builder.append(options.keyValueSeparator).append(value);
-            }
+            builder.append(options.keyValueSeparator).append(value);
         }
 
         public void appendNewLine() {

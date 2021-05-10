@@ -11,6 +11,8 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
+
+// this is an integration test
 public class SingleThreadExecutorTest {
 
     private final FakeDnsServer fakeDnsServer = new FakeDnsServer();
@@ -60,5 +62,3 @@ public class SingleThreadExecutorTest {
     }
 
 }
-
-// this is an integration test
