@@ -6,6 +6,10 @@ import org.apache.commons.lang.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 
 public final class DNSPacket {
+    public static final short TYPE_A = 1;
+    public static final short TYPE_NS = 2;
+
+
     // header
     public final short id; // 16 bit
     public final boolean response; // 1 bit

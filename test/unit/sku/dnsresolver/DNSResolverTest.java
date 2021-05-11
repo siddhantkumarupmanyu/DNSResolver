@@ -9,7 +9,6 @@ import sku.dnsresolver.network.DNSSocketAddress;
 import sku.dnsresolver.network.NetworkExecutor;
 import sku.dnsresolver.ui.UiListener;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.hamcrest.Matchers.allOf;
@@ -95,11 +94,6 @@ public class DNSResolverTest {
             resolver.receiveMessage(new DNSMessage(serverAddress, responsePacket));
         }
 
-        @Override
-        public void shutdown() {
-
-        }
-
         public void addResponseFor(String serverIpAddress, String queryString, short type, String response) {
             DNSPacket.DNSQuery query = new DNSPacket.DNSQuery(queryString, type, (short) 1);
             DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 0, (short) 0, response);
@@ -111,6 +105,11 @@ public class DNSResolverTest {
 
             final HashMap<DNSPacket.DNSQuery, DNSPacket.DNSAnswer> queryHashmap = responses.get(serverSocket);
             queryHashmap.put(query, answer);
+        }
+
+        @Override
+        public void shutdown() {
+            // not implemented
         }
 
         private DNSPacket buildResponsePacket(short id, boolean recursion, DNSPacket.DNSAnswer answer) {
