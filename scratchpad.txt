@@ -6,7 +6,7 @@ domain name, without recursion
 
 =============================================================
 
-no need to match id's in end to end test.
+no need to match id's in end to end test. - fix these tests
     -Should use Arrays.copyOf() to neglect first two bytes;
 
 DNSPacketParser: refactor ParseQuery and ParseAnswers have duplications
@@ -22,3 +22,6 @@ Add isValid method in DNSPacket
 
 nextByte() in DNSPacketParser can be replace with an iterator.
     -but nextByte gives more readability, so let it remain
+
+can extract queries and its associated methods to a inner class in DNSResolver.
+    - but I think, not needed now. If I touch this class again I will do it.
