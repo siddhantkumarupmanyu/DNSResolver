@@ -6,7 +6,9 @@ domain name, without recursion
 
 =============================================================
 
-no need to match id's in end to end test. - fix these tests
+complete resolvesDomainNameWithoutRecursion test.
+
+no need to match id's in end to end test.
     -Should use Arrays.copyOf() to neglect first two bytes;
 
 DNSPacketParser: refactor ParseQuery and ParseAnswers have duplications
