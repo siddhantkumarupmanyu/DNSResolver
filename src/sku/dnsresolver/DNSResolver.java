@@ -11,8 +11,8 @@ import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DNSResolver implements UserRequestListener, DNSMessageListener {
-
     public static final String DEFAULT_PORT = "53";
+
     private final NetworkExecutor executor;
     private final UiListener uiListener;
 
@@ -30,9 +30,9 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         DNSPacket.DNSQuery query;
 
         if (recursion) {
-            query = new DNSPacket.DNSQuery(domainName, DNSPacket.TYPE_A, (short) 1);
+            query = new DNSPacket.DNSQuery(domainName, DNSPacket.TYPE_A, DNSPacket.CLASS_1);
         } else {
-            query = new DNSPacket.DNSQuery("", DNSPacket.TYPE_NS, (short) 1);
+            query = new DNSPacket.DNSQuery("", DNSPacket.TYPE_NS, DNSPacket.CLASS_1);
         }
 
         DNSPacket packet = new DNSQueryBuilder()
@@ -54,54 +54,52 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         if (isResolved(currentQuery, originalQueryLabels)) {
             notifyUi(packet);
         } else {
-            nextQuery(message.from, message.packet);
+            NextQuery nextQuery = getNextQuery(message.from, message.packet);
+            sendQuery(nextQuery.to, packet.id, nextQuery.query);
         }
     }
 
-    private void nextQuery(DNSSocketAddress from, DNSPacket packet) {
+    private NextQuery getNextQuery(DNSSocketAddress from, DNSPacket packet) {
         String originalQueryLabels = getOriginalQueryLabels(packet.id);
         String alreadyQueriedLabels = alreadyQueriedLabels(packet.id);
         DNSPacket.DNSQuery currentQuery = packet.queries[0];
 
         if (isNameServersResponse(currentQuery)) {
-            queryForNameServerIp(from, packet);
+            return queryForNameServerIp(from, packet);
         } else if (isIntermediateNameServersIpResponse(originalQueryLabels, alreadyQueriedLabels)) {
-            queryForNextNameServersAndUpdateAlreadyQueriedLabels(packet);
+            NextQuery nextQuery = queryForNextNameServers(packet);
+            updateAlreadyQueriedLabels(packet.id, nextQuery.query.query);
+            return nextQuery;
         } else if (isFinalNameServersIpResponse(originalQueryLabels, alreadyQueriedLabels)) {
-            queryForDomainNameIp(packet);
+            return queryForDomainNameIp(packet);
         } else {
             throw new Defect("DNSResolver Error");
         }
     }
 
-    private void queryForNameServerIp(DNSSocketAddress from, DNSPacket packet) {
+    private NextQuery queryForNameServerIp(DNSSocketAddress from, DNSPacket packet) {
         String nameServer = packet.answers[0].address; // first nameServer record
-        final DNSPacket.DNSQuery requestQuery = new DNSPacket.DNSQuery(nameServer, DNSPacket.TYPE_A, (short) 1);
-        resolveQuery(from, packet.id, requestQuery);
+        final DNSPacket.DNSQuery requestQuery = new DNSPacket.DNSQuery(nameServer, DNSPacket.TYPE_A, DNSPacket.CLASS_1);
+        return new NextQuery(from, requestQuery);
     }
 
-    private void queryForNextNameServersAndUpdateAlreadyQueriedLabels(DNSPacket packet) {
+    private NextQuery queryForNextNameServers(DNSPacket packet) {
         String nameServerIp = packet.answers[0].address; // first nameServer ip
         final DNSPacket.DNSQuery requestQuery = new DNSPacket.DNSQuery(
                 nextQueryLabels(packet.id, getOriginalQueryLabels(packet.id), alreadyQueriedLabels(packet.id)),
                 DNSPacket.TYPE_NS,
-                (short) 1
+                DNSPacket.CLASS_1
         );
-
-        updateAlreadyQueriedLabels(packet.id, requestQuery.query);
-
-        resolveQuery(new DNSSocketAddress(nameServerIp, DEFAULT_PORT), packet.id,
-                requestQuery);
+        return new NextQuery(new DNSSocketAddress(nameServerIp, DEFAULT_PORT), requestQuery);
     }
 
-    private void queryForDomainNameIp(DNSPacket packet) {
+    private NextQuery queryForDomainNameIp(DNSPacket packet) {
         String nameServerIp = packet.answers[0].address; // first nameServer ip
 
-        final DNSPacket.DNSQuery requestQuery = new DNSPacket.DNSQuery(getOriginalQueryLabels(packet.id), DNSPacket.TYPE_A, (short) 1);
+        final DNSPacket.DNSQuery requestQuery =
+                new DNSPacket.DNSQuery(getOriginalQueryLabels(packet.id), DNSPacket.TYPE_A, DNSPacket.CLASS_1);
 
-        resolveQuery(new DNSSocketAddress(nameServerIp, DEFAULT_PORT),
-                packet.id,
-                requestQuery);
+        return new NextQuery(new DNSSocketAddress(nameServerIp, DEFAULT_PORT), requestQuery);
     }
 
     private void notifyUi(DNSPacket packet) {
@@ -109,7 +107,7 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         uiListener.responseText(formatter.getFormattedString());
     }
 
-    private void resolveQuery(DNSSocketAddress to, short id, DNSPacket.DNSQuery requestQuery) {
+    private void sendQuery(DNSSocketAddress to, short id, DNSPacket.DNSQuery requestQuery) {
         DNSPacket request = new DNSQueryBuilder()
                 .setId(id)
                 .setRecursionDesired(false)
@@ -143,8 +141,8 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         return originalQueryLabels.equals(alreadyQueriedLabels);
     }
 
-    private boolean isResolved(DNSPacket.DNSQuery currentQuery, String originalQuery) {
-        return originalQuery.equals(currentQuery.query) && (currentQuery.qType == DNSPacket.TYPE_A);
+    private boolean isResolved(DNSPacket.DNSQuery currentQuery, String originalQueryLabels) {
+        return originalQueryLabels.equals(currentQuery.query) && (currentQuery.qType == DNSPacket.TYPE_A);
     }
 
     private void updateAlreadyQueriedLabels(short id, String nextQueryLabel) {
@@ -161,5 +159,15 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
 
     private short generateId() {
         return (short) ThreadLocalRandom.current().nextInt();
+    }
+
+    private static class NextQuery {
+        public final DNSSocketAddress to;
+        public final DNSPacket.DNSQuery query;
+
+        private NextQuery(DNSSocketAddress to, DNSPacket.DNSQuery query) {
+            this.to = to;
+            this.query = query;
+        }
     }
 }
