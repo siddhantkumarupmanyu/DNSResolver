@@ -74,12 +74,16 @@ public class DNSPacketGenerator {
     }
 
     private void insertQueryLabels() {
-        String[] labels = packet.queries[0].query.split("\\.");
+        String queryString = packet.queries[0].query;
 
-        for (String label : labels) {
-            bytes.add((byte) label.length());
-            for (byte b : label.getBytes(StandardCharsets.UTF_8)) {
-                bytes.add(b);
+        if (!queryString.isEmpty()) {
+            String[] labels = queryString.split("\\.");
+
+            for (String label : labels) {
+                bytes.add((byte) label.length());
+                for (byte b : label.getBytes(StandardCharsets.UTF_8)) {
+                    bytes.add(b);
+                }
             }
         }
 
