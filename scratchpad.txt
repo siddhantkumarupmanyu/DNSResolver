@@ -6,6 +6,9 @@ domain name, without recursion
 
 =============================================================
 
+DNSResolver give priority to Authoritative Name Severs over Answers If response is of NS
+    - on most occasions if authoritative section exist, answer section will not be there
+
 complete resolvesDomainNameWithoutRecursion test.
 
 no need to match id's in end to end test.

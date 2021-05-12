@@ -50,8 +50,8 @@ public class DNSPacketParser {
 
     private void parseBody() {
         builder.setQueries(parseQuery());
-        builder.setAnswers(parseAnswers());
-        builder.setAuthoritativeNameServers(parseAuthoritativeNameServers());
+        builder.setAnswers(parseAnswers(answerCount));
+        builder.setAuthoritativeNameServers(parseAnswers(authoritativeNSCount));
     }
 
     private void parse_QR_OPCode_AA_TC_RD() {
@@ -93,20 +93,12 @@ public class DNSPacketParser {
         return new DNSPacket.DNSQuery(queryLabels, qType, qClass);
     }
 
-    private DNSPacket.DNSAnswer[] parseAnswers() {
-        DNSPacket.DNSAnswer[] answers = new DNSPacket.DNSAnswer[answerCount];
-        for (short i = 0; i < answerCount; i++) {
+    private DNSPacket.DNSAnswer[] parseAnswers(int count) {
+        DNSPacket.DNSAnswer[] answers = new DNSPacket.DNSAnswer[count];
+        for (short i = 0; i < count; i++) {
             answers[i] = parseAnswer();
         }
         return answers;
-    }
-
-    private DNSPacket.DNSAnswer[] parseAuthoritativeNameServers() {
-        DNSPacket.DNSAnswer[] nameServers = new DNSPacket.DNSAnswer[authoritativeNSCount];
-        for (short i = 0; i < authoritativeNSCount; i++) {
-            nameServers[i] = parseAnswer();
-        }
-        return nameServers;
     }
 
     private DNSPacket.DNSAnswer parseAnswer() {
