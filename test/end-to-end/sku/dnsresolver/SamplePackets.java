@@ -14,7 +14,7 @@ public class SamplePackets {
             0x00, // RA, Z, RCode
             0x00, 0x01, // QDCount
             0x00, 0x00, // ANCount
-            0x00, 0x00, // NSCount
+            0x00, 0x00, // Authoritative NSCount
             0x00, 0x00, // ARCount
             // body
             0x03, 0x77, 0x77, 0x77, // 3 www
@@ -32,7 +32,7 @@ public class SamplePackets {
             (byte) 0x80, // RA = 1, Z = 0, 0, 0, RCode = 0000
             0x00, 0x01, // QDCount
             0x00, 0x01, // ANCount
-            0x00, 0x00, // NSCount
+            0x00, 0x00, // Authoritative NSCount
             0x00, 0x00, // ARCount
             // body
             //      query
@@ -57,7 +57,7 @@ public class SamplePackets {
             0x00, // RA, Z, RCode
             0x00, 0x01, // QDCount
             0x00, 0x00, // ANCount
-            0x00, 0x00, // NSCount
+            0x00, 0x00, // Authoritative NSCount
             0x00, 0x00, // ARCount
             // body
             0x05, 0x63, 0x6e, 0x61, 0x6d, 0x65, // 4 cname
@@ -75,7 +75,7 @@ public class SamplePackets {
             (byte) 0x80, // RA = 1, Z = 0, 0, 0, RCode = 0000
             0x00, 0x01, // QDCount
             0x00, 0x02, // ANCount
-            0x00, 0x00, // NSCount
+            0x00, 0x00, // Authoritative NSCount
             0x00, 0x00, // ARCount
             // body
             //      query
@@ -101,7 +101,7 @@ public class SamplePackets {
             0x7f, 0x00, 0x00, 0x02 // RData
     };
 
-    // TODO:
+
     public static final byte[] QUERY_ROOT_NS = {
             // header
             0x00, 0x01, // id
@@ -109,7 +109,7 @@ public class SamplePackets {
             0x00, // RA, Z, RCode
             0x00, 0x01, // QDCount
             0x00, 0x00, // ANCount
-            0x00, 0x00, // NSCount
+            0x00, 0x00, // Authoritative NSCount
             0x00, 0x00, // ARCount
             // body
             0x00, // null label or termination
@@ -124,7 +124,7 @@ public class SamplePackets {
             (byte) 0x80, // RA = 1, Z = 0, 0, 0, RCode = 0000
             0x00, 0x01, // QDCount
             0x00, 0x02, // ANCount
-            0x00, 0x00, // NSCount
+            0x00, 0x00, // Authoritative NSCount
             0x00, 0x00, // ARCount
             // body
             //      query
@@ -150,19 +150,106 @@ public class SamplePackets {
             0x01, 0x62, // 1 b
             (byte) 0xc0, 0x1e // pointer offset = 0x1e
     };
-    public static final byte[] QUERY_ROOT_NS_IP_ADDRESS = {};
-    public static final byte[] RESPONSE_ROOT_NS_IP_ADDRESS = {};
+    public static final byte[] QUERY_ROOT_NS_IP_ADDRESS = {
+            0x00, 0x01, // id
+            0x00, // QR = 0, OP Code = 0000, AA = 0, TC = 0, RD = 0
+            0x00, // RA, Z = 0, 0, 0, RCode = 0000
+            0x00, 0x01, // QDCount
+            0x00, 0x02, // ANCount
+            0x00, 0x00, // Authoritative NSCount
+            0x00, 0x00, // ARCount
+            // body
+            0x01, 0x61, // 1 a
+            0x0c, 0x72, 0x6f, 0x6f, 0x74, 0x2d, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x73, // 12 root-servers
+            0x03, 0x6e, 0x65, 0x74, // 3 net
+            0x00, // null
+            0x00, 0x01, // QType
+            0x00, 0x01 // QClass
+    };
+    public static final byte[] RESPONSE_ROOT_NS_IP_ADDRESS = {
+            0x00, 0x01, // id
+            (byte) 0x80, // QR = 1, OP Code = 0000, AA = 0, TC = 0, RD = 0
+            (byte) 0x80, // RA = 1, Z = 0, 0, 0, RCode = 0000
+            0x00, 0x01, // QDCount
+            0x00, 0x01, // ANCount
+            0x00, 0x00, // Authoritative NSCount
+            0x00, 0x00, // ARCount
+            // body
+            //      query
+            0x01, 0x61,// 1 a
+            0x0c, 0x72, 0x6f, 0x6f, 0x74, 0x2d, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x73, // 12 root-servers
+            0x03, 0x6e, 0x65, 0x74, // 3 net
+            0x00, // null
+            0x00, 0x01, // type
+            0x00, 0x01, // class
+            (byte) 0xc0, 0x0c, // pointer offset = 0x0c
+            0x00, 0x01, // type
+            0x00, 0x01, // class
+            0x00, 0x00, 0x00, 0x73, // TTL
+            0x00, 0x04, // RD Length
+            0x7f, 0x00, 0x00, 0x01 // address
+    };
 
+    // TODO:
+    public static final byte[] QUERY_COM_NS = {
+            // header
+            0x00, 0x01, // id
+            0x00, // QR, OP Code, AA, TC, RD = 0
+            0x00, // RA, Z, RCode
+            0x00, 0x01, // QDCount
+            0x00, 0x00, // ANCount
+            0x00, 0x00, // Authoritative NSCount
+            0x00, 0x00, // ARCount
+            // body
+            0x03, 0x63, 0x6f, 0x6d, // 3 com
+            0x00, // null label or termination
+            0x00, 0x02, // QType
+            0x00, 0x01, // QClass
+    };
+    public static final byte[] RESPONSE_COM_NS = {
+            0x00, 0x01, // id
+            (byte) 0x80, // QR = 1, OP Code = 0000, AA = 0, TC = 0, RD = 0
+            0x00, // RA = 0, Z = 0, 0, 0, RCode = 0000
+            0x00, 0x01, // QDCount
+            0x00, 0x00, // ANCount
+            0x00, 0x02, // Authoritative NSCount
+            0x00, 0x00, // ARCount
+            // body
+            //      query
+            0x03, 0x63, 0x6f, 0x6d, // 3 com
+            0x00, // null
+            0x00, 0x02, // type
+            0x00, 0x01, // class
+            // authoritative name servers for com
+            (byte) 0xc0, 0x0c, // pointer offset = 0x0c
+            0x00, 0x02, // type
+            0x00, 0x01, // class
+            0x00, 0x00, 0x00, 0x73, // TTL
+            0x00, 0x14, // RD length
+            // address
+            0x01, 0x61, // 1 a
+            0x0c, 0x67, 0x74, 0x6c, 0x64, 0x2d, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x73, // 12 gtld-servers.net
+            0x03, 0x6e, 0x65, 0x74, // 3 net
+            0x00, // null
+            (byte) 0xc0, 0x0c, // pointer offset = 0x0c
+            0x00, 0x02, // type
+            0x00, 0x01, // class
+            0x00, 0x00, 0x00, 0x73, // TTL
+            0x00, 0x04, // RD Length
+            // address
+            0x01, 0x62, // 1 b
+            (byte) 0xc0, 0x23, // pointer offset = 0x23
 
-    public static final byte[] QUERY_COM_NS = {};
-    public static final byte[] RESPONSE_COM_NS = {};
+    };
     public static final byte[] QUERY_COM_NS_IP_ADDRESS = {};
     public static final byte[] RESPONSE_COM_NS_IP_ADDRESS = {};
+
 
     public static final byte[] QUERY_EXAMPLE_NS = {};
     public static final byte[] RESPONSE_EXAMPLE_NS = {};
     public static final byte[] QUERY_EXAMPLE_NS_IP_ADDRESS = {};
     public static final byte[] RESPONSE_EXAMPLE_NS_IP_ADDRESS = {};
+
 
     public static final byte[] QUERY_WWW_EXAMPLE_NS = {};
     public static final byte[] RESPONSE_WWW_EXAMPLE_NS = {};

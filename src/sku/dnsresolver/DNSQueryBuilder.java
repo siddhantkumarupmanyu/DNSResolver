@@ -40,6 +40,7 @@ public class DNSQueryBuilder {
                 .setReplyCode(0)
                 .setQueries(queries)
                 .setAnswers()
+                .setAuthoritativeNameServers()
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package sku.dnsresolver;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -104,6 +105,41 @@ public class DNSPacketParserTest {
         DNSPacketParser parser = new DNSPacketParser(SamplePackets.RESPONSE_ROOT_NS);
 
         assertThat(parser.getDNSPacket(), is(equalTo(packet)));
+    }
+
+    @Test
+    public void parseResponseWithAuthoritativeSection() {
+        DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("com", DNSPacket.TYPE_NS, (short) 1);
+
+        DNSPacket.DNSAnswer authoritativeNameServer1 = new DNSPacket.DNSAnswer(query, 115, (short) 20, "a.gtld-servers.net");
+
+        DNSPacket.DNSAnswer authoritativeNameServer2 = new DNSPacket.DNSAnswer(query, 115, (short) 4, "b.gtld-servers.net");
+
+        DNSPacket packet = new DNSPacketBuilder()
+                .setId(SamplePackets.DEFAULT_ID)
+                .setResponse(true)
+                .setOpCode(0)
+                .setAuthoritative(false)
+                .setTruncated(false)
+                .setRecursionDesired(false)
+                .setRecursionAvailable(false)
+                .setZ(false)
+                .setAnswerAuthenticated(false)
+                .setNonAuthenticatedData(false)
+                .setReplyCode(0)
+                .setQuestionCount((short) 1)
+                .setAnswerRRCount((short) 0)
+                .setAuthorityRRCount((short) 2)
+                .setAdditionalRRCount((short) 0)
+                .setQueries(query)
+                .setAnswers()
+                .setAuthoritativeNameServers(authoritativeNameServer1, authoritativeNameServer2)
+                .build();
+
+        DNSPacketParser parser = new DNSPacketParser(SamplePackets.RESPONSE_COM_NS);
+
+        assertThat(parser.getDNSPacket(), is(equalTo(packet)));
+
     }
 
     private byte[] googleResponseWithNegativeAddress() {

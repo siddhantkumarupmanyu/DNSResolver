@@ -21,6 +21,7 @@ public class DNSPacketParser {
     private int currentBufferIndex = 0;
 
     private short answerCount = 0;
+    private short authoritativeNSCount = 0;
 
     public DNSPacketParser(byte[] response) {
         this.response = response;
@@ -43,13 +44,14 @@ public class DNSPacketParser {
         parse_RA_Z_RCode();
         builder.setQuestionCount(getNextShortFromBuffer());
         builder.setAnswerRRCount(answerCount = getNextShortFromBuffer());
-        builder.setAuthorityRRCount(getNextShortFromBuffer());
+        builder.setAuthorityRRCount(authoritativeNSCount = getNextShortFromBuffer());
         builder.setAdditionalRRCount(getNextShortFromBuffer());
     }
 
     private void parseBody() {
         builder.setQueries(parseQuery());
         builder.setAnswers(parseAnswers());
+        builder.setAuthoritativeNameServers(parseAuthoritativeNameServers());
     }
 
     private void parse_QR_OPCode_AA_TC_RD() {
@@ -97,6 +99,14 @@ public class DNSPacketParser {
             answers[i] = parseAnswer();
         }
         return answers;
+    }
+
+    private DNSPacket.DNSAnswer[] parseAuthoritativeNameServers() {
+        DNSPacket.DNSAnswer[] nameServers = new DNSPacket.DNSAnswer[authoritativeNSCount];
+        for (short i = 0; i < authoritativeNSCount; i++) {
+            nameServers[i] = parseAnswer();
+        }
+        return nameServers;
     }
 
     private DNSPacket.DNSAnswer parseAnswer() {

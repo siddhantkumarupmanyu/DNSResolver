@@ -32,6 +32,7 @@ public final class DNSPacket {
     //body
     public final DNSQuery[] queries;
     public final DNSAnswer[] answers;
+    public final DNSAnswer[] authoritativeNameServers;
 
     public DNSPacket(
             short id,
@@ -50,7 +51,8 @@ public final class DNSPacket {
             short authorityRRCount,
             short additionalRRCount,
             DNSQuery[] queries,
-            DNSAnswer[] answers
+            DNSAnswer[] answers,
+            DNSAnswer[] authoritativeNameServers
     ) {
         this.id = id;
         this.response = response;
@@ -69,6 +71,7 @@ public final class DNSPacket {
         this.additionalRRCount = additionalRRCount;
         this.queries = queries;
         this.answers = answers;
+        this.authoritativeNameServers = authoritativeNameServers;
     }
 
     @Override
@@ -97,6 +100,7 @@ public final class DNSPacket {
                 .append(additionalRRCount, that.additionalRRCount)
                 .append(queries, that.queries)
                 .append(answers, that.answers)
+                .append(authoritativeNameServers, that.authoritativeNameServers)
                 .isEquals();
     }
 
@@ -120,6 +124,7 @@ public final class DNSPacket {
                 .append(additionalRRCount)
                 .append(queries)
                 .append(answers)
+                .append(authoritativeNameServers)
                 .toHashCode();
     }
 

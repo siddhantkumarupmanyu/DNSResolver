@@ -42,6 +42,7 @@ public class DNSQueryBuilderTest {
                 (short) 0,
                 (short) 0,
                 new DNSPacket.DNSQuery[]{query},
+                new DNSPacket.DNSAnswer[0],
                 new DNSPacket.DNSAnswer[0]
         );
     }
