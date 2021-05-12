@@ -6,8 +6,17 @@ domain name, without recursion
 
 =============================================================
 
-DNSResolver give priority to Authoritative Name Severs over Answers If response is of NS
-    - on most occasions if authoritative section exist, answer section will not be there
+Root servers work in different ways; Make DNSResolver work with them;
+    - they will always return authoritative nameservers for the domain, e.g "com"
+    - they will return the resolved ip addresses in the additional section
+    - i tried asking for ip address but they returned same response as with nameservers
+    - I have to consider this case
+    - so flow should be like this
+        - if i asked for namespace servers but answer section does not exist in response
+        - check authoritative namespaces section
+        - ask for ip for one of the servers
+        - if again answer section does not exist check additional section
+        - use one of the servers for next query
 
 complete resolvesDomainNameWithoutRecursion test.
 
