@@ -36,14 +36,14 @@ public class DNSPacketGeneratorTest {
     @Test
     public void generateBytesForRootNSQuery() {
         DNSPacket exchange = new DNSQueryBuilder()
-                .setId((short) 1)
+                .setId(SamplePackets.DEFAULT_ID)
                 .setRecursionDesired(false)
                 .setQueries(new DNSPacket.DNSQuery("", DNSPacket.TYPE_NS, (short) 1))
                 .build();
 
         DNSPacketGenerator generator = new DNSPacketGenerator(exchange);
 
-        assertThat(generator.getBytes(), is(equalTo(rootNSRequestQuery())));
+        assertThat(generator.getBytes(), is(equalTo(SamplePackets.QUERY_ROOT_NS)));
     }
 
     private byte[] googleRequestPacket() {
@@ -82,23 +82,6 @@ public class DNSPacketGeneratorTest {
                 0x03, 0x63, 0x6f, 0x6d, // 3 com
                 0x00, // null label or termination
                 0x00, 0x01, // QType
-                0x00, 0x01, // QClass
-        };
-    }
-
-    private byte[] rootNSRequestQuery() {
-        return new byte[]{
-                // header
-                0x00, 0x1, // id
-                0x00, // QR, OP Code, AA, TC, RD = 0
-                0x00, // RA, Z, RCode
-                0x00, 0x01, // QDCount
-                0x00, 0x00, // ANCount
-                0x00, 0x00, // NSCount
-                0x00, 0x00, // ARCount
-                // body
-                0x00, // null label or termination
-                0x00, 0x02, // QType
                 0x00, 0x01, // QClass
         };
     }

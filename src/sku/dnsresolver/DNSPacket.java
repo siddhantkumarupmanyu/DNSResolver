@@ -8,6 +8,7 @@ import org.apache.commons.lang.builder.ToStringStyle;
 public final class DNSPacket {
     public static final short TYPE_A = 1;
     public static final short TYPE_NS = 2;
+    public static final short TYPE_CNAME = 5;
     public static final short CLASS_1 = 1;
 
 

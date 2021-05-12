@@ -83,12 +83,12 @@ public class DNSPacketParser {
     }
 
     private DNSPacket.DNSQuery parseQuery() {
-        String query = parseLabels();
+        final String queryLabels = parseLabels();
 
         short qType = getNextShortFromBuffer();
         short qClass = getNextShortFromBuffer();
 
-        return new DNSPacket.DNSQuery(query, qType, qClass);
+        return new DNSPacket.DNSQuery(queryLabels, qType, qClass);
     }
 
     private DNSPacket.DNSAnswer[] parseAnswers() {
@@ -100,19 +100,13 @@ public class DNSPacketParser {
     }
 
     private DNSPacket.DNSAnswer parseAnswer() {
-        final DNSPacket.DNSQuery query;
-
-        if (isAPointer(nextByte())) {
-            query = parseQueryPointedByPointer();
-        } else {
-            query = parseQuery();
-        }
+        final DNSPacket.DNSQuery query = parseQuery();
 
         int ttl = getNextIntFromBuffer();
         short dataLength = getNextShortFromBuffer();
 
         final String address;
-        if (query.qType == 1) {
+        if (query.qType == DNSPacket.TYPE_A) {
             address = new StringBuilder()
                     .append(nextByte() & 0x000000ff)
                     .append(".")
@@ -122,27 +116,14 @@ public class DNSPacketParser {
                     .append(".")
                     .append(nextByte() & 0x000000ff)
                     .toString();
-        } else if (query.qType == 5) {
+        } else if (query.qType == DNSPacket.TYPE_NS) {
+            address = parseLabels();
+        } else if (query.qType == DNSPacket.TYPE_CNAME) {
             address = parseLabels();
         } else {
             throw new Defect();
         }
         return new DNSPacket.DNSAnswer(query, ttl, dataLength, address);
-    }
-
-    private DNSPacket.DNSQuery parseQueryPointedByPointer() {
-        int offset = nextByte();
-        int oldIndex = this.currentBufferIndex;
-        this.currentBufferIndex = offset;
-        String queryLabel = parseLabels();
-        this.currentBufferIndex = oldIndex;
-        short qType = getNextShortFromBuffer();
-        short qClass = getNextShortFromBuffer();
-        return new DNSPacket.DNSQuery(queryLabel, qType, qClass);
-    }
-
-    private boolean isAPointer(byte currentByte) {
-        return currentByte == ((byte) POINTER_TYPE);
     }
 
     private String parseLabels() {
@@ -176,6 +157,10 @@ public class DNSPacketParser {
         }
 
         return stringBuilder.toString();
+    }
+
+    private boolean isAPointer(byte currentByte) {
+        return currentByte == ((byte) POINTER_TYPE);
     }
 
     private short getNextShortFromBuffer() {

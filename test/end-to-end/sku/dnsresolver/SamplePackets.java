@@ -102,8 +102,54 @@ public class SamplePackets {
     };
 
     // TODO:
-    public static final byte[] QUERY_ROOT_NS = {};
-    public static final byte[] RESPONSE_ROOT_NS = {};
+    public static final byte[] QUERY_ROOT_NS = {
+            // header
+            0x00, 0x01, // id
+            0x00, // QR, OP Code, AA, TC, RD = 0
+            0x00, // RA, Z, RCode
+            0x00, 0x01, // QDCount
+            0x00, 0x00, // ANCount
+            0x00, 0x00, // NSCount
+            0x00, 0x00, // ARCount
+            // body
+            0x00, // null label or termination
+            0x00, 0x02, // QType
+            0x00, 0x01, // QClass
+    };
+
+    public static final byte[] RESPONSE_ROOT_NS = {
+            // header
+            0x00, 0x01, // id
+            (byte) 0x80, // QR = 1, OP Code = 0000, AA = 0, TC = 0, RD = 0
+            (byte) 0x80, // RA = 1, Z = 0, 0, 0, RCode = 0000
+            0x00, 0x01, // QDCount
+            0x00, 0x02, // ANCount
+            0x00, 0x00, // NSCount
+            0x00, 0x00, // ARCount
+            // body
+            //      query
+            0x00, // null
+            0x00, 0x02, // QType
+            0x00, 0x01, // QClass
+            //      answer
+            0x00,
+            0x00, 0x02, // Type
+            0x00, 0x01, // Class
+            0x00, 0x00, 0x00, 0x73, // TTL
+            0x00, 0x14, // RDLength
+            // RData
+            0x01, 0x61, // 1 a
+            0x0c, 0x72, 0x6f, 0x6f, 0x74, 0x2d, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x73, // 12 root-servers
+            0x03, 0x6e, 0x65, 0x74, // 3 net
+            0x00, // terminator
+            0x00,
+            0x00, 0x02, // Type
+            0x00, 0x01, // Class
+            0x00, 0x00, 0x00, 0x73, // TTL
+            0x00, 0x4, // RDLength
+            0x01, 0x62, // 1 b
+            (byte) 0xc0, 0x1e // pointer offset = 0x1e
+    };
     public static final byte[] QUERY_ROOT_NS_IP_ADDRESS = {};
     public static final byte[] RESPONSE_ROOT_NS_IP_ADDRESS = {};
 

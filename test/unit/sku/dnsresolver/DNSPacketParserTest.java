@@ -73,6 +73,39 @@ public class DNSPacketParserTest {
         assertThat(parser.getDNSPacket(), is(equalTo(packet)));
     }
 
+    @Test
+    public void parseRootNSResponse() {
+        DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("", DNSPacket.TYPE_NS, (short) 1);
+
+        DNSPacket.DNSAnswer answer1 = new DNSPacket.DNSAnswer(query, 115, (short) 20, "a.root-servers.net");
+
+        DNSPacket.DNSAnswer answer2 = new DNSPacket.DNSAnswer(query, 115, (short) 4, "b.root-servers.net");
+
+        DNSPacket packet = new DNSPacketBuilder()
+                .setId(SamplePackets.DEFAULT_ID)
+                .setResponse(true)
+                .setOpCode(0)
+                .setAuthoritative(false)
+                .setTruncated(false)
+                .setRecursionDesired(false)
+                .setRecursionAvailable(true)
+                .setZ(false)
+                .setAnswerAuthenticated(false)
+                .setNonAuthenticatedData(false)
+                .setReplyCode(0)
+                .setQuestionCount((short) 1)
+                .setAnswerRRCount((short) 2)
+                .setAuthorityRRCount((short) 0)
+                .setAdditionalRRCount((short) 0)
+                .setQueries(query)
+                .setAnswers(answer1, answer2)
+                .build();
+
+        DNSPacketParser parser = new DNSPacketParser(SamplePackets.RESPONSE_ROOT_NS);
+
+        assertThat(parser.getDNSPacket(), is(equalTo(packet)));
+    }
+
     private byte[] googleResponseWithNegativeAddress() {
         return new byte[]{
                 // header
