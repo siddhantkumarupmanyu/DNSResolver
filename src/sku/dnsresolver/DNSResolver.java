@@ -7,6 +7,7 @@ import sku.dnsresolver.ui.UiListener;
 import sku.dnsresolver.ui.UserRequestListener;
 import sku.dnsresolver.util.Defect;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -78,13 +79,23 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
     }
 
     private NextQuery queryForNameServerIp(DNSSocketAddress from, DNSPacket packet) {
-        String nameServer = packet.answers[0].address; // first nameServer record
+        final String nameServer;
+        if (packet.answerRRCount > 0) {
+            nameServer = packet.answers[0].address; // first nameServer record
+        } else {
+            nameServer = packet.authoritativeNameServers[0].address; // first nameServer record
+        }
         final DNSPacket.DNSQuery requestQuery = new DNSPacket.DNSQuery(nameServer, DNSPacket.TYPE_A, DNSPacket.CLASS_1);
         return new NextQuery(from, requestQuery);
     }
 
     private NextQuery queryForNextNameServers(DNSPacket packet) {
-        String nameServerIp = packet.answers[0].address; // first nameServer ip
+        final String nameServerIp;
+        if (packet.answerRRCount > 0) {
+            nameServerIp = packet.answers[0].address; // first nameServer record
+        } else {
+            nameServerIp = getAnswerMatchingToQuery(packet.queries[0].query, packet.additionalAnswers).address;
+        }
         final DNSPacket.DNSQuery requestQuery = new DNSPacket.DNSQuery(
                 nextQueryLabels(packet.id, getOriginalQueryLabels(packet.id), alreadyQueriedLabels(packet.id)),
                 DNSPacket.TYPE_NS,
@@ -127,6 +138,14 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         } else {
             return lastLabel + "." + alreadyQueriedLabels(id);
         }
+    }
+
+    @SuppressWarnings("OptionalGetWithoutIsPresent")
+    private DNSPacket.DNSAnswer getAnswerMatchingToQuery(String queryString, DNSPacket.DNSAnswer[] answers) {
+        return Arrays.stream(answers)
+                .filter(answer -> (answer.query.query.equals(queryString)))
+                .findFirst()
+                .get();
     }
 
     private boolean isNameServersResponse(DNSPacket.DNSQuery currentQuery) {

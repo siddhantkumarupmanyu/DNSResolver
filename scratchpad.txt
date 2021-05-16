@@ -6,6 +6,8 @@ domain name, without recursion
 
 =============================================================
 
+
+// It's done; will remove this when end to end test for recursion passes
 Root servers work in different ways; Make DNSResolver work with them;
     - they will always return authoritative nameservers for the domain, e.g "com"
     - they will return the resolved ip addresses in the additional section
