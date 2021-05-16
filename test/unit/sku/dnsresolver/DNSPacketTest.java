@@ -22,6 +22,8 @@ public class DNSPacketTest {
         DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("www.example.com", (short) 1, (short) 1);
         DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 256, (short) 4, "127.0.0.1");
         DNSPacket.DNSAnswer authoritativeNameServer = new DNSPacket.DNSAnswer(query, 256, (short) 4, "ns.example.com");
+        DNSPacket.DNSQuery nsQuery = new DNSPacket.DNSQuery("ns.example.com", DNSPacket.TYPE_A, DNSPacket.CLASS_1);
+        DNSPacket.DNSAnswer additional = new DNSPacket.DNSAnswer(nsQuery, 256, (short) 4, "127.0.0.2");
 
         return new DNSPacket(
                 (short) id,
@@ -36,12 +38,13 @@ public class DNSPacketTest {
                 false,
                 0,
                 (short) 1,
-                (short) 0,
-                (short) 0,
-                (short) 0,
+                (short) 1,
+                (short) 1,
+                (short) 1,
                 new DNSPacket.DNSQuery[]{query},
                 new DNSPacket.DNSAnswer[]{answer},
-                new DNSPacket.DNSAnswer[]{authoritativeNameServer}
+                new DNSPacket.DNSAnswer[]{authoritativeNameServer},
+                new DNSPacket.DNSAnswer[]{additional}
         );
     }
 }

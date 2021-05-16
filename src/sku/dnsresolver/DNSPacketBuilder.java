@@ -20,6 +20,7 @@ public class DNSPacketBuilder {
     private DNSPacket.DNSQuery[] queries = new DNSPacket.DNSQuery[0];
     private DNSPacket.DNSAnswer[] answers = new DNSPacket.DNSAnswer[0];
     private DNSPacket.DNSAnswer[] authoritativeNameServers = new DNSPacket.DNSAnswer[0];
+    private DNSPacket.DNSAnswer[] additionalAnswers = new DNSPacket.DNSAnswer[0];
 
     public DNSPacketBuilder setId(short id) {
         this.id = id;
@@ -106,8 +107,13 @@ public class DNSPacketBuilder {
         return this;
     }
 
-    public DNSPacketBuilder setAuthoritativeNameServers(DNSPacket.DNSAnswer... authoritativeNameServer) {
-        this.authoritativeNameServers = authoritativeNameServer;
+    public DNSPacketBuilder setAuthoritativeNameServers(DNSPacket.DNSAnswer... authoritativeNameServers) {
+        this.authoritativeNameServers = authoritativeNameServers;
+        return this;
+    }
+
+    public DNSPacketBuilder setAdditionalAnswers(DNSPacket.DNSAnswer... additionalAnswers) {
+        this.additionalAnswers = additionalAnswers;
         return this;
     }
 
@@ -130,7 +136,8 @@ public class DNSPacketBuilder {
                 additionalRRCount,
                 queries,
                 answers,
-                authoritativeNameServers
+                authoritativeNameServers,
+                additionalAnswers
         );
     }
 }
