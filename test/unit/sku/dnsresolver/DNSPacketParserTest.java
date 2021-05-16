@@ -1,6 +1,5 @@
 package sku.dnsresolver;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -108,12 +107,15 @@ public class DNSPacketParserTest {
     }
 
     @Test
-    public void parseResponseWithAuthoritativeSection() {
+    public void parseResponseWithAuthoritativeAndAdditionalSectionWithIPv6Addresses() {
         DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("com", DNSPacket.TYPE_NS, (short) 1);
 
         DNSPacket.DNSAnswer authoritativeNameServer1 = new DNSPacket.DNSAnswer(query, 115, (short) 20, "a.gtld-servers.net");
-
         DNSPacket.DNSAnswer authoritativeNameServer2 = new DNSPacket.DNSAnswer(query, 115, (short) 4, "b.gtld-servers.net");
+        DNSPacket.DNSQuery aNSQuery = new DNSPacket.DNSQuery("a.gtld-servers.net", DNSPacket.TYPE_A, DNSPacket.CLASS_1);
+        DNSPacket.DNSQuery bNSQuery = new DNSPacket.DNSQuery("b.gtld-servers.net", DNSPacket.TYPE_A, DNSPacket.CLASS_1);
+        DNSPacket.DNSAnswer aNSAnswer = new DNSPacket.DNSAnswer(aNSQuery, 115, (short) 4, "192.12.94.30");
+        DNSPacket.DNSAnswer bNSAnswer = new DNSPacket.DNSAnswer(bNSQuery, 115, (short) 4, "192.33.14.30");
 
         DNSPacket packet = new DNSPacketBuilder()
                 .setId(SamplePackets.DEFAULT_ID)
@@ -130,10 +132,11 @@ public class DNSPacketParserTest {
                 .setQuestionCount((short) 1)
                 .setAnswerRRCount((short) 0)
                 .setAuthorityRRCount((short) 2)
-                .setAdditionalRRCount((short) 0)
+                .setAdditionalRRCount((short) 4)
                 .setQueries(query)
                 .setAnswers()
                 .setAuthoritativeNameServers(authoritativeNameServer1, authoritativeNameServer2)
+                .setAdditionalAnswers(aNSAnswer, bNSAnswer)
                 .build();
 
         DNSPacketParser parser = new DNSPacketParser(SamplePackets.RESPONSE_COM_NS);

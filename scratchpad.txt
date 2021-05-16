@@ -16,7 +16,7 @@ Root servers work in different ways; Make DNSResolver work with them;
         - check authoritative namespaces section
         - ask for ip for one of the servers
         - if again answer section does not exist check additional section
-        - use one of the servers for next query
+        - use server i queried from additional section for next query
 
 complete resolvesDomainNameWithoutRecursion test.
 

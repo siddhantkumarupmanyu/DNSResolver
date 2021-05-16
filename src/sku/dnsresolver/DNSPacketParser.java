@@ -3,6 +3,7 @@ package sku.dnsresolver;
 import sku.dnsresolver.util.Defect;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 /**
  * This class only supports parsing response bytes to DNSPacket.
@@ -22,6 +23,7 @@ public class DNSPacketParser {
 
     private short answerCount = 0;
     private short authoritativeNSCount = 0;
+    private short additionalAnswersCount = 0;
 
     public DNSPacketParser(byte[] response) {
         this.response = response;
@@ -45,13 +47,14 @@ public class DNSPacketParser {
         builder.setQuestionCount(getNextShortFromBuffer());
         builder.setAnswerRRCount(answerCount = getNextShortFromBuffer());
         builder.setAuthorityRRCount(authoritativeNSCount = getNextShortFromBuffer());
-        builder.setAdditionalRRCount(getNextShortFromBuffer());
+        builder.setAdditionalRRCount(additionalAnswersCount = getNextShortFromBuffer());
     }
 
     private void parseBody() {
         builder.setQueries(parseQuery());
         builder.setAnswers(parseAnswers(answerCount));
         builder.setAuthoritativeNameServers(parseAnswers(authoritativeNSCount));
+        builder.setAdditionalAnswers(parseAnswers(additionalAnswersCount));
     }
 
     private void parse_QR_OPCode_AA_TC_RD() {
@@ -96,9 +99,13 @@ public class DNSPacketParser {
     private DNSPacket.DNSAnswer[] parseAnswers(int count) {
         DNSPacket.DNSAnswer[] answers = new DNSPacket.DNSAnswer[count];
         for (short i = 0; i < count; i++) {
-            answers[i] = parseAnswer();
+            try {
+                answers[i] = parseAnswer();
+            } catch (IPv6Exception e) {
+                answers[i] = null;
+            }
         }
-        return answers;
+        return removeNullFromAnswersArray(answers);
     }
 
     private DNSPacket.DNSAnswer parseAnswer() {
@@ -122,10 +129,19 @@ public class DNSPacketParser {
             address = parseLabels();
         } else if (query.qType == DNSPacket.TYPE_CNAME) {
             address = parseLabels();
+        } else if (query.qType == DNSPacket.TYPE_AAAA) {
+            ipv6NotSupportedYet(dataLength);
+            throw new IPv6Exception();
         } else {
             throw new Defect();
         }
         return new DNSPacket.DNSAnswer(query, ttl, dataLength, address);
+    }
+
+    private void ipv6NotSupportedYet(int dataLength) {
+        for (int i = 0; i < dataLength; i++) {
+            nextByte();
+        }
     }
 
     private String parseLabels() {
@@ -191,6 +207,19 @@ public class DNSPacketParser {
     @SuppressWarnings("SimplifiableConditionalExpression")
     private boolean booleanFromInt(int value) {
         return value == 0 ? false : true;
+    }
+
+    private static class IPv6Exception extends RuntimeException {
+    }
+
+    private static DNSPacket.DNSAnswer[] removeNullFromAnswersArray(DNSPacket.DNSAnswer[] answers) {
+        ArrayList<DNSPacket.DNSAnswer> list = new ArrayList<>();
+        for (DNSPacket.DNSAnswer answer : answers) {
+            if (answer != null) {
+                list.add(answer);
+            }
+        }
+        return list.toArray(new DNSPacket.DNSAnswer[0]);
     }
 }
 
