@@ -63,11 +63,10 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
     private NextQuery getNextQuery(DNSSocketAddress from, DNSPacket packet) {
         String originalQueryLabels = getOriginalQueryLabels(packet.id);
         String alreadyQueriedLabels = alreadyQueriedLabels(packet.id);
-        DNSPacket.DNSQuery currentQuery = packet.queries[0];
 
-        if (isNameServersResponse(currentQuery)) {
+        if (isNameServersResponseWithoutIp(packet)) {
             return queryForNameServerIp(from, packet);
-        } else if (isIntermediateNameServersIpResponse(originalQueryLabels, alreadyQueriedLabels)) {
+        } else if (isIntermediateResponseWithNameServersIp(packet, originalQueryLabels, alreadyQueriedLabels)) {
             NextQuery nextQuery = queryForNextNameServers(packet);
             updateAlreadyQueriedLabels(packet.id, nextQuery.query.query);
             return nextQuery;
@@ -83,7 +82,7 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         if (packet.answerRRCount > 0) {
             nameServer = packet.answers[0].address; // first nameServer record
         } else {
-            nameServer = packet.authoritativeNameServers[0].address; // first nameServer record
+            nameServer = packet.authoritativeNameServers[0].address;
         }
         final DNSPacket.DNSQuery requestQuery = new DNSPacket.DNSQuery(nameServer, DNSPacket.TYPE_A, DNSPacket.CLASS_1);
         return new NextQuery(from, requestQuery);
@@ -94,7 +93,8 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         if (packet.answerRRCount > 0) {
             nameServerIp = packet.answers[0].address; // first nameServer record
         } else {
-            nameServerIp = getAnswerMatchingToQuery(packet.queries[0].query, packet.additionalAnswers).address;
+            String nameServer = packet.authoritativeNameServers[0].address; // first nameServer record
+            nameServerIp = getAnswerMatchingToQueryLabels(nameServer, packet.additionalAnswers).address;
         }
         final DNSPacket.DNSQuery requestQuery = new DNSPacket.DNSQuery(
                 nextQueryLabels(packet.id, getOriginalQueryLabels(packet.id), alreadyQueriedLabels(packet.id)),
@@ -141,21 +141,30 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
     }
 
     @SuppressWarnings("OptionalGetWithoutIsPresent")
-    private DNSPacket.DNSAnswer getAnswerMatchingToQuery(String queryString, DNSPacket.DNSAnswer[] answers) {
+    private DNSPacket.DNSAnswer getAnswerMatchingToQueryLabels(String queryString, DNSPacket.DNSAnswer[] answers) {
         return Arrays.stream(answers)
                 .filter(answer -> (answer.query.query.equals(queryString)))
                 .findFirst()
                 .get();
     }
 
-    private boolean isNameServersResponse(DNSPacket.DNSQuery currentQuery) {
-        return currentQuery.qType == DNSPacket.TYPE_NS;
+    private boolean isNameServersResponseWithoutIp(DNSPacket packet) {
+        DNSPacket.DNSQuery currentQuery = packet.queries[0];
+        boolean isTypeNS = currentQuery.qType == DNSPacket.TYPE_NS;
+        boolean answersExist = packet.answerRRCount > 0;
+        boolean authoritativeNSExistButNotAdditional = packet.authorityRRCount > 0 && packet.additionalRRCount == 0;
+        return isTypeNS && (answersExist || authoritativeNSExistButNotAdditional);
     }
 
-    private boolean isIntermediateNameServersIpResponse(String originalQueryLabels, String alreadyQueriedLabels) {
-        return !isFinalNameServersIpResponse(originalQueryLabels, alreadyQueriedLabels);
+    private boolean isIntermediateResponseWithNameServersIp(DNSPacket packet, String originalQueryLabels, String alreadyQueriedLabels) {
+        boolean isIntermediateResponse = !isFinalNameServersIpResponse(originalQueryLabels, alreadyQueriedLabels);
+        boolean answersExist = packet.answerRRCount > 0;
+        boolean authoritativeNSAndAdditionalExist = packet.authorityRRCount > 0 && packet.additionalRRCount > 0;
+        return isIntermediateResponse && (answersExist || authoritativeNSAndAdditionalExist);
     }
 
+    // TODO: should be renamed to isFinalResponseWithNameServersIp
+    // and have checks like isIntermediateResponseWithNameServersIp
     private boolean isFinalNameServersIpResponse(String originalQueryLabels, String alreadyQueriedLabels) {
         return originalQueryLabels.equals(alreadyQueriedLabels);
     }

@@ -56,8 +56,8 @@ public class Main implements DNSMessageListener, UserRequestListener {
         DNSPacket packet = new DNSQueryBuilder()
                 .setId((short) 1)
                 .setRecursionDesired(false)
-//                .setQueries(new DNSPacket.DNSQuery("a.gtld-servers.net", DNSPacket.TYPE_A, (short) 1))
-                .setQueries(new DNSPacket.DNSQuery("com", DNSPacket.TYPE_NS, (short) 1))
+                .setQueries(new DNSPacket.DNSQuery("a.gtld-servers.net", DNSPacket.TYPE_A, (short) 1))
+//                .setQueries(new DNSPacket.DNSQuery("com", DNSPacket.TYPE_NS, (short) 1))
                 .build();
 
         this.networkExecutor.query(dnsSocketAddress, packet);

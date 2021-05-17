@@ -3,6 +3,7 @@ package sku.dnsresolver;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sku.dnsresolver.network.DNSSocketAddress;
@@ -141,7 +142,6 @@ public class DNSResolverTest {
 
             final HashMap<DNSPacket.DNSQuery, DNSPacket.DNSAnswer[]> queryHashmap = responses.get(serverSocket);
             queryHashmap.put(queryNS, new DNSPacket.DNSAnswer[]{authorizedNS, additionalAnswer});
-            queryHashmap.put(queryAdditional, new DNSPacket.DNSAnswer[]{authorizedNS, additionalAnswer});
         }
 
 

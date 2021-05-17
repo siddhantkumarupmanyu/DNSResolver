@@ -190,7 +190,7 @@ public class SamplePackets {
             0x7f, 0x00, 0x00, 0x01 // address
     };
 
-    // TODO:
+
     public static final byte[] QUERY_COM_NS = {
             // header
             0x00, 0x01, // id
@@ -272,10 +272,8 @@ public class SamplePackets {
             0x20, 0x01, 0x05, 0x03, 0x23, 0x1d, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x00, 0x30, // address
 
     };
-    public static final byte[] QUERY_COM_NS_IP_ADDRESS = {};
-    public static final byte[] RESPONSE_COM_NS_IP_ADDRESS = {};
 
-
+    // TODO:
     public static final byte[] QUERY_EXAMPLE_NS = {};
     public static final byte[] RESPONSE_EXAMPLE_NS = {};
     public static final byte[] QUERY_EXAMPLE_NS_IP_ADDRESS = {};

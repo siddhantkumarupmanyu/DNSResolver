@@ -7,18 +7,18 @@ domain name, without recursion
 =============================================================
 
 
-// It's done; will remove this when end to end test for recursion passes
 Root servers work in different ways; Make DNSResolver work with them;
     - they will always return authoritative nameservers for the domain, e.g "com"
     - they will return the resolved ip addresses in the additional section
-    - i tried asking for ip address but they returned same response as with nameservers
+    - i tried asking for ip address(in this case a.gtld-servers.net),
+        but they returned response for "net" instead of "com" namespace server
     - I have to consider this case
     - so flow should be like this
         - if i asked for namespace servers but answer section does not exist in response
         - check authoritative namespaces section
-        - ask for ip for one of the servers
-        - if again answer section does not exist check additional section
-        - use server i queried from additional section for next query
+        - select one of the servers from there
+        - check additional section; and get that server's ipaddress from there.
+        - use that server for next query
 
 complete resolvesDomainNameWithoutRecursion test.
 
