@@ -101,7 +101,7 @@ public class DNSPacketParser {
         for (short i = 0; i < count; i++) {
             try {
                 answers[i] = parseAnswer();
-            } catch (IPv6Exception e) {
+            } catch (NotSupportedYet e) {
                 answers[i] = null;
             }
         }
@@ -130,15 +130,18 @@ public class DNSPacketParser {
         } else if (query.qType == DNSPacket.TYPE_CNAME) {
             address = parseLabels();
         } else if (query.qType == DNSPacket.TYPE_AAAA) {
-            ipv6NotSupportedYet(dataLength);
-            throw new IPv6Exception();
+            readNextBytes(dataLength);
+            throw new NotSupportedYet("Ipv6");
+        } else if (query.qType == DNSPacket.TYPE_SOA) {
+            readNextBytes(dataLength);
+            throw new NotSupportedYet("SOA");
         } else {
             throw new Defect();
         }
         return new DNSPacket.DNSAnswer(query, ttl, dataLength, address);
     }
 
-    private void ipv6NotSupportedYet(int dataLength) {
+    private void readNextBytes(int dataLength) {
         for (int i = 0; i < dataLength; i++) {
             nextByte();
         }
@@ -209,7 +212,10 @@ public class DNSPacketParser {
         return value == 0 ? false : true;
     }
 
-    private static class IPv6Exception extends RuntimeException {
+    private static class NotSupportedYet extends RuntimeException {
+        public NotSupportedYet(String message) {
+            super(message);
+        }
     }
 
     private static DNSPacket.DNSAnswer[] removeNullFromAnswersArray(DNSPacket.DNSAnswer[] answers) {

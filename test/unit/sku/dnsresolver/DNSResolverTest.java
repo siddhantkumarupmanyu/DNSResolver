@@ -3,7 +3,6 @@ package sku.dnsresolver;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sku.dnsresolver.network.DNSSocketAddress;
@@ -28,7 +27,6 @@ public class DNSResolverTest {
     private final DNSResolver resolver = new DNSResolver(fakeExecutor, uiListener);
 
     @Test
-    @Ignore
     public void resolvesWithRecursion() {
         final DNSSocketAddress serverSocket = new DNSSocketAddress("127.0.0.1", "53");
 
@@ -68,8 +66,7 @@ public class DNSResolverTest {
         fakeExecutor.addResponseFor(COM_NS_SERVER_IP, "example.com", DNSPacket.TYPE_NS, EXAMPLE_NS_SERVER, null);
         fakeExecutor.addResponseFor(COM_NS_SERVER_IP, EXAMPLE_NS_SERVER, DNSPacket.TYPE_A, EXAMPLE_NS_SERVER, EXAMPLE_NS_SERVER_IP);
 
-        fakeExecutor.addResponseFor(EXAMPLE_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_NS, EXAMPLE_NS_SERVER);
-        fakeExecutor.addResponseFor(EXAMPLE_NS_SERVER_IP, EXAMPLE_NS_SERVER, DNSPacket.TYPE_A, EXAMPLE_NS_SERVER_IP);
+        fakeExecutor.addAuthoritativeResponse(EXAMPLE_NS_SERVER_IP, "www.example.com");
         fakeExecutor.addResponseFor(EXAMPLE_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_A, WWW_EXAMPLE_COM_IP);
 
         context.checking(new Expectations() {{
@@ -82,6 +79,30 @@ public class DNSResolverTest {
         resolver.resolve("www.example.com", "127.0.0.1", "53", false);
     }
 
+    // TODO:
+//    @Test
+//    public void whenAdditionalSectionDoesNotContainAllAuthoritaiveNSAddresses() {
+    // see RESPONSE_EXAMPLE_NS_IP_ADDRESS, additional does not contain ns.icann.org address
+    // what i should do is to see if i made a query for NS,
+    // if so then select that one from additional,
+    // else select one which is contained in additional,
+    // question is why i am i going in authoritative if additional exist
+    // why not select one from there??? because i am not confident that it only contains ns address
+
+    // to make this test possible
+    // we can mock Network executor instead of using FakeExecutor.
+//    }
+
+    // TODO:
+//    @Test
+//    case when recursion desired is true but server response have recursion available as false{
+    // to make this test possible
+    // we can mock Network executor instead of using FakeExecutor.
+//    }
+
+    // TODO:
+    // case when we get isAuthoritative = true in intermediate response
+    // ask for next ns from it only
 
     private class FakeExecutor implements NetworkExecutor {
 
@@ -97,8 +118,11 @@ public class DNSResolverTest {
             final ArrayList<DNSPacket.DNSAnswer> answersSection = new ArrayList<>();
             final ArrayList<DNSPacket.DNSAnswer> authoritativeNameServes = new ArrayList<>();
             final ArrayList<DNSPacket.DNSAnswer> additionalSection = new ArrayList<>();
+            boolean authority = false;
 
-            if (queryHashmap.get(askedQuery).length == 1) {
+            if (queryHashmap.get(askedQuery).length == 0) {
+                authority = true;
+            } else if (queryHashmap.get(askedQuery).length == 1) {
                 DNSPacket.DNSAnswer answer = queryHashmap.get(askedQuery)[0];
                 answersSection.add(answer);
             } else {
@@ -111,7 +135,7 @@ public class DNSResolverTest {
             }
 
             DNSPacket responsePacket = buildResponsePacket(
-                    packet.id, packet.recursionDesired, askedQuery,
+                    packet.id, packet.recursionDesired, authority, askedQuery,
                     toDNSAnswerArray(answersSection), toDNSAnswerArray(authoritativeNameServes), toDNSAnswerArray(additionalSection));
             resolver.receiveMessage(new DNSMessage(serverAddress, responsePacket));
         }
@@ -147,6 +171,20 @@ public class DNSResolverTest {
             queryHashmap.put(queryNS, new DNSPacket.DNSAnswer[]{authorizedNS, additionalAnswer});
         }
 
+        public void addAuthoritativeResponse(String serverIpAddress, String queryString) {
+            DNSPacket.DNSQuery queryNS = new DNSPacket.DNSQuery(queryString, DNSPacket.TYPE_NS, DNSPacket.CLASS_1);
+
+            DNSSocketAddress serverSocket = new DNSSocketAddress(serverIpAddress, "53");
+            if (!responses.containsKey(serverSocket)) {
+                responses.put(serverSocket, new HashMap<>());
+            }
+
+            // too keep it simple; not adding SOA in response
+            // see RESPONSE_WWW_EXAMPLE_NS for more details
+            final HashMap<DNSPacket.DNSQuery, DNSPacket.DNSAnswer[]> queryHashmap = responses.get(serverSocket);
+            queryHashmap.put(queryNS, new DNSPacket.DNSAnswer[]{});
+        }
+
 
         @Override
         public void shutdown() {
@@ -154,8 +192,7 @@ public class DNSResolverTest {
         }
 
         private DNSPacket buildResponsePacket(
-                short id,
-                boolean recursion,
+                short id, boolean recursion, boolean authority,
                 DNSPacket.DNSQuery query,
                 DNSPacket.DNSAnswer[] answers,
                 DNSPacket.DNSAnswer[] authoritativeNameServers,
@@ -165,7 +202,7 @@ public class DNSResolverTest {
                     .setId(id)
                     .setResponse(true)
                     .setOpCode(0)
-                    .setAuthoritative(false)
+                    .setAuthoritative(authority)
                     .setTruncated(false)
                     .setRecursionDesired(recursion)
                     .setRecursionAvailable(recursion)

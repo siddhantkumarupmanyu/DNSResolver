@@ -71,7 +71,7 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
             updateAlreadyQueriedLabels(packet.id, nextQuery.query.query);
             return nextQuery;
         } else if (isFinalNameServersIpResponse(originalQueryLabels, alreadyQueriedLabels)) {
-            return queryForDomainNameIp(packet);
+            return queryForDomainNameIp(from, packet);
         } else {
             throw new Defect("DNSResolver Error");
         }
@@ -104,8 +104,13 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         return new NextQuery(new DNSSocketAddress(nameServerIp, DEFAULT_PORT), requestQuery);
     }
 
-    private NextQuery queryForDomainNameIp(DNSPacket packet) {
-        String nameServerIp = packet.answers[0].address; // first nameServer ip
+    private NextQuery queryForDomainNameIp(DNSSocketAddress from, DNSPacket packet) {
+        String nameServerIp;
+        if (packet.authoritative) {
+            nameServerIp = from.ipAddress;
+        } else {
+            nameServerIp = packet.answers[0].address; // first nameServer ip
+        }
 
         final DNSPacket.DNSQuery requestQuery =
                 new DNSPacket.DNSQuery(getOriginalQueryLabels(packet.id), DNSPacket.TYPE_A, DNSPacket.CLASS_1);

@@ -56,8 +56,8 @@ public class Main implements DNSMessageListener, UserRequestListener {
         DNSPacket packet = new DNSQueryBuilder()
                 .setId((short) 1)
                 .setRecursionDesired(false)
-                .setQueries(new DNSPacket.DNSQuery("a.iana-servers.net", DNSPacket.TYPE_A, (short) 1))
-//                .setQueries(new DNSPacket.DNSQuery("example.com", DNSPacket.TYPE_NS, (short) 1))
+//                .setQueries(new DNSPacket.DNSQuery("a.iana-servers.net", DNSPacket.TYPE_A, (short) 1))
+                .setQueries(new DNSPacket.DNSQuery("www.example.com", DNSPacket.TYPE_NS, (short) 1))
                 .build();
 
         this.networkExecutor.query(dnsSocketAddress, packet);

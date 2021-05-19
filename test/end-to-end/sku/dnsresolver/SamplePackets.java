@@ -391,7 +391,7 @@ public class SamplePackets {
             0x00, 0x01, // class = 1
             0x00, 0x02, (byte) 0xa3, 0x00, // TTL
             0x00, 0x04, // data length = 4
-            (byte) 0xc7, 0x2b, (byte) 0x87, 0x35, // ipv4 address
+            (byte) 0xc7, 0x2b, (byte) 0x87, 0x35, // ipv4 address = 199.43.135.53
             // 1
             (byte) 0xc0, 0x0c, // pointer offset = 0x0c
             0x00, 0x1c, // type = ipv6 address
@@ -416,6 +416,54 @@ public class SamplePackets {
     };
 
     // TODO:
-    public static final byte[] QUERY_WWW_EXAMPLE_NS = {};
-    public static final byte[] RESPONSE_WWW_EXAMPLE_NS = {};
+    public static final byte[] QUERY_WWW_EXAMPLE_NS = {
+            // header
+            0x00, 0x01, // id
+            0x00, // QR, OP Code, AA, TC, RD = 0
+            0x00, // RA, Z, RCode
+            0x00, 0x01, // QDCount
+            0x00, 0x00, // ANCount
+            0x00, 0x00, // Authoritative NSCount
+            0x00, 0x00, // ARCount
+            0x03, 0x77, 0x77, 0x77, // 3 www
+            0x07, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, // 7 example
+            0x03, 0x63, 0x6f, 0x6d, //3 com
+            0x00, // null
+            0x00, 0x02, // type = NS
+            0x00, 0x01, // class = 1
+    };
+    public static final byte[] RESPONSE_WWW_EXAMPLE_NS = {
+            // header
+            0x00, 0x01, // id
+            (byte) 0x84, // QR = 1, OP Code, Authority Server = 1, TC, RD = 0
+            0x00, // RA, Z, RCode
+            0x00, 0x01, // QDCount
+            0x00, 0x00, // ANCount
+            0x00, 0x01, // Authoritative NSCount
+            0x00, 0x00, // ARCount
+            // body
+            // query
+            0x03, 0x77, 0x77, 0x77, // 3 www
+            0x07, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, // 7 example
+            0x03, 0x63, 0x6f, 0x6d, // 3 com
+            0x00, // null
+            0x00, 0x02, // type = NS
+            0x00, 0x01, // class = 1
+            // authoritative NS
+            (byte) 0xc0, 0x10, // pointer
+            0x00, 0x06, // type = SOA (Start of a zone of Authority)
+            0x00, 0x01, // class = 1
+            0x00, 0x00, 0x0e, 0x10, // TTL
+            0x00, 0x2c, // data length = 44
+            0x02, 0x6e, 0x73, // 2 ns
+            0x05, 0x69, 0x63, 0x61, 0x6e, 0x6e, // 5 icann
+            0x03, 0x6f, 0x72, 0x67, // 3 org
+            0x00, // null
+            0x03, 0x6e, 0x6f, 0x63, 0x03, 0x64, 0x6e, 0x73, (byte) 0xc0, 0x30, // Responsible authority's mailbox: noc.dns.icann.org
+            0x78, 0x76, (byte) 0xcd, (byte) 0xfd, // Serial Number: 2021051901
+            0x00, 0x00, 0x1c, 0x20, // Refresh Interval: 7200 (2 hours)
+            0x00, 0x00, 0x0e, 0x10, // Retry Interval: 3600 (1 hour)
+            0x00, 0x12, 0x75, 0x00, // Expire limit: 1209600 (14 days)
+            0x00, 0x00, 0x0e, 0x10, // Minimum TTL: 3600 (1 hour)
+    };
 }

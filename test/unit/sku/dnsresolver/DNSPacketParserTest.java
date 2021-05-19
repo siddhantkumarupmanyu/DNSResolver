@@ -179,6 +179,37 @@ public class DNSPacketParserTest {
         assertThat(parser.getDNSPacket(), is(equalTo(packet)));
     }
 
+    @Test
+    public void parseResponseWithSOA() {
+        DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("www.example.com", DNSPacket.TYPE_NS, (short) 1);
+
+        DNSPacket packet = new DNSPacketBuilder()
+                .setId(SamplePackets.DEFAULT_ID)
+                .setResponse(true)
+                .setOpCode(0)
+                .setAuthoritative(true)
+                .setTruncated(false)
+                .setRecursionDesired(false)
+                .setRecursionAvailable(false)
+                .setZ(false)
+                .setAnswerAuthenticated(false)
+                .setNonAuthenticatedData(false)
+                .setReplyCode(0)
+                .setQuestionCount((short) 1)
+                .setAnswerRRCount((short) 0)
+                .setAuthorityRRCount((short) 1)
+                .setAdditionalRRCount((short) 0)
+                .setQueries(query)
+                .setAnswers()
+                .setAuthoritativeNameServers()
+                .setAdditionalAnswers()
+                .build();
+
+        DNSPacketParser parser = new DNSPacketParser(SamplePackets.RESPONSE_WWW_EXAMPLE_NS);
+
+        assertThat(parser.getDNSPacket(), is(equalTo(packet)));
+    }
+
     private byte[] googleResponseWithNegativeAddress() {
         return new byte[]{
                 // header

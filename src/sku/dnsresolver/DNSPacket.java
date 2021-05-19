@@ -11,6 +11,7 @@ public final class DNSPacket {
     public static final short TYPE_CNAME = 5;
     public static final short CLASS_1 = 1;
     public static final short TYPE_AAAA = 28; // IPv6
+    public static final short TYPE_SOA = 6; // SOA
 
 
     // header
