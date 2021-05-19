@@ -6,11 +6,6 @@ domain name, without recursion
 
 =============================================================
 
-
-if some server returns that it is authority for the domain just ask for domain ip from it
-    - see www.example.com NS response
-
-
 Root servers work in different ways; Make DNSResolver work with them;
     - they will always return authoritative nameservers for the domain, e.g "com"
     - they will return the resolved ip addresses in the additional section

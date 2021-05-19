@@ -100,14 +100,39 @@ public class DNSResolverTest {
     // we can mock Network executor instead of using FakeExecutor.
 //    }
 
-    // TODO:
-    // case when we get isAuthoritative = true in intermediate response
-    // ask for next ns from it only
+    @Test
+    public void requestNextNSToSameServer_WhenIntermediateNSIsAuthoritative() {
+        String ROOT_NS_SERVER = "a.root-servers.net";
+        String ROOT_NS_SERVER_IP = "127.0.0.2";
+
+        String COM_NS_SERVER = "a.gtld-servers.net";
+        String COM_NS_SERVER_IP = "127.0.0.3";
+
+        String WWW_EXAMPLE_COM_IP = "192.168.0.1";
+
+        fakeExecutor.addResponseFor("127.0.0.1", "", DNSPacket.TYPE_NS, ROOT_NS_SERVER);
+        fakeExecutor.addResponseFor("127.0.0.1", ROOT_NS_SERVER, DNSPacket.TYPE_A, ROOT_NS_SERVER_IP);
+
+        fakeExecutor.addResponseFor(ROOT_NS_SERVER_IP, "com", DNSPacket.TYPE_NS, COM_NS_SERVER, COM_NS_SERVER_IP);
+
+        fakeExecutor.addAuthoritativeResponse(COM_NS_SERVER_IP, "example.com");
+
+        fakeExecutor.addAuthoritativeResponse(COM_NS_SERVER_IP, "www.example.com");
+        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_A, WWW_EXAMPLE_COM_IP);
+
+        context.checking(new Expectations() {{
+            oneOf(uiListener).responseText(with(allOf(
+                    containsString("label: " + "www.example.com"),
+                    containsString("address: " + WWW_EXAMPLE_COM_IP)
+            )));
+        }});
+
+        resolver.resolve("www.example.com", "127.0.0.1", "53", false);
+    }
 
     private class FakeExecutor implements NetworkExecutor {
 
         private final HashMap<DNSSocketAddress, HashMap<DNSPacket.DNSQuery, DNSPacket.DNSAnswer[]>> responses = new HashMap<>();
-
 
         @Override
         public void query(DNSSocketAddress serverAddress, DNSPacket packet) {
@@ -191,35 +216,36 @@ public class DNSResolverTest {
             // not implemented
         }
 
-        private DNSPacket buildResponsePacket(
-                short id, boolean recursion, boolean authority,
-                DNSPacket.DNSQuery query,
-                DNSPacket.DNSAnswer[] answers,
-                DNSPacket.DNSAnswer[] authoritativeNameServers,
-                DNSPacket.DNSAnswer[] additional
-        ) {
-            return new DNSPacketBuilder()
-                    .setId(id)
-                    .setResponse(true)
-                    .setOpCode(0)
-                    .setAuthoritative(authority)
-                    .setTruncated(false)
-                    .setRecursionDesired(recursion)
-                    .setRecursionAvailable(recursion)
-                    .setZ(false)
-                    .setAnswerAuthenticated(false)
-                    .setNonAuthenticatedData(false)
-                    .setReplyCode(0)
-                    .setQuestionCount((short) 1)
-                    .setAnswerRRCount((short) answers.length)
-                    .setAuthorityRRCount((short) authoritativeNameServers.length)
-                    .setAdditionalRRCount((short) additional.length)
-                    .setQueries(query)
-                    .setAnswers(answers)
-                    .setAuthoritativeNameServers(authoritativeNameServers)
-                    .setAdditionalAnswers(additional)
-                    .build();
-        }
+    }
+
+    private DNSPacket buildResponsePacket(
+            short id, boolean recursion, boolean authority,
+            DNSPacket.DNSQuery query,
+            DNSPacket.DNSAnswer[] answers,
+            DNSPacket.DNSAnswer[] authoritativeNameServers,
+            DNSPacket.DNSAnswer[] additional
+    ) {
+        return new DNSPacketBuilder()
+                .setId(id)
+                .setResponse(true)
+                .setOpCode(0)
+                .setAuthoritative(authority)
+                .setTruncated(false)
+                .setRecursionDesired(recursion)
+                .setRecursionAvailable(recursion)
+                .setZ(false)
+                .setAnswerAuthenticated(false)
+                .setNonAuthenticatedData(false)
+                .setReplyCode(0)
+                .setQuestionCount((short) 1)
+                .setAnswerRRCount((short) answers.length)
+                .setAuthorityRRCount((short) authoritativeNameServers.length)
+                .setAdditionalRRCount((short) additional.length)
+                .setQueries(query)
+                .setAnswers(answers)
+                .setAuthoritativeNameServers(authoritativeNameServers)
+                .setAdditionalAnswers(additional)
+                .build();
     }
 
     private DNSPacket.DNSAnswer[] toDNSAnswerArray(List<DNSPacket.DNSAnswer> answers) {
