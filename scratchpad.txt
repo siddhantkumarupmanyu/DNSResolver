@@ -32,6 +32,8 @@ PacketGenerator and PacketParser should go into network packages as they are use
 
 add timeout in Network manager so other requests are made if one blocked executor for response but it never arrived
 
+I have consider the case when recursion desired is true but server response have recursion available as false
+
 Add isValid method in DNSPacket
     -builder should call isValid()
     -isValid method should check to see of All RRs matches as specified by their counts

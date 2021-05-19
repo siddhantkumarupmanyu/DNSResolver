@@ -28,6 +28,7 @@ public class DNSResolverTest {
     private final DNSResolver resolver = new DNSResolver(fakeExecutor, uiListener);
 
     @Test
+    @Ignore
     public void resolvesWithRecursion() {
         final DNSSocketAddress serverSocket = new DNSSocketAddress("127.0.0.1", "53");
 
@@ -62,10 +63,10 @@ public class DNSResolverTest {
         fakeExecutor.addResponseFor("127.0.0.1", "", DNSPacket.TYPE_NS, ROOT_NS_SERVER);
         fakeExecutor.addResponseFor("127.0.0.1", ROOT_NS_SERVER, DNSPacket.TYPE_A, ROOT_NS_SERVER_IP);
 
-        fakeExecutor.addResponseFor(ROOT_NS_SERVER_IP, "com", COM_NS_SERVER, COM_NS_SERVER_IP);
+        fakeExecutor.addResponseFor(ROOT_NS_SERVER_IP, "com", DNSPacket.TYPE_NS, COM_NS_SERVER, COM_NS_SERVER_IP);
 
-        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, "example.com", DNSPacket.TYPE_NS, EXAMPLE_NS_SERVER);
-        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, EXAMPLE_NS_SERVER, DNSPacket.TYPE_A, EXAMPLE_NS_SERVER_IP);
+        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, "example.com", DNSPacket.TYPE_NS, EXAMPLE_NS_SERVER, null);
+        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, EXAMPLE_NS_SERVER, DNSPacket.TYPE_A, EXAMPLE_NS_SERVER, EXAMPLE_NS_SERVER_IP);
 
         fakeExecutor.addResponseFor(EXAMPLE_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_NS, EXAMPLE_NS_SERVER);
         fakeExecutor.addResponseFor(EXAMPLE_NS_SERVER_IP, EXAMPLE_NS_SERVER, DNSPacket.TYPE_A, EXAMPLE_NS_SERVER_IP);
@@ -104,7 +105,9 @@ public class DNSResolverTest {
                 DNSPacket.DNSAnswer nameServer = queryHashmap.get(askedQuery)[0];
                 DNSPacket.DNSAnswer additional = queryHashmap.get(askedQuery)[1];
                 authoritativeNameServes.add(nameServer);
-                additionalSection.add(additional);
+                if (additional.address != null) {
+                    additionalSection.add(additional);
+                }
             }
 
             DNSPacket responsePacket = buildResponsePacket(
@@ -128,9 +131,9 @@ public class DNSResolverTest {
 
 
         public void addResponseFor(
-                String serverIpAddress, String queryString, String authoritativeNameServerAddress, String additionalAnswerAddress
+                String serverIpAddress, String queryString, short type, String authoritativeNameServerAddress, String additionalAnswerAddress
         ) {
-            DNSPacket.DNSQuery queryNS = new DNSPacket.DNSQuery(queryString, DNSPacket.TYPE_NS, DNSPacket.CLASS_1);
+            DNSPacket.DNSQuery queryNS = new DNSPacket.DNSQuery(queryString, type, DNSPacket.CLASS_1);
             DNSPacket.DNSQuery queryAdditional = new DNSPacket.DNSQuery(authoritativeNameServerAddress, DNSPacket.TYPE_A, DNSPacket.CLASS_1);
             DNSPacket.DNSAnswer authorizedNS = new DNSPacket.DNSAnswer(queryNS, 0, (short) 0, authoritativeNameServerAddress);
             DNSPacket.DNSAnswer additionalAnswer = new DNSPacket.DNSAnswer(queryAdditional, 0, (short) 0, additionalAnswerAddress);

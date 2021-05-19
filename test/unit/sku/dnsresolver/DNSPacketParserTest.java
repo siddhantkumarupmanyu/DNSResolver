@@ -145,6 +145,40 @@ public class DNSPacketParserTest {
 
     }
 
+    @Test
+    public void parseResponseWithOnlyAuthoritativeNameServers() {
+        DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("example.com", DNSPacket.TYPE_NS, (short) 1);
+
+        DNSPacket.DNSAnswer authoritativeNameServer1 = new DNSPacket.DNSAnswer(query, 115, (short) 20, "a.iana-servers.net");
+        DNSPacket.DNSAnswer authoritativeNameServer2 = new DNSPacket.DNSAnswer(query, 115, (short) 4, "b.iana-servers.net");
+
+        DNSPacket packet = new DNSPacketBuilder()
+                .setId(SamplePackets.DEFAULT_ID)
+                .setResponse(true)
+                .setOpCode(0)
+                .setAuthoritative(false)
+                .setTruncated(false)
+                .setRecursionDesired(false)
+                .setRecursionAvailable(false)
+                .setZ(false)
+                .setAnswerAuthenticated(false)
+                .setNonAuthenticatedData(false)
+                .setReplyCode(0)
+                .setQuestionCount((short) 1)
+                .setAnswerRRCount((short) 0)
+                .setAuthorityRRCount((short) 2)
+                .setAdditionalRRCount((short) 0)
+                .setQueries(query)
+                .setAnswers()
+                .setAuthoritativeNameServers(authoritativeNameServer1, authoritativeNameServer2)
+                .setAdditionalAnswers()
+                .build();
+
+        DNSPacketParser parser = new DNSPacketParser(SamplePackets.RESPONSE_EXAMPLE_NS);
+
+        assertThat(parser.getDNSPacket(), is(equalTo(packet)));
+    }
+
     private byte[] googleResponseWithNegativeAddress() {
         return new byte[]{
                 // header
