@@ -3,6 +3,7 @@ package sku.dnsresolver;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sku.dnsresolver.network.DNSSocketAddress;
@@ -33,7 +34,7 @@ public class DNSResolverTest {
         final String resolvedAddress = "192.168.0.1";
         final String query = "www.example.com";
 
-        fakeExecutor.addResponseFor(serverSocket.ipAddress, query, (short) 1, resolvedAddress);
+        fakeExecutor.addAnsResponseFor(serverSocket.ipAddress, query, DNSPacket.TYPE_A, resolvedAddress);
 
         context.checking(new Expectations() {{
             oneOf(uiListener).responseText(with(allOf(
@@ -58,16 +59,16 @@ public class DNSResolverTest {
 
         String WWW_EXAMPLE_COM_IP = "192.168.0.1";
 
-        fakeExecutor.addResponseFor("127.0.0.1", "", DNSPacket.TYPE_NS, ROOT_NS_SERVER);
-        fakeExecutor.addResponseFor("127.0.0.1", ROOT_NS_SERVER, DNSPacket.TYPE_A, ROOT_NS_SERVER_IP);
+        fakeExecutor.addAnsResponseFor("127.0.0.1", "", DNSPacket.TYPE_NS, ROOT_NS_SERVER);
+        fakeExecutor.addAnsResponseFor("127.0.0.1", ROOT_NS_SERVER, DNSPacket.TYPE_A, ROOT_NS_SERVER_IP);
 
-        fakeExecutor.addResponseFor(ROOT_NS_SERVER_IP, "com", DNSPacket.TYPE_NS, COM_NS_SERVER, COM_NS_SERVER_IP);
+        fakeExecutor.addResponseFor(ROOT_NS_SERVER_IP, "com", DNSPacket.TYPE_NS, new TestPair(COM_NS_SERVER, COM_NS_SERVER_IP));
 
-        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, "example.com", DNSPacket.TYPE_NS, EXAMPLE_NS_SERVER, null);
-        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, EXAMPLE_NS_SERVER, DNSPacket.TYPE_A, EXAMPLE_NS_SERVER, EXAMPLE_NS_SERVER_IP);
+        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, "example.com", DNSPacket.TYPE_NS, new TestPair(EXAMPLE_NS_SERVER, TestPair.NO_ADDITIONAL));
+        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, EXAMPLE_NS_SERVER, DNSPacket.TYPE_A, new TestPair(EXAMPLE_NS_SERVER, EXAMPLE_NS_SERVER_IP));
 
         fakeExecutor.addAuthoritativeResponse(EXAMPLE_NS_SERVER_IP, "www.example.com");
-        fakeExecutor.addResponseFor(EXAMPLE_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_A, WWW_EXAMPLE_COM_IP);
+        fakeExecutor.addAnsResponseFor(EXAMPLE_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_A, WWW_EXAMPLE_COM_IP);
 
         context.checking(new Expectations() {{
             oneOf(uiListener).responseText(with(allOf(
@@ -79,19 +80,18 @@ public class DNSResolverTest {
         resolver.resolve("www.example.com", "127.0.0.1", "53", false);
     }
 
-    // TODO:
-//    @Test
-//    public void whenAdditionalSectionDoesNotContainAllAuthoritaiveNSAddresses() {
-    // see RESPONSE_EXAMPLE_NS_IP_ADDRESS, additional does not contain ns.icann.org address
-    // what i should do is to see if i made a query for NS,
-    // if so then select that one from additional,
-    // else select one which is contained in additional,
-    // question is why i am i going in authoritative if additional exist
-    // why not select one from there??? because i am not confident that it only contains ns address
+    @Test
+    @Ignore
+    public void additionalSectionDoesNotContainFirstAuthoritativeNSAddress() {
+        // see RESPONSE_EXAMPLE_NS_IP_ADDRESS, additional does not contain ns.icann.org address
+        // what i should do is to see if i made a query for NS,
+        // if so then select that one from additional,
+        // else select one which is contained in additional,
+        // question is why i am i going in authoritative if additional exist
+        // why not select one from there??? because i am not confident that it only contains ns address
 
-    // to make this test possible
-    // we can mock Network executor instead of using FakeExecutor.
-//    }
+
+    }
 
     // TODO:
 //    @Test
@@ -110,15 +110,15 @@ public class DNSResolverTest {
 
         String WWW_EXAMPLE_COM_IP = "192.168.0.1";
 
-        fakeExecutor.addResponseFor("127.0.0.1", "", DNSPacket.TYPE_NS, ROOT_NS_SERVER);
-        fakeExecutor.addResponseFor("127.0.0.1", ROOT_NS_SERVER, DNSPacket.TYPE_A, ROOT_NS_SERVER_IP);
+        fakeExecutor.addAnsResponseFor("127.0.0.1", "", DNSPacket.TYPE_NS, ROOT_NS_SERVER);
+        fakeExecutor.addAnsResponseFor("127.0.0.1", ROOT_NS_SERVER, DNSPacket.TYPE_A, ROOT_NS_SERVER_IP);
 
-        fakeExecutor.addResponseFor(ROOT_NS_SERVER_IP, "com", DNSPacket.TYPE_NS, COM_NS_SERVER, COM_NS_SERVER_IP);
+        fakeExecutor.addResponseFor(ROOT_NS_SERVER_IP, "com", DNSPacket.TYPE_NS, new TestPair(COM_NS_SERVER, COM_NS_SERVER_IP));
 
         fakeExecutor.addAuthoritativeResponse(COM_NS_SERVER_IP, "example.com");
 
         fakeExecutor.addAuthoritativeResponse(COM_NS_SERVER_IP, "www.example.com");
-        fakeExecutor.addResponseFor(COM_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_A, WWW_EXAMPLE_COM_IP);
+        fakeExecutor.addAnsResponseFor(COM_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_A, WWW_EXAMPLE_COM_IP);
 
         context.checking(new Expectations() {{
             oneOf(uiListener).responseText(with(allOf(
@@ -132,82 +132,89 @@ public class DNSResolverTest {
 
     private class FakeExecutor implements NetworkExecutor {
 
-        private final HashMap<DNSSocketAddress, HashMap<DNSPacket.DNSQuery, DNSPacket.DNSAnswer[]>> responses = new HashMap<>();
+        private final HashMap<DNSSocketAddress, HashMap<DNSPacket.DNSQuery, List<DNSPacket.DNSAnswer[]>>> responses = new HashMap<>();
 
         @Override
         public void query(DNSSocketAddress serverAddress, DNSPacket packet) {
             final DNSPacket.DNSQuery askedQuery = packet.queries[0];
 
-            final HashMap<DNSPacket.DNSQuery, DNSPacket.DNSAnswer[]> queryHashmap = responses.get(serverAddress);
+            final HashMap<DNSPacket.DNSQuery, List<DNSPacket.DNSAnswer[]>> queryHashmap = responses.get(serverAddress);
 
-            final ArrayList<DNSPacket.DNSAnswer> answersSection = new ArrayList<>();
-            final ArrayList<DNSPacket.DNSAnswer> authoritativeNameServes = new ArrayList<>();
-            final ArrayList<DNSPacket.DNSAnswer> additionalSection = new ArrayList<>();
-            boolean authority = false;
+            List<DNSPacket.DNSAnswer[]> answers = queryHashmap.get(askedQuery);
 
-            if (queryHashmap.get(askedQuery).length == 0) {
-                authority = true;
-            } else if (queryHashmap.get(askedQuery).length == 1) {
-                DNSPacket.DNSAnswer answer = queryHashmap.get(askedQuery)[0];
-                answersSection.add(answer);
-            } else {
-                DNSPacket.DNSAnswer nameServer = queryHashmap.get(askedQuery)[0];
-                DNSPacket.DNSAnswer additional = queryHashmap.get(askedQuery)[1];
-                authoritativeNameServes.add(nameServer);
-                if (additional.address != null) {
-                    additionalSection.add(additional);
-                }
-            }
+            final DNSPacket.DNSAnswer[] answersSection = answers.get(0);
+            final DNSPacket.DNSAnswer[] authoritativeNameServes = answers.get(1);
+            final DNSPacket.DNSAnswer[] additionalSection = answers.get(2);
+            boolean authority =
+                    (answersSection.length == 0) && (authoritativeNameServes.length == 0) && (additionalSection.length == 0);
 
             DNSPacket responsePacket = buildResponsePacket(
                     packet.id, packet.recursionDesired, authority, askedQuery,
-                    toDNSAnswerArray(answersSection), toDNSAnswerArray(authoritativeNameServes), toDNSAnswerArray(additionalSection));
+                    answersSection, authoritativeNameServes, additionalSection);
             resolver.receiveMessage(new DNSMessage(serverAddress, responsePacket));
         }
 
-        public void addResponseFor(String serverIpAddress, String queryString, short type, String response) {
-            DNSPacket.DNSQuery query = new DNSPacket.DNSQuery(queryString, type, (short) 1);
+        public void addAnsResponseFor(String serverIpAddress, String queryString, short type, String response) {
+            DNSPacket.DNSQuery query = new DNSPacket.DNSQuery(queryString, type, DNSPacket.CLASS_1);
             DNSPacket.DNSAnswer answer = new DNSPacket.DNSAnswer(query, 0, (short) 0, response);
 
-            DNSSocketAddress serverSocket = new DNSSocketAddress(serverIpAddress, "53");
-            if (!responses.containsKey(serverSocket)) {
-                responses.put(serverSocket, new HashMap<>());
-            }
+            DNSPacket.DNSAnswer[] answers = {answer};
+            DNSPacket.DNSAnswer[] authoritative = new DNSPacket.DNSAnswer[0];
+            DNSPacket.DNSAnswer[] additional = new DNSPacket.DNSAnswer[0];
 
-            final HashMap<DNSPacket.DNSQuery, DNSPacket.DNSAnswer[]> queryHashmap = responses.get(serverSocket);
-            queryHashmap.put(query, new DNSPacket.DNSAnswer[]{answer});
+            addResponse(serverIpAddress, query, answers, authoritative, additional);
         }
 
-
         public void addResponseFor(
-                String serverIpAddress, String queryString, short type, String authoritativeNameServerAddress, String additionalAnswerAddress
-        ) {
+                String serverIpAddress, String queryString, short type, TestPair... pairs) {
             DNSPacket.DNSQuery queryNS = new DNSPacket.DNSQuery(queryString, type, DNSPacket.CLASS_1);
-            DNSPacket.DNSQuery queryAdditional = new DNSPacket.DNSQuery(authoritativeNameServerAddress, DNSPacket.TYPE_A, DNSPacket.CLASS_1);
-            DNSPacket.DNSAnswer authorizedNS = new DNSPacket.DNSAnswer(queryNS, 0, (short) 0, authoritativeNameServerAddress);
-            DNSPacket.DNSAnswer additionalAnswer = new DNSPacket.DNSAnswer(queryAdditional, 0, (short) 0, additionalAnswerAddress);
 
-            DNSSocketAddress serverSocket = new DNSSocketAddress(serverIpAddress, "53");
-            if (!responses.containsKey(serverSocket)) {
-                responses.put(serverSocket, new HashMap<>());
+            List<DNSPacket.DNSAnswer> authoritativeNSList = new ArrayList<>();
+            List<DNSPacket.DNSAnswer> additionalList = new ArrayList<>();
+
+            for (TestPair pair : pairs) {
+                String authoritativeNSAddress = pair.authoritativeNameServerAddress;
+                authoritativeNSList.add(new DNSPacket.DNSAnswer(queryNS, 0, (short) 0, authoritativeNSAddress));
+
+                String additional = pair.additional;
+                if (!additional.equals(TestPair.NO_ADDITIONAL)) {
+                    DNSPacket.DNSQuery queryAdditional = new DNSPacket.DNSQuery(authoritativeNSAddress, DNSPacket.TYPE_A, DNSPacket.CLASS_1);
+                    additionalList.add(new DNSPacket.DNSAnswer(queryAdditional, 0, (short) 0, additional));
+                }
             }
 
-            final HashMap<DNSPacket.DNSQuery, DNSPacket.DNSAnswer[]> queryHashmap = responses.get(serverSocket);
-            queryHashmap.put(queryNS, new DNSPacket.DNSAnswer[]{authorizedNS, additionalAnswer});
+            DNSPacket.DNSAnswer[] answers = new DNSPacket.DNSAnswer[0];
+            DNSPacket.DNSAnswer[] authoritative = authoritativeNSList.toArray(new DNSPacket.DNSAnswer[0]);
+            DNSPacket.DNSAnswer[] additional = additionalList.toArray(new DNSPacket.DNSAnswer[0]);
+
+            addResponse(serverIpAddress, queryNS, answers, authoritative, additional);
         }
 
         public void addAuthoritativeResponse(String serverIpAddress, String queryString) {
             DNSPacket.DNSQuery queryNS = new DNSPacket.DNSQuery(queryString, DNSPacket.TYPE_NS, DNSPacket.CLASS_1);
 
+            // too keep it simple; not adding SOA in response
+            // see RESPONSE_WWW_EXAMPLE_NS for more details
+            addResponse(serverIpAddress, queryNS,
+                    new DNSPacket.DNSAnswer[0], new DNSPacket.DNSAnswer[0], new DNSPacket.DNSAnswer[0]);
+        }
+
+        private void addResponse(
+                String serverIpAddress, DNSPacket.DNSQuery query,
+                DNSPacket.DNSAnswer[] answer, DNSPacket.DNSAnswer[] authoritative, DNSPacket.DNSAnswer[] additional
+        ) {
+            List<DNSPacket.DNSAnswer[]> list = new ArrayList<>(3);
+            list.add(answer);
+            list.add(authoritative);
+            list.add(additional);
+
             DNSSocketAddress serverSocket = new DNSSocketAddress(serverIpAddress, "53");
             if (!responses.containsKey(serverSocket)) {
                 responses.put(serverSocket, new HashMap<>());
             }
 
-            // too keep it simple; not adding SOA in response
-            // see RESPONSE_WWW_EXAMPLE_NS for more details
-            final HashMap<DNSPacket.DNSQuery, DNSPacket.DNSAnswer[]> queryHashmap = responses.get(serverSocket);
-            queryHashmap.put(queryNS, new DNSPacket.DNSAnswer[]{});
+            final HashMap<DNSPacket.DNSQuery, List<DNSPacket.DNSAnswer[]>> queryHashmap = responses.get(serverSocket);
+            queryHashmap.put(query, list);
         }
 
 
@@ -248,8 +255,18 @@ public class DNSResolverTest {
                 .build();
     }
 
-    private DNSPacket.DNSAnswer[] toDNSAnswerArray(List<DNSPacket.DNSAnswer> answers) {
-        return answers.toArray(new DNSPacket.DNSAnswer[0]);
+    private static class TestPair {
+        static final String NO_ADDITIONAL = "";
+
+        final String authoritativeNameServerAddress;
+        final String additional;
+
+        public TestPair(String authoritativeNameServerAddress, String additionalAddress) {
+            this.authoritativeNameServerAddress = authoritativeNameServerAddress;
+            this.additional = additionalAddress;
+        }
     }
 
 }
+
+// https://stackoverflow.com/questions/12211030/capturing-method-parameter-in-jmock-to-pass-to-a-stubbed-implementation
