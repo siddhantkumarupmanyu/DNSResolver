@@ -38,7 +38,6 @@ public class DNSResolverEndToEndTest {
     }
 
     @Test
-    @Ignore
     public void resolvesDomainNameWithoutRecursion() throws InterruptedException {
         application.resolveWithoutRecursion("www.example.com", fakeDnsServer);
         fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_ROOT_NS);
@@ -59,8 +58,8 @@ public class DNSResolverEndToEndTest {
 
         fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_WWW_EXAMPLE_NS);
         fakeDnsServer.respondWith(SamplePackets.RESPONSE_WWW_EXAMPLE_NS);
-        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_WWW_EXAMPLE_COM);
-        fakeDnsServer.respondWith(SamplePackets.RESPONSE_WWW_EXAMPLE_COM);
+        fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_WWW_EXAMPLE_COM_NO_RECURSION);
+        fakeDnsServer.respondWith(SamplePackets.RESPONSE_WWW_EXAMPLE_COM_NO_RECURSION);
 
         application.hasReceivedResponseWith("127.0.0.1");
     }

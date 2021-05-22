@@ -42,7 +42,7 @@
     <target name="test.run" description="Run the tests" depends="test.compile">
         <property name="test.reports.dir" location="${build.dir}/testreports"/>
         <mkdir dir="${test.reports.dir}"/>
-        <junit fork="true">
+        <junit fork="true" printsummary="withOutAndErr">
             <batchtest todir="${test.reports.dir}" haltonfailure="true" haltonerror="true">
                 <formatter type="plain"/>
                 <fileset dir="${test.dir}/end-to-end" includes="**/*Test.java"/>

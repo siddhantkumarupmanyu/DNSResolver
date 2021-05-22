@@ -79,8 +79,8 @@ public class DNSResolverTest {
         resolver.resolve("www.example.com", "127.0.0.1", "53", false);
     }
 
-    @Test
-    public void additionalSectionDoesNotContainFirstAuthoritativeNSAddress() {
+//    @Test
+//    public void additionalSectionDoesNotContainFirstAuthoritativeNSAddress() {
         // see RESPONSE_EXAMPLE_NS_IP_ADDRESS, additional does not contain ns.icann.org address
         // what i should do is to see if i made a query for NS,
         // if so then select that one from additional,
@@ -88,8 +88,8 @@ public class DNSResolverTest {
         // question is why i am i going in authoritative if additional exist
         // why not select one from there??? because i am not confident that it only contains ns address
 
-        // should i leave checking this to End tests???
-    }
+        // end to end test is checking it. Should i leave it??
+//    }
 
     // TODO:
 //    @Test

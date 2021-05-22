@@ -9,6 +9,7 @@ import sku.dnsresolver.util.Defect;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DNSResolver implements UserRequestListener, DNSMessageListener {
@@ -18,15 +19,19 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
     private final UiListener uiListener;
 
     private final HashMap<Short, String[]> queries = new HashMap<>();
+    private String requestPort;
 
     public DNSResolver(NetworkExecutor executor, UiListener uiListener) {
         this.executor = executor;
         this.uiListener = uiListener;
+        this.requestPort = DEFAULT_PORT;
     }
 
     @Override
     public void resolve(String domainName, String serverIp, String port, boolean recursion) {
         DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(serverIp, port);
+
+        requestPort = port;
 
         DNSPacket.DNSQuery query;
 
@@ -106,8 +111,7 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         } else if (packet.answerRRCount > 0) {
             nameServerIp = packet.answers[0].address; // first nameServer record
         } else {
-            String nameServer = packet.authoritativeNameServers[0].address; // first nameServer record
-            nameServerIp = getAnswerMatchingToQueryLabels(nameServer, packet.additionalAnswers).address;
+            nameServerIp = getAuthoritativeNSIpFromAdditional(packet.authoritativeNameServers, packet.additionalAnswers);
         }
         return nameServerIp;
     }
@@ -139,12 +143,23 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         }
     }
 
-    @SuppressWarnings("OptionalGetWithoutIsPresent")
-    private DNSPacket.DNSAnswer getAnswerMatchingToQueryLabels(String queryString, DNSPacket.DNSAnswer[] answers) {
+    private String getAuthoritativeNSIpFromAdditional(
+            DNSPacket.DNSAnswer[] authoritativeServers,
+            DNSPacket.DNSAnswer[] additionalAnswers
+    ) {
+        for (DNSPacket.DNSAnswer ns : authoritativeServers) {
+            Optional<DNSPacket.DNSAnswer> ipAnswer = getAnswerMatchingToQueryLabels(ns.address, additionalAnswers);
+            if (ipAnswer.isPresent()) {
+                return ipAnswer.get().address;
+            }
+        }
+        throw new Defect("No Matching IP in Additional Section");
+    }
+
+    private Optional<DNSPacket.DNSAnswer> getAnswerMatchingToQueryLabels(String queryString, DNSPacket.DNSAnswer[] answers) {
         return Arrays.stream(answers)
                 .filter(answer -> (answer.query.query.equals(queryString)))
-                .findFirst()
-                .get();
+                .findFirst();
     }
 
     private boolean isNameServersResponseWithoutIp(DNSPacket packet) {
@@ -152,7 +167,7 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
         boolean isTypeNS = currentQuery.qType == DNSPacket.TYPE_NS;
         boolean answersExist = packet.answerRRCount > 0;
         boolean authoritativeNSExistButNotAdditional = packet.authorityRRCount > 0 && packet.additionalRRCount == 0;
-        return isTypeNS && (answersExist || authoritativeNSExistButNotAdditional);
+        return isTypeNS && (!packet.authoritative) && (answersExist || authoritativeNSExistButNotAdditional);
     }
 
     private boolean isIntermediateNSIpResponse(DNSPacket packet, String originalQueryLabels, String alreadyQueriedLabels) {
@@ -192,7 +207,7 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
 
     private NextQuery createQuery(String toIp, String querySting, short type) {
         final DNSPacket.DNSQuery requestQuery = new DNSPacket.DNSQuery(querySting, type, DNSPacket.CLASS_1);
-        return new NextQuery(new DNSSocketAddress(toIp, DEFAULT_PORT), requestQuery);
+        return new NextQuery(new DNSSocketAddress(toIp, requestPort), requestQuery);
     }
 
     private static class NextQuery {

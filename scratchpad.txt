@@ -21,6 +21,8 @@ Root servers work in different ways; Make DNSResolver work with them;
 
 complete resolvesDomainNameWithoutRecursion test.
 
+Fix the formatter print authoritative and additional section too
+
 PacketGenerator and PacketParser should go into network packages as they are used by network manager only,
     - also PacketFormatter should go into ui package;
 
