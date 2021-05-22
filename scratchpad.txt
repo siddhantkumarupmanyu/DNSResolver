@@ -1,10 +1,34 @@
 
 domain name, with recursion ==> done
 domain name, with cname ==> done
-domain name, without recursion
-    -requires support for NS
+domain name, without recursion ==> done
 
 =============================================================
+
+Fix the formatter print authoritative and additional section
+
+PacketGenerator and PacketParser should go into network packages as they are used by network manager only,
+    - also PacketFormatter should go into ui package;
+
+add timeout in Network manager so other requests are made if one blocked executor for response but it never arrived
+
+I have consider the case when recursion desired is true but server response have recursion available as false
+
+Add isValid method in DNSPacket
+    - builder should call isValid()
+    - isValid method should check to see of All RRs matches as specified by their counts
+    - not gonna do it; currently it's overkill
+
+nextByte() in DNSPacketParser can be replace with an iterator.
+    -but nextByte gives more readability, so let it remain
+
+can extract queries and its associated methods to a inner class in DNSResolver.
+    - but I think, not needed now. If I touch this class again I will do it.
+
+
+
+
+================ NOTES =================
 
 Root servers work in different ways; Make DNSResolver work with them;
     - they will always return authoritative nameservers for the domain, e.g "com"
@@ -18,24 +42,3 @@ Root servers work in different ways; Make DNSResolver work with them;
         - select one of the servers from there
         - check additional section; and get that server's ipaddress from there.
         - use that server for next query
-
-complete resolvesDomainNameWithoutRecursion test.
-
-Fix the formatter print authoritative and additional section too
-
-PacketGenerator and PacketParser should go into network packages as they are used by network manager only,
-    - also PacketFormatter should go into ui package;
-
-add timeout in Network manager so other requests are made if one blocked executor for response but it never arrived
-
-I have consider the case when recursion desired is true but server response have recursion available as false
-
-Add isValid method in DNSPacket
-    -builder should call isValid()
-    -isValid method should check to see of All RRs matches as specified by their counts
-
-nextByte() in DNSPacketParser can be replace with an iterator.
-    -but nextByte gives more readability, so let it remain
-
-can extract queries and its associated methods to a inner class in DNSResolver.
-    - but I think, not needed now. If I touch this class again I will do it.
