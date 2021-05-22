@@ -2,6 +2,8 @@ package sku.dnsresolver;
 
 import sku.dnsresolver.network.DNSSocketAddress;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -32,6 +34,8 @@ public class FakeDnsServer {
     }
 
     public void respondWith(byte[] packet) {
+        packet[0] = messageListener.lastId[0];
+        packet[1] = messageListener.lastId[1];
         serverThread.sendPacket(packet, messageListener.lastAddress);
     }
 
@@ -47,14 +51,18 @@ public class FakeDnsServer {
         private final ArrayBlockingQueue<byte[]> packets = new ArrayBlockingQueue<>(1);
 
         private DNSSocketAddress lastAddress;
+        private byte[] lastId;
 
         public void receivedPacket(byte[] packet, DNSSocketAddress address) {
             packets.add(packet);
+            lastId = Arrays.copyOf(packet, 2);
             lastAddress = address;
         }
 
         public void receivedAPacket(byte[] packet) throws InterruptedException {
-            assertThat("Packet in Bytes", packets.poll(5, TimeUnit.SECONDS), is(equalTo(packet)));
+            byte[] expectedPacketWithoutId = Arrays.copyOfRange(packet, 2, packet.length - 2);
+            byte[] originalPacketWithoutId = Arrays.copyOfRange(Objects.requireNonNull(packets.poll(5, TimeUnit.SECONDS)), 2, packet.length - 2);
+            assertThat("Packet in Bytes", originalPacketWithoutId, is(equalTo(expectedPacketWithoutId)));
         }
     }
 }

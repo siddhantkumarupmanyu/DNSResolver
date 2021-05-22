@@ -33,7 +33,8 @@ public class SingleThreadExecutorTest {
     @Test
     public void queryDnsPacket() throws Exception {
         final CountDownLatch messageWasReceived = new CountDownLatch(1);
-        SingleThreadExecutor singleThreadExecutor = new SingleThreadExecutor(factory, createDNSMessageListener(messageWasReceived));
+        SingleThreadExecutor singleThreadExecutor = new SingleThreadExecutor(factory);
+        singleThreadExecutor.addListener(createDNSMessageListener(messageWasReceived));
 
         singleThreadExecutor.query(fakeServerAddress, queryFor("www.example.com"));
 

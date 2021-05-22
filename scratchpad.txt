@@ -21,11 +21,6 @@ Root servers work in different ways; Make DNSResolver work with them;
 
 complete resolvesDomainNameWithoutRecursion test.
 
-no need to match id's in end to end test.
-    -Should use Arrays.copyOf() to neglect first two bytes;
-
-DNSPacketParser: refactor ParseQuery and ParseAnswers have duplications
-
 PacketGenerator and PacketParser should go into network packages as they are used by network manager only,
     - also PacketFormatter should go into ui package;
 

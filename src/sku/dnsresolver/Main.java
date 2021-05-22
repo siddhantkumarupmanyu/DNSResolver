@@ -5,32 +5,36 @@ import sku.dnsresolver.network.DatagramFactory;
 import sku.dnsresolver.network.NetworkExecutor;
 import sku.dnsresolver.network.SingleThreadExecutor;
 import sku.dnsresolver.ui.MainWindow;
+import sku.dnsresolver.ui.UiListener;
 import sku.dnsresolver.ui.UserRequestListener;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class Main implements DNSMessageListener, UserRequestListener {
+public class Main implements UserRequestListener, UiListener {
 
     private MainWindow ui;
     private final NetworkExecutor networkExecutor;
+    private final DNSResolver dnsResolver;
 
     public Main() throws Exception {
+        this.networkExecutor = new SingleThreadExecutor(new DatagramFactory());
+        this.dnsResolver = new DNSResolver(this.networkExecutor, this);
+
+        this.networkExecutor.addListener(this.dnsResolver);
+
         startUserInterface();
         shutdownNetworkManagerWhenUICloses();
-
-        this.networkExecutor = new SingleThreadExecutor(new DatagramFactory(), this);
     }
 
+    // This is a decorator: refactor it into it's own class
     @Override
-    public void receiveMessage(DNSMessage dnsMessage) {
+    public void responseText(String text) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                // TODO: replace it with something like PacketFormatter.format(packet);
-                PacketFormatter formatter = new PacketFormatter(dnsMessage.packet);
-                ui.appendTextToResponse(formatter.getFormattedString());
+                ui.responseText(text);
             }
         });
     }
@@ -44,12 +48,12 @@ public class Main implements DNSMessageListener, UserRequestListener {
             @Override
             public void run() {
                 ui = new MainWindow();
-                ui.addUserRequestListener(Main.this);
+                ui.addUserRequestListener(dnsResolver);
             }
         });
     }
 
-    @Override
+    // no need; if need to do custom query use this
     public void resolve(String domainName, String serverIp, String serverPort, boolean recursion) {
         DNSSocketAddress dnsSocketAddress = new DNSSocketAddress(serverIp, serverPort);
 

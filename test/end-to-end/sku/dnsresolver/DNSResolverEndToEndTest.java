@@ -2,6 +2,7 @@ package sku.dnsresolver;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class DNSResolverEndToEndTest {
@@ -37,6 +38,7 @@ public class DNSResolverEndToEndTest {
     }
 
     @Test
+    @Ignore
     public void resolvesDomainNameWithoutRecursion() throws InterruptedException {
         application.resolveWithoutRecursion("www.example.com", fakeDnsServer);
         fakeDnsServer.hasReceivedPacket(SamplePackets.QUERY_ROOT_NS);

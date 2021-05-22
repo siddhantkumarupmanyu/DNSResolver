@@ -7,9 +7,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
 
-public class MainWindow extends JFrame {
+public class MainWindow extends JFrame implements UiListener {
     public static final String MAIN_WINDOW_NAME = "DNS Resolver";
     public static final String RESPONSE_TEXT_AREA = "response-text-area";
     public static final String DOMAIN_TEXTFIELD_NAME = "domain-name-textfield";
@@ -41,7 +40,7 @@ public class MainWindow extends JFrame {
     private JPanel makeControls() {
         final JTextField domainNameField = domainNameField();
         final JTextField serverIpField = serverIpField();
-        final JFormattedTextField serverPortField = serverPortField();
+        final JTextField serverPortField = serverPortField();
 
         JPanel requiredControls = new JPanel(new FlowLayout());
         requiredControls.add(domainNameField);
@@ -71,7 +70,7 @@ public class MainWindow extends JFrame {
             }
 
             private String serverPort() {
-                return String.valueOf(serverPortField.getValue());
+                return serverPortField.getText();
             }
 
             private boolean recursion() {
@@ -110,8 +109,8 @@ public class MainWindow extends JFrame {
         return serverIpField;
     }
 
-    private JFormattedTextField serverPortField() {
-        JFormattedTextField serverPortField = new JFormattedTextField(NumberFormat.getIntegerInstance());
+    private JTextField serverPortField() {
+        JTextField serverPortField = new JTextField();
         serverPortField.setColumns(7);
         serverPortField.setName(SERVER_PORT_TEXTFIELD_NAME);
         return serverPortField;
@@ -136,7 +135,12 @@ public class MainWindow extends JFrame {
         userRequests.addListener(userRequestListener);
     }
 
-    public void appendTextToResponse(String text) {
+    @Override
+    public void responseText(String text) {
+        appendTextToResponse(text);
+    }
+
+    private void appendTextToResponse(String text) {
         response.append(horizontalLine());
         response.append(text);
     }

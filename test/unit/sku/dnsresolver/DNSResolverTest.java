@@ -3,7 +3,6 @@ package sku.dnsresolver;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JMock;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import sku.dnsresolver.network.DNSSocketAddress;
@@ -81,7 +80,6 @@ public class DNSResolverTest {
     }
 
     @Test
-    @Ignore
     public void additionalSectionDoesNotContainFirstAuthoritativeNSAddress() {
         // see RESPONSE_EXAMPLE_NS_IP_ADDRESS, additional does not contain ns.icann.org address
         // what i should do is to see if i made a query for NS,
@@ -90,7 +88,7 @@ public class DNSResolverTest {
         // question is why i am i going in authoritative if additional exist
         // why not select one from there??? because i am not confident that it only contains ns address
 
-
+        // should i leave checking this to End tests???
     }
 
     // TODO:
@@ -217,6 +215,11 @@ public class DNSResolverTest {
             queryHashmap.put(query, list);
         }
 
+
+        @Override
+        public void addListener(DNSMessageListener listener) {
+            // not implemented
+        }
 
         @Override
         public void shutdown() {
