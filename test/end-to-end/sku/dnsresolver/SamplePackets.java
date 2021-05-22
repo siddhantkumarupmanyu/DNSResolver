@@ -142,6 +142,7 @@ public class SamplePackets {
             0x0c, 0x72, 0x6f, 0x6f, 0x74, 0x2d, 0x73, 0x65, 0x72, 0x76, 0x65, 0x72, 0x73, // 12 root-servers
             0x03, 0x6e, 0x65, 0x74, // 3 net
             0x00, // terminator
+            // ans: 2
             0x00,
             0x00, 0x02, // Type
             0x00, 0x01, // Class
@@ -155,7 +156,7 @@ public class SamplePackets {
             0x00, // QR = 0, OP Code = 0000, AA = 0, TC = 0, RD = 0
             0x00, // RA, Z = 0, 0, 0, RCode = 0000
             0x00, 0x01, // QDCount
-            0x00, 0x02, // ANCount
+            0x00, 0x00, // ANCount
             0x00, 0x00, // Authoritative NSCount
             0x00, 0x00, // ARCount
             // body
@@ -248,7 +249,8 @@ public class SamplePackets {
             0x00, 0x01, // class
             0x00, 0x00, 0x00, 0x73, // TTL
             0x00, 0x04, // data length
-            (byte) 0xc0, 0x0c, 0x5e, 0x1e, // address = 192.12.94.30
+//            (byte) 0xc0, 0x0c, 0x5e, 0x1e, // original address = 192.12.94.30
+            0x7f, 0x00, 0x00, 0x01, // address
             // ipv6 address for above address; we do not support it yet.
             (byte) 0xc0, 0x21,// pointer
             0x00, 0x1c, // type = IPv6
@@ -262,7 +264,8 @@ public class SamplePackets {
             0x00, 0x01, // class
             0x00, 0x00, 0x00, 0x73, // TTL
             0x00, 0x04, // data length
-            (byte) 0xc0, 0x21, 0x0e, 0x1e, // address = 192.33.14.30
+//            (byte) 0xc0, 0x21, 0x0e, 0x1e, // address = 192.33.14.30
+            0x7f, 0x00, 0x00, 0x01, // address
             // ipv6 address for above address; we do not support it yet.
             (byte) 0xc0, 0x41, // pointer
             0x00, 0x1c, // type = IPv6
@@ -348,8 +351,8 @@ public class SamplePackets {
             0x00, // RA = 0, Z = 0, 0, 0, RCode = 0000
             0x00, 0x01, // QDCount
             0x00, 0x00, // ANCount
-            0x00, 0x04, // Authoritative NSCount
-            0x00, 0x06, // ARCount
+            0x00, 0x03, // Authoritative NSCount
+            0x00, 0x04, // ARCount
             // body
             // query
             0x01, 0x61, // 1 a
@@ -363,7 +366,7 @@ public class SamplePackets {
             (byte) 0xc0, 0x0e, // pointer offset = 0x0e
             0x00, 0x02, // type = NS
             0x00, 0x01, // class = 1
-            0x00, 0x02, (byte) 0xa3, 0x00, // TTL
+            0x00, 0x00, 0x00, 0x73, // TTL
             0x00, 0x0e, // data length 14
             0x02, 0x6e, 0x73, // 2 ns
             0x05, 0x69, 0x63, 0x61, 0x6e, 0x6e, // 5 icann
@@ -372,15 +375,15 @@ public class SamplePackets {
             // 2
             (byte) 0xc0, 0x0e, // pointer offset = 0x0e
             0x00, 0x02, // type = NS
-            0x00, 0x01, // class =1
-            0x00, 0x02, (byte) 0xa3, 0x00, // TTL
+            0x00, 0x01, // class = 1
+            0x00, 0x00, 0x00, 0x73, // TTL
             0x00, 0x02, // data length 2
             (byte) 0xc0, 0x0c, // pointer offset = 0x0c
             // 3
             (byte) 0xc0, 0x0e, // pointer offset = 0x0e
             0x00, 0x02, // type = NS
             0x00, 0x01, // class = 1
-            0x00, 0x02, (byte) 0xa3, 0x00, // TTL
+            0x00, 0x00, 0x00, 0x73, // TTL
             0x00, 0x04, // data length = 4
             0x01, 0x62, // 1 b
             (byte) 0xc0, 0x0e, // pointer offset = 0x0e
@@ -389,9 +392,10 @@ public class SamplePackets {
             (byte) 0xc0, 0x0c, // pointer offset = 0x0c
             0x00, 0x01, // type = 1
             0x00, 0x01, // class = 1
-            0x00, 0x02, (byte) 0xa3, 0x00, // TTL
+            0x00, 0x00, 0x00, 0x73, // TTL
             0x00, 0x04, // data length = 4
-            (byte) 0xc7, 0x2b, (byte) 0x87, 0x35, // ipv4 address = 199.43.135.53
+//            (byte) 0xc7, 0x2b, (byte) 0x87, 0x35, // ipv4 address = 199.43.135.53
+            0x7f, 0x00, 0x00, 0x01, // address = 127.0.0.1
             // 1
             (byte) 0xc0, 0x0c, // pointer offset = 0x0c
             0x00, 0x1c, // type = ipv6 address
@@ -403,9 +407,10 @@ public class SamplePackets {
             (byte) 0xc0, 0x58, // pointer offset = 0x58
             0x00, 0x01, // type = 1
             0x00, 0x01, // class = 1
-            0x00, 0x02, (byte) 0xa3, 0x00, // TTL
+            0x00, 0x00, 0x00, 0x73, // TTL
             0x00, 0x04, // data length = 4
-            (byte) 0xc7, 0x2b, (byte) 0x85, 0x35, // ipv4 address
+//            (byte) 0xc7, 0x2b, (byte) 0x85, 0x35, // ipv4 address
+            0x7f, 0x00, 0x00, 0x01, // address = 127.0.0.1
             // 2
             (byte) 0xc0, 0x58, // pointer offset = 0x58
             0x00, 0x1c, // type = ipv6 address

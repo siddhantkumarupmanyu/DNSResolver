@@ -114,8 +114,8 @@ public class DNSPacketParserTest {
         DNSPacket.DNSAnswer authoritativeNameServer2 = new DNSPacket.DNSAnswer(query, 115, (short) 4, "b.gtld-servers.net");
         DNSPacket.DNSQuery aNSQuery = new DNSPacket.DNSQuery("a.gtld-servers.net", DNSPacket.TYPE_A, DNSPacket.CLASS_1);
         DNSPacket.DNSQuery bNSQuery = new DNSPacket.DNSQuery("b.gtld-servers.net", DNSPacket.TYPE_A, DNSPacket.CLASS_1);
-        DNSPacket.DNSAnswer aNSAnswer = new DNSPacket.DNSAnswer(aNSQuery, 115, (short) 4, "192.12.94.30");
-        DNSPacket.DNSAnswer bNSAnswer = new DNSPacket.DNSAnswer(bNSQuery, 115, (short) 4, "192.33.14.30");
+        DNSPacket.DNSAnswer aNSAnswer = new DNSPacket.DNSAnswer(aNSQuery, 115, (short) 4, "127.0.0.1");
+        DNSPacket.DNSAnswer bNSAnswer = new DNSPacket.DNSAnswer(bNSQuery, 115, (short) 4, "127.0.0.1");
 
         DNSPacket packet = new DNSPacketBuilder()
                 .setId(SamplePackets.DEFAULT_ID)
@@ -206,6 +206,47 @@ public class DNSPacketParserTest {
                 .build();
 
         DNSPacketParser parser = new DNSPacketParser(SamplePackets.RESPONSE_WWW_EXAMPLE_NS);
+
+        assertThat(parser.getDNSPacket(), is(equalTo(packet)));
+    }
+
+    @Test
+    public void parse_RESPONSE_EXAMPLE_NS_IP_ADDRESS(){
+        DNSPacket.DNSQuery query = new DNSPacket.DNSQuery("a.iana-servers.net", DNSPacket.TYPE_A, DNSPacket.CLASS_1);
+        DNSPacket.DNSQuery queryNS = new DNSPacket.DNSQuery("iana-servers.net", DNSPacket.TYPE_NS, DNSPacket.CLASS_1);
+
+        DNSPacket.DNSAnswer authoritativeNameServer1 = new DNSPacket.DNSAnswer(queryNS, 115, (short) 14, "ns.icann.org");
+        DNSPacket.DNSAnswer authoritativeNameServer2 = new DNSPacket.DNSAnswer(queryNS, 115, (short) 2, "a.iana-servers.net");
+        DNSPacket.DNSAnswer authoritativeNameServer3 = new DNSPacket.DNSAnswer(queryNS, 115, (short) 4, "b.iana-servers.net");
+
+        DNSPacket.DNSQuery aNSQuery = new DNSPacket.DNSQuery("a.iana-servers.net", DNSPacket.TYPE_A, DNSPacket.CLASS_1);
+        DNSPacket.DNSQuery bNSQuery = new DNSPacket.DNSQuery("b.iana-servers.net", DNSPacket.TYPE_A, DNSPacket.CLASS_1);
+        DNSPacket.DNSAnswer aNSAnswer = new DNSPacket.DNSAnswer(aNSQuery, 115, (short) 4, "127.0.0.1");
+        DNSPacket.DNSAnswer bNSAnswer = new DNSPacket.DNSAnswer(bNSQuery, 115, (short) 4, "127.0.0.1");
+
+        DNSPacket packet = new DNSPacketBuilder()
+                .setId(SamplePackets.DEFAULT_ID)
+                .setResponse(true)
+                .setOpCode(0)
+                .setAuthoritative(false)
+                .setTruncated(false)
+                .setRecursionDesired(false)
+                .setRecursionAvailable(false)
+                .setZ(false)
+                .setAnswerAuthenticated(false)
+                .setNonAuthenticatedData(false)
+                .setReplyCode(0)
+                .setQuestionCount((short) 1)
+                .setAnswerRRCount((short) 0)
+                .setAuthorityRRCount((short) 3)
+                .setAdditionalRRCount((short) 4)
+                .setQueries(query)
+                .setAnswers()
+                .setAuthoritativeNameServers(authoritativeNameServer1, authoritativeNameServer2, authoritativeNameServer3)
+                .setAdditionalAnswers(aNSAnswer, bNSAnswer)
+                .build();
+
+        DNSPacketParser parser = new DNSPacketParser(SamplePackets.RESPONSE_EXAMPLE_NS_IP_ADDRESS);
 
         assertThat(parser.getDNSPacket(), is(equalTo(packet)));
     }
