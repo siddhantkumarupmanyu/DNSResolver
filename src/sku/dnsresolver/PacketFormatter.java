@@ -44,7 +44,10 @@ public class PacketFormatter {
 
     private void formatBody() {
         formatQueries();
-        formatAnswers();
+        formatAnswers("answers", "answer", packet.answerRRCount, packet.answers);
+        formatAnswers("authoritative NameServers", "nameserver", packet.authorityRRCount, packet.authoritativeNameServers);
+        formatAnswers("additional section", "answer", packet.additionalRRCount, packet.additionalAnswers);
+        builder.appendNewLine();
     }
 
     private void formatQueries() {
@@ -63,15 +66,14 @@ public class PacketFormatter {
         builder.appendListItem(options, "class", query.qClass);
     }
 
-    private void formatAnswers() {
-        builder.appendString("answers");
-        for (short i = 0; i < packet.answerRRCount; i++) {
+    private void formatAnswers(String section, String sectionKey, short answersCount, DNSPacket.DNSAnswer[] answers) {
+        builder.appendString(section);
+        for (short i = 0; i < answersCount; i++) {
             FormatterOptions options = new FormatterOptions("", listItemPrefix, keyValueSeparator, 0);
             int position = i + 1;
-            builder.appendListItem(options, "answer", position);
-            formatAnswer(packet.answers[i], options, position == packet.answerRRCount);
+            builder.appendListItem(options, sectionKey, position);
+            formatAnswer(answers[i], options, position == answersCount);
         }
-        builder.appendNewLine();
     }
 
     private void formatAnswer(DNSPacket.DNSAnswer answer, FormatterOptions parentOptions, boolean isLast) {
