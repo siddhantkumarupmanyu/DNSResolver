@@ -1,17 +1,20 @@
 package sku.dnsresolver.network;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.SocketException;
+import java.net.*;
 import java.util.Arrays;
 
 
 public class DatagramPacketTransceiver implements PacketTransceiver {
     public static final int UDP_MAX_BYTES = 1400;
 
+    private final int timeout;
+
     private DatagramSocket socket;
+
+    public DatagramPacketTransceiver(int timeout) {
+        this.timeout = timeout;
+    }
 
     @Override
     public void sendPacket(PacketTransceiver.Packet packet) {
@@ -35,6 +38,8 @@ public class DatagramPacketTransceiver implements PacketTransceiver {
 
             byte[] packetInBytes = Arrays.copyOf(datagramPacket.getData(), datagramPacket.getLength());
             return new Packet((InetSocketAddress) datagramPacket.getSocketAddress(), packetInBytes);
+        } catch (SocketTimeoutException e) {
+            throw new TimeoutException();
         } catch (IOException e) {
 //            e.printStackTrace();
             throw new NetworkException("Unable to Receive Packet", e);
@@ -45,6 +50,7 @@ public class DatagramPacketTransceiver implements PacketTransceiver {
 
     private void createSocket() throws SocketException {
         socket = new DatagramSocket();
+        socket.setSoTimeout(timeout);
     }
 
     private void closeSocket() {
