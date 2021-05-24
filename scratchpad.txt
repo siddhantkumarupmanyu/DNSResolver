@@ -5,10 +5,13 @@ domain name, without recursion ==> done
 
 =============================================================
 
-PacketGenerator and PacketParser should go into network packages as they are used by network manager only,
-    - also PacketFormatter should go into ui package;
+migrate the project to use gradle.
+implement MVC architecture pattern
+make module that uses JAVAFX instead of swing (do not migrate implement it as another module)
 
-I have consider the case when recursion desired is true but server response have recursion available as false
+Consider the case when recursion desired is true but server response have recursion available as false
+    - will consider it  later on
+    - now doing above things.
 
 Add isValid method in DNSPacket
     - builder should call isValid()
