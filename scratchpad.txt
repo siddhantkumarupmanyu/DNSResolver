@@ -10,9 +10,6 @@ Fix the formatter print authoritative and additional section
 PacketGenerator and PacketParser should go into network packages as they are used by network manager only,
     - also PacketFormatter should go into ui package;
 
-add timeout in Network manager so other requests are made if one blocked executor for response but it never arrived
-	- https://docs.oracle.com/javase/8/docs/api/java/net/DatagramSocket.html#setSoTimeout-int-
-
 I have consider the case when recursion desired is true but server response have recursion available as false
 
 Add isValid method in DNSPacket
