@@ -5,8 +5,6 @@ domain name, without recursion ==> done
 
 =============================================================
 
-Fix the formatter print authoritative and additional section
-
 PacketGenerator and PacketParser should go into network packages as they are used by network manager only,
     - also PacketFormatter should go into ui package;
 
