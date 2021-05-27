@@ -14,12 +14,12 @@ public class ApplicationDriver extends JFrameDriver {
 
     public ApplicationDriver(int timeoutMillis) {
         super(new GesturePerformer(),
-                JFrameDriver.topLevelFrame(named(MainWindow.MAIN_WINDOW_NAME), showingOnScreen()),
+                JFrameDriver.topLevelFrame(ComponentDriver.named(MainWindow.MAIN_WINDOW_NAME), ComponentDriver.showingOnScreen()),
                 new AWTEventQueueProber(timeoutMillis, 100));
     }
 
     public void responseTextAreaContains(String ipAddress) {
-        new JTextComponentDriver<>(this, JTextArea.class, named(MainWindow.RESPONSE_TEXT_AREA))
+        new JTextComponentDriver<>(this, JTextArea.class, ComponentDriver.named(MainWindow.RESPONSE_TEXT_AREA))
                 .hasText(containsString("address: " + ipAddress));
     }
 
@@ -36,7 +36,7 @@ public class ApplicationDriver extends JFrameDriver {
     }
 
     private void setOptions(boolean recursive) {
-        JCheckBoxDriver driver = new JCheckBoxDriver(this, JCheckBox.class, named(MainWindow.RECURSIVE_CHECKBOX_NAME));
+        JCheckBoxDriver driver = new JCheckBoxDriver(this, JCheckBox.class, ComponentDriver.named(MainWindow.RECURSIVE_CHECKBOX_NAME));
         if (!recursive) {
             driver.click();
         }
@@ -44,13 +44,13 @@ public class ApplicationDriver extends JFrameDriver {
 
     private JTextFieldDriver textField(String fieldName) {
         JTextFieldDriver newItemId =
-                new JTextFieldDriver(this, JTextField.class, named(fieldName));
+                new JTextFieldDriver(this, JTextField.class, ComponentDriver.named(fieldName));
         newItemId.focusWithMouse();
         return newItemId;
     }
 
     private JButtonDriver resolveButton() {
-        return new JButtonDriver(this, JButton.class, named(MainWindow.RESOLVE_BUTTON_NAME));
+        return new JButtonDriver(this, JButton.class, ComponentDriver.named(MainWindow.RESOLVE_BUTTON_NAME));
     }
 
 }

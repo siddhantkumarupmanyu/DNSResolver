@@ -1,0 +1,92 @@
+plugins {
+    id 'java'
+}
+
+version = "1.0.0"
+
+//repositories{
+//    flatDir{
+//        dirs("lib/develop", "lib/deploy")
+//    }
+//}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+
+    commonTest {
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+        java {
+            srcDirs = ['test/common']
+        }
+    }
+
+    endToEndTest {
+        compileClasspath += sourceSets.main.output + sourceSets.commonTest.output
+        runtimeClasspath += sourceSets.main.output + sourceSets.commonTest.output
+        java {
+            srcDirs = ['test/end-to-end']
+        }
+    }
+
+    unitTest {
+        compileClasspath += sourceSets.main.output + sourceSets.commonTest.output
+        runtimeClasspath += sourceSets.main.output + sourceSets.commonTest.output
+        java {
+            srcDirs = ['test/unit']
+        }
+    }
+
+}
+
+configurations {
+    endToEndTestImplementation.extendsFrom testImplementation
+    endToEndTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+configurations {
+    unitTestImplementation.extendsFrom testImplementation
+    unitTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+configurations {
+    commonTestImplementation.extendsFrom testImplementation
+    commonTestRuntimeOnly.extendsFrom runtimeOnly
+}
+
+task endToEndTest(type: Test) {
+    jvmArgs = ["-Dcom.objogate.wl.keyboard=US"]
+
+    description = 'Runs integration tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.endToEndTest.output.classesDirs
+    classpath = sourceSets.endToEndTest.runtimeClasspath
+}
+
+
+task unitTest(type: Test) {
+    jvmArgs = ["-Dcom.objogate.wl.keyboard=US"]
+
+    description = 'Runs unit tests.'
+    group = 'verification'
+
+    testClassesDirs = sourceSets.unitTest.output.classesDirs
+    classpath = sourceSets.unitTest.runtimeClasspath
+}
+
+test {
+    dependsOn endToEndTest, unitTest
+}
+
+dependencies {
+    implementation(fileTree("lib/deploy") { include("*.jar") })
+    testImplementation(fileTree("lib/develop") { include("*.jar") })
+}
+
+
+// https://stackoverflow.com/questions/61836692/gradle-make-integration-test-source-module-work
