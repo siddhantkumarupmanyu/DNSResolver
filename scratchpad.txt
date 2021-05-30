@@ -5,7 +5,7 @@ domain name, without recursion ==> done
 
 =============================================================
 
-migrate the project to use gradle. (consider using another branch)
+migrate the project to use gradle. (consider using another branch) ==> done
 implement MVC architecture pattern
 make module that uses JAVAFX instead of swing (do not migrate implement it as another module)
 
