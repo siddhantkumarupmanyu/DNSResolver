@@ -5,38 +5,28 @@ import sku.dnsresolver.network.DatagramFactory;
 import sku.dnsresolver.network.NetworkExecutor;
 import sku.dnsresolver.network.SingleThreadExecutor;
 import sku.dnsresolver.ui.MainWindow;
-import sku.dnsresolver.ui.UiListener;
 import sku.dnsresolver.ui.UserRequestListener;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-public class Main implements UserRequestListener, UiListener {
+public class Main implements UserRequestListener {
 
     private MainWindow ui;
     private final NetworkExecutor networkExecutor;
-    private final DNSResolver dnsResolver;
 
     public Main() throws Exception {
-        this.networkExecutor = new SingleThreadExecutor(new DatagramFactory());
-        this.dnsResolver = new DNSResolver(this.networkExecutor, this);
-
-        this.networkExecutor.addListener(this.dnsResolver);
-
         startUserInterface();
-        shutdownNetworkManagerWhenUICloses();
-    }
 
-    // This is a decorator: refactor it into it's own class
-    @Override
-    public void responseText(String text) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                ui.responseText(text);
-            }
-        });
+
+        this.networkExecutor = new SingleThreadExecutor(new DatagramFactory());
+        DNSResolver dnsResolver = new DNSResolver(this.networkExecutor, new SwingThreadUiListener(ui));
+
+        this.networkExecutor.addListener(dnsResolver);
+
+        ui.addUserRequestListener(dnsResolver);
+        shutdownNetworkManagerWhenUICloses();
     }
 
     public static void main(String... args) throws Exception {
@@ -48,7 +38,6 @@ public class Main implements UserRequestListener, UiListener {
             @Override
             public void run() {
                 ui = new MainWindow();
-                ui.addUserRequestListener(dnsResolver);
             }
         });
     }
