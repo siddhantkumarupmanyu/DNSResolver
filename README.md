@@ -18,7 +18,7 @@ This will run both end-to-end(acceptence) as well as unit tests.
 ## Todo
 - [x] migrate the project to use gradle. (consider using another branch)
 - [ ] implement MVC architecture pattern
-- [ ] make module that uses JAVAFX instead of swing (implement it as another module)
+- [ ] use JAVAFX instead of swing (implement it as another module)
 
 ## Additional Tools Used
 - Wireshark
