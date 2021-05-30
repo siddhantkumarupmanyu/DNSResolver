@@ -1,8 +1,8 @@
 # DNSResolver
 A simple DNS Resolver in Java. <br />
-Currently it supports resolving domain name with/without recursion and cname. <br />
+Currently it supports resolving domain name with/without recursion. <br />
 As of now, it does not support IPv6. <br />
-SamplePacket.java contains the sample packets captured with Wireshark.
+SamplePacket.java contains the DNS sample packets captured with Wireshark.
 
 ## Running Application
 ```
