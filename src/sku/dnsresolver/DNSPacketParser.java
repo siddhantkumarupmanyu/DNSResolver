@@ -156,7 +156,7 @@ public class DNSPacketParser {
             int labelCount = currentCharacter;
 
             if (isAPointer((byte) labelCount)) {
-                int offset = nextByte();
+                int offset = nextByte() & 0x000000ff;
                 int oldIndex = this.currentBufferIndex;
                 this.currentBufferIndex = offset;
                 stringBuilder.append(parseLabels());
