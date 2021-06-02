@@ -58,7 +58,6 @@ public class PacketFormatterTest {
 
     private String formattedPacket() {
         return String.join("\n",
-                "",
                 "id: 1",
                 "response: true",
                 "opcode: 0",
@@ -126,8 +125,7 @@ public class PacketFormatterTest {
                 "    +-- class: 1",
                 "    +-- ttl: 115",
                 "    +-- length: 4",
-                "    +-- address: 127.0.0.2",
-                ""
+                "    +-- address: 127.0.0.2"
         );
     }
 

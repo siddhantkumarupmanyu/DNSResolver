@@ -25,7 +25,7 @@ public class PacketFormatter {
     }
 
     private void formatHeader() {
-        builder.appendKeyValuePair("id", packet.id);
+        builder.appendKeyValuePairWithoutNewLine("id", packet.id);
         builder.appendKeyValuePair("response", packet.response);
         builder.appendKeyValuePair("opcode", packet.opCode);
         builder.appendKeyValuePair("authoritative", packet.authoritative);
@@ -47,7 +47,6 @@ public class PacketFormatter {
         formatAnswers("answers", "answer", packet.answerRRCount, packet.answers);
         formatAnswers("authoritative NameServers", "nameserver", packet.authorityRRCount, packet.authoritativeNameServers);
         formatAnswers("additional section", "answer", packet.additionalRRCount, packet.additionalAnswers);
-        builder.appendNewLine();
     }
 
     private void formatQueries() {
@@ -98,9 +97,13 @@ public class PacketFormatter {
 
         private final StringBuilder builder = new StringBuilder();
 
+        public void appendKeyValuePairWithoutNewLine(String key, Object value) {
+            builder.append(key).append(keyValueSeparator).append(value);
+        }
+
         public void appendKeyValuePair(String key, Object value) {
             appendNewLine();
-            builder.append(key).append(keyValueSeparator).append(value);
+            appendKeyValuePairWithoutNewLine(key, value);
         }
 
         public void appendString(String str) {
