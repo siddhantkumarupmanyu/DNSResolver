@@ -5,9 +5,7 @@ domain name, without recursion ==> done
 
 =============================================================
 
-migrate the project to use gradle. (consider using another branch) ==> done
-implement MVC architecture pattern
-make module that uses JAVAFX instead of swing (do not migrate implement it as another module)
+Add remaining features found on https://digwebinterface.com/
 
 Consider the case when recursion desired is true but server response have recursion available as false
     - will consider it  later on

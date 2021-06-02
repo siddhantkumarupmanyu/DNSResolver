@@ -16,9 +16,7 @@ This will run both end-to-end(acceptence) as well as unit tests.
 ```
 
 ## Todo
-- [x] migrate the project to use gradle. (consider using another branch)
-- [ ] implement MVC architecture pattern
-- [ ] use JAVAFX instead of swing (implement it as another module)
+Add remaining features found on https://digwebinterface.com/
 
 ## Tools Used
 - Wireshark
