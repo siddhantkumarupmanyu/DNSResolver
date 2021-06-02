@@ -46,8 +46,7 @@ public class SingleThreadExecutor implements NetworkExecutor {
     }
 
     private void sendQuery(PacketTransceiver transceiver, DNSPacket query, DNSSocketAddress serverAddress) {
-        // TODO: replace it with something like DNSPacketGenerator.packetInBytes(query);
-        byte[] queryInBytes = new DNSPacketGenerator(query).getBytes();
+        byte[] queryInBytes = DNSPacketGenerator.packetInBytes(query);
         PacketTransceiver.Packet queryPacket = new PacketTransceiver.Packet(serverAddress.inetSocketAddress(), queryInBytes);
         transceiver.sendPacket(queryPacket);
     }
@@ -55,8 +54,7 @@ public class SingleThreadExecutor implements NetworkExecutor {
     private DNSMessage receiveResponse(PacketTransceiver transceiver) {
         PacketTransceiver.Packet responsePacket = transceiver.receivePacket();
         DNSSocketAddress serverAddress = DNSSocketAddress.from(responsePacket.address);
-        // TODO: replace it with something like DNSPaketParser.parsePacket(response.data);
-        DNSPacket response = new DNSPacketParser(responsePacket.data).getDNSPacket();
+        DNSPacket response = DNSPacketParser.parsePacket(responsePacket.data);
         return new DNSMessage(serverAddress, response);
     }
 

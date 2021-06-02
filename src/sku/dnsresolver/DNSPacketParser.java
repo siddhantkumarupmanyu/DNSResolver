@@ -25,6 +25,10 @@ public class DNSPacketParser {
     private short authoritativeNSCount = 0;
     private short additionalAnswersCount = 0;
 
+    public static DNSPacket parsePacket(byte[] response) {
+        return new DNSPacketParser(response).getDNSPacket();
+    }
+
     public DNSPacketParser(byte[] response) {
         this.response = response;
         this.builder = new DNSPacketBuilder();

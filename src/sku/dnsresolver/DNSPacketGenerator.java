@@ -16,6 +16,10 @@ public class DNSPacketGenerator {
     private final DNSPacket packet;
     private final ArrayList<Byte> bytes;
 
+    public static byte[] packetInBytes(DNSPacket packet) {
+        return new DNSPacketGenerator(packet).getBytes();
+    }
+
     public DNSPacketGenerator(DNSPacket packet) {
         this.packet = packet;
         this.bytes = new ArrayList<>();
