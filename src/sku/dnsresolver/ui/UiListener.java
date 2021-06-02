@@ -1,5 +1,5 @@
 package sku.dnsresolver.ui;
 
 public interface UiListener {
-    void responseText(String text);
+    void responseText(String query, String formattedResponse);
 }

@@ -18,8 +18,8 @@ public class ApplicationDriver extends JFrameDriver {
                 new AWTEventQueueProber(timeoutMillis, 100));
     }
 
-    public void hasExpandableResult(String heading, String ipAddress) {
-        JTextFieldDriver headingDriver = new JTextFieldDriver(this, JTextField.class, ComponentDriver.named(heading));
+    public void hasExpandableResult(String responseIndex, String ipAddress) {
+        JTextFieldDriver headingDriver = new JTextFieldDriver(this, JTextField.class, ComponentDriver.named(responseIndex));
         headingDriver.leftClickOnComponent();
 
         new JTextComponentDriver<>(this, JTextArea.class, ComponentDriver.named(MainWindow.RESPONSE_TEXT_AREA))

@@ -32,8 +32,7 @@ public class ApplicationRunner {
     }
 
     public void hasReceivedResponseWith(String ipAddress) {
-        // TODO:
-        driver.hasExpandableResult("Some Heading" ,ipAddress);
+        driver.hasExpandableResult("0", ipAddress);
     }
 
     public void stop() {

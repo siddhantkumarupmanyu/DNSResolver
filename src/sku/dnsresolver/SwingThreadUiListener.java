@@ -13,11 +13,11 @@ public class SwingThreadUiListener implements UiListener {
     }
 
     @Override
-    public void responseText(String text) {
+    public void responseText(String query, String formattedResponse) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                delegate.responseText(text);
+                delegate.responseText(query, formattedResponse);
             }
         });
     }

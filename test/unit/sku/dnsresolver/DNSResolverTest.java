@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
 
 @RunWith(JMock.class)
 public class DNSResolverTest {
@@ -36,7 +35,7 @@ public class DNSResolverTest {
         fakeExecutor.addAnsResponseFor(serverSocket.ipAddress, query, DNSPacket.TYPE_A, resolvedAddress);
 
         context.checking(new Expectations() {{
-            oneOf(uiListener).responseText(with(allOf(
+            oneOf(uiListener).responseText(with(equalTo(query)),with(allOf(
                     containsString("label: " + query),
                     containsString("address: " + resolvedAddress)
             )));
@@ -70,7 +69,7 @@ public class DNSResolverTest {
         fakeExecutor.addAnsResponseFor(EXAMPLE_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_A, WWW_EXAMPLE_COM_IP);
 
         context.checking(new Expectations() {{
-            oneOf(uiListener).responseText(with(allOf(
+            oneOf(uiListener).responseText(with(equalTo("www.example.com")), with(allOf(
                     containsString("label: " + "www.example.com"),
                     containsString("address: " + WWW_EXAMPLE_COM_IP)
             )));
@@ -119,7 +118,7 @@ public class DNSResolverTest {
         fakeExecutor.addAnsResponseFor(COM_NS_SERVER_IP, "www.example.com", DNSPacket.TYPE_A, WWW_EXAMPLE_COM_IP);
 
         context.checking(new Expectations() {{
-            oneOf(uiListener).responseText(with(allOf(
+            oneOf(uiListener).responseText(with(equalTo("www.example.com")),with(allOf(
                     containsString("label: " + "www.example.com"),
                     containsString("address: " + WWW_EXAMPLE_COM_IP)
             )));

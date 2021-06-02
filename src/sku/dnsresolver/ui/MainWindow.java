@@ -34,7 +34,6 @@ public class MainWindow extends JFrame implements UiListener {
 
     private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
 
-
     public MainWindow() {
         super("DNS Resolver");
         setUpFrame();
@@ -53,8 +52,8 @@ public class MainWindow extends JFrame implements UiListener {
     }
 
     @Override
-    public void responseText(String text) {
-        addResponse("Some Heading", text);
+    public void responseText(String query, String response) {
+        expandable_result.addItem(query, response);
     }
 
     public void addUserRequestListener(UserRequestListener userRequestListener) {
@@ -93,11 +92,6 @@ public class MainWindow extends JFrame implements UiListener {
 
         });
     }
-
-    public void addResponse(String heading, String result) {
-        expandable_result.addItem(heading, result);
-    }
-
 
     // Intelli Generated Code // Do not touch
     {

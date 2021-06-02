@@ -8,13 +8,15 @@ import java.awt.event.MouseEvent;
 
 public class ExpandableResult extends JPanel {
 
+    private int index = 0;
+
     public ExpandableResult() {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
     }
 
     public void addItem(final String heading, String result) {
 
-        final ExpandableItem item = new ExpandableItem(heading, result);
+        final ExpandableItem item = new ExpandableItem(index++, heading, result);
 
         add(Box.createRigidArea(new Dimension(0, 2)));
         add(item);
@@ -32,10 +34,10 @@ public class ExpandableResult extends JPanel {
 
         private boolean isCollapsed = true;
 
-        public ExpandableItem(String heading, String result) {
+        public ExpandableItem(int index, String heading, String result) {
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
-            headingField = createHeadingField(heading);
+            headingField = createHeadingField(index, heading);
             resultArea = createResultTextArea(result);
 
             add(headingField);
@@ -61,10 +63,10 @@ public class ExpandableResult extends JPanel {
             repaint();
         }
 
-        private JTextField createHeadingField(String heading) {
+        private JTextField createHeadingField(int index, String heading) {
             final JTextField headingField = new JTextField(heading);
 
-            headingField.setName(heading);
+            headingField.setName(String.valueOf(index));
 
             headingField.setHighlighter(null);
             headingField.setEditable(false);

@@ -118,7 +118,7 @@ public class DNSResolver implements UserRequestListener, DNSMessageListener {
 
     private void notifyUi(DNSPacket packet) {
         PacketFormatter formatter = new PacketFormatter(packet);
-        uiListener.responseText(formatter.getFormattedString());
+        uiListener.responseText(packet.queries[0].query, formatter.getFormattedString());
     }
 
     private void sendQuery(DNSSocketAddress to, short id, DNSPacket.DNSQuery requestQuery) {
