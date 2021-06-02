@@ -33,7 +33,7 @@ public class SingleThreadExecutor implements NetworkExecutor {
                 notifyListener(message);
             }
         };
-        executor.submit(runnable);
+        executor.execute(runnable);
     }
 
     @Override

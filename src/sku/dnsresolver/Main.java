@@ -20,7 +20,10 @@ public class Main implements UserRequestListener {
         startUserInterface();
 
 
-        this.networkExecutor = new SingleThreadExecutor(new DatagramFactory());
+        DatagramFactory factory = new DatagramFactory();
+        factory.setTimeout(5000);
+
+        this.networkExecutor = new SingleThreadExecutor(factory);
         DNSResolver dnsResolver = new DNSResolver(this.networkExecutor, new SwingThreadUiListener(ui));
 
         this.networkExecutor.addListener(dnsResolver);
@@ -29,8 +32,12 @@ public class Main implements UserRequestListener {
         shutdownNetworkManagerWhenUICloses();
     }
 
-    public static void main(String... args) throws Exception {
-        Main main = new Main();
+    public static void main(String... args) {
+        try {
+            Main main = new Main();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
     private void startUserInterface() throws Exception {
