@@ -121,7 +121,7 @@ public class MainWindow extends JFrame implements UiListener {
         final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
         defaultComboBoxModel1.addElement("1.1.1.1");
         defaultComboBoxModel1.addElement("8.8.8.8");
-        defaultComboBoxModel1.addElement("8.8.8.4");
+        defaultComboBoxModel1.addElement("8.8.4.4");
         defaultComboBoxModel1.addElement("127.0.0.1");
         dns_servers.setModel(defaultComboBoxModel1);
         input_panel.add(dns_servers, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

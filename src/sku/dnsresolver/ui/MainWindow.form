@@ -34,7 +34,7 @@
               <model>
                 <item value="1.1.1.1"/>
                 <item value="8.8.8.8"/>
-                <item value="8.8.8.4"/>
+                <item value="8.8.4.4"/>
               </model>
             </properties>
           </component>
