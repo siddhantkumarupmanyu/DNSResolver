@@ -32,7 +32,8 @@ public class ApplicationRunner {
     }
 
     public void hasReceivedResponseWith(String ipAddress) {
-        driver.responseTextAreaContains(ipAddress);
+        // TODO:
+        driver.hasExpandableResult("Some Heading" ,ipAddress);
     }
 
     public void stop() {

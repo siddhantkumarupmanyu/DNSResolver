@@ -9,10 +9,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainWindow extends JFrame implements UiListener {
-    public static final String MAIN_WINDOW_NAME = "DNS Resolver";
+    public static final String MAIN_WINDOW_NAME = "dns-Resolver";
     public static final String RESPONSE_TEXT_AREA = "response-text-area";
     public static final String DOMAIN_TEXTFIELD_NAME = "domain-name-textfield";
-    public static final String SERVER_IP_TEXTFIELD_NAME = "server-ip-textfield";
+    public static final String SERVER_IP_COMBOBOX_NAME = "server-ip-combobox";
     public static final String SERVER_PORT_TEXTFIELD_NAME = "server-port-textfield";
     public static final String RESOLVE_BUTTON_NAME = "resolve-button";
     public static final String RECURSIVE_CHECKBOX_NAME = "recursive-checkbox";
@@ -21,13 +21,56 @@ public class MainWindow extends JFrame implements UiListener {
 
     private JTextArea response;
 
+    private final DisplayView displayView;
+
     public MainWindow() {
         super("DNS Resolver");
-        setName(MAIN_WINDOW_NAME);
-        fillContentPane(makeControls(), responsePanel());
-        pack();
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+//        setName(MAIN_WINDOW_NAME);
+//        fillContentPane(makeControls(), responsePanel());
+//        pack();
+//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        setVisible(true);
+
+        displayView = new DisplayView();
+
+        JFrame frame = new JFrame("DNS Resolver");
+        frame.setName(MAIN_WINDOW_NAME);
+        frame.setContentPane(displayView.rootPanel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setSize(450, 500);
+        frame.setLocationByPlatform(true);
+        frame.setVisible(true);
+
+        displayView.resolve.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userRequests.announce().resolve(domainName(), serverIp(), serverPort(), recursion());
+            }
+
+            private String domainName() {
+                return displayView.domain_name.getText();
+            }
+
+            private String serverIp() {
+                return (String) displayView.dns_servers.getSelectedItem();
+            }
+
+            private String serverPort() {
+                return displayView.port.getText();
+            }
+
+            private boolean recursion() {
+                return displayView.recursion_desired.isSelected();
+            }
+
+        });
+    }
+
+    @Override
+    public void responseText(String text) {
+        displayView.addResponse("Some Heading", text);
+//        appendTextToResponse(text);
     }
 
     private void fillContentPane(JPanel controls, JPanel response) {
@@ -105,7 +148,7 @@ public class MainWindow extends JFrame implements UiListener {
     private JTextField serverIpField() {
         JTextField serverIpField = new JTextField();
         serverIpField.setColumns(15);
-        serverIpField.setName(SERVER_IP_TEXTFIELD_NAME);
+        serverIpField.setName(SERVER_IP_COMBOBOX_NAME);
         return serverIpField;
     }
 
@@ -133,11 +176,6 @@ public class MainWindow extends JFrame implements UiListener {
 
     public void addUserRequestListener(UserRequestListener userRequestListener) {
         userRequests.addListener(userRequestListener);
-    }
-
-    @Override
-    public void responseText(String text) {
-        appendTextToResponse(text);
     }
 
     private void appendTextToResponse(String text) {

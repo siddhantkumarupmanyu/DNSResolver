@@ -18,7 +18,10 @@ public class ApplicationDriver extends JFrameDriver {
                 new AWTEventQueueProber(timeoutMillis, 100));
     }
 
-    public void responseTextAreaContains(String ipAddress) {
+    public void hasExpandableResult(String heading, String ipAddress) {
+        JTextFieldDriver headingDriver = new JTextFieldDriver(this, JTextField.class, ComponentDriver.named(heading));
+        headingDriver.leftClickOnComponent();
+
         new JTextComponentDriver<>(this, JTextArea.class, ComponentDriver.named(MainWindow.RESPONSE_TEXT_AREA))
                 .hasText(containsString("address: " + ipAddress));
     }
@@ -31,7 +34,7 @@ public class ApplicationDriver extends JFrameDriver {
 
     private void setRequired(String domainName, String serverIp, String serverPort) {
         textField(MainWindow.DOMAIN_TEXTFIELD_NAME).replaceAllText(domainName);
-        textField(MainWindow.SERVER_IP_TEXTFIELD_NAME).replaceAllText(serverIp);
+        selectLocalAddress(MainWindow.SERVER_IP_COMBOBOX_NAME);
         textField(MainWindow.SERVER_PORT_TEXTFIELD_NAME).replaceAllText(serverPort);
     }
 
@@ -47,6 +50,11 @@ public class ApplicationDriver extends JFrameDriver {
                 new JTextFieldDriver(this, JTextField.class, ComponentDriver.named(fieldName));
         newItemId.focusWithMouse();
         return newItemId;
+    }
+
+    private void selectLocalAddress(String comboBoxName) {
+        JComboBoxDriver driver = new JComboBoxDriver(this, JComboBox.class, ComponentDriver.named(comboBoxName));
+        driver.selectItem(3);
     }
 
     private JButtonDriver resolveButton() {
