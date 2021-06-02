@@ -1,6 +1,5 @@
 package sku.dnsresolver.ui;
 
-import org.apache.commons.lang.StringUtils;
 import sku.dnsresolver.util.Announcer;
 
 import javax.swing.*;
@@ -9,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class MainWindow extends JFrame implements UiListener {
+
     public static final String MAIN_WINDOW_NAME = "dns-Resolver";
     public static final String RESPONSE_TEXT_AREA = "response-text-area";
     public static final String DOMAIN_TEXTFIELD_NAME = "domain-name-textfield";
@@ -17,173 +17,149 @@ public class MainWindow extends JFrame implements UiListener {
     public static final String RESOLVE_BUTTON_NAME = "resolve-button";
     public static final String RECURSIVE_CHECKBOX_NAME = "recursive-checkbox";
 
+    public JPanel rootPanel;
+    private JPanel input_panel;
+    private JPanel advanced_panel;
+    private JScrollPane result_pane;
+
+    private ExpandableResult expandable_result;
+
+    public JTextField domain_name;
+    public JTextField port;
+
+    public JComboBox<String> dns_servers;
+    public JButton resolve;
+
+    public JCheckBox recursion_desired;
+
     private final Announcer<UserRequestListener> userRequests = Announcer.to(UserRequestListener.class);
 
-    private JTextArea response;
-
-    private final DisplayView displayView;
 
     public MainWindow() {
         super("DNS Resolver");
-//        setName(MAIN_WINDOW_NAME);
-//        fillContentPane(makeControls(), responsePanel());
-//        pack();
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        setVisible(true);
+        setUpFrame();
+        setUpComponents();
 
-        displayView = new DisplayView();
+        setVisible(true);
+    }
 
-        JFrame frame = new JFrame("DNS Resolver");
-        frame.setName(MAIN_WINDOW_NAME);
-        frame.setContentPane(displayView.rootPanel);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
-        frame.setSize(450, 500);
-        frame.setLocationByPlatform(true);
-        frame.setVisible(true);
-
-        displayView.resolve.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userRequests.announce().resolve(domainName(), serverIp(), serverPort(), recursion());
-            }
-
-            private String domainName() {
-                return displayView.domain_name.getText();
-            }
-
-            private String serverIp() {
-                return (String) displayView.dns_servers.getSelectedItem();
-            }
-
-            private String serverPort() {
-                return displayView.port.getText();
-            }
-
-            private boolean recursion() {
-                return displayView.recursion_desired.isSelected();
-            }
-
-        });
+    private void setUpFrame() {
+        setName(MAIN_WINDOW_NAME);
+        setContentPane(rootPanel);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        pack();
+        setSize(450, 500);
+        setLocationByPlatform(true);
     }
 
     @Override
     public void responseText(String text) {
-        displayView.addResponse("Some Heading", text);
-//        appendTextToResponse(text);
-    }
-
-    private void fillContentPane(JPanel controls, JPanel response) {
-        final Container contentPane = getContentPane();
-        contentPane.setLayout(new BorderLayout());
-        contentPane.add(controls, BorderLayout.NORTH);
-        contentPane.add(response, BorderLayout.CENTER);
-    }
-
-    private JPanel makeControls() {
-        final JTextField domainNameField = domainNameField();
-        final JTextField serverIpField = serverIpField();
-        final JTextField serverPortField = serverPortField();
-
-        JPanel requiredControls = new JPanel(new FlowLayout());
-        requiredControls.add(domainNameField);
-        requiredControls.add(serverIpField);
-        requiredControls.add(serverPortField);
-
-        final JCheckBox recursiveCheckbox = getRecursiveCheckbox();
-
-        JPanel options = new JPanel(new FlowLayout());
-        options.add(recursiveCheckbox);
-
-        JButton resolveButton = new JButton("Resolve");
-        resolveButton.setName(RESOLVE_BUTTON_NAME);
-
-        resolveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                userRequests.announce().resolve(domainName(), serverIp(), serverPort(), recursion());
-            }
-
-            private String domainName() {
-                return domainNameField.getText();
-            }
-
-            private String serverIp() {
-                return serverIpField.getText();
-            }
-
-            private String serverPort() {
-                return serverPortField.getText();
-            }
-
-            private boolean recursion() {
-                return recursiveCheckbox.isSelected();
-            }
-
-        });
-
-        requiredControls.add(resolveButton);
-
-        JPanel controls = new JPanel(new BorderLayout());
-        controls.add(requiredControls, BorderLayout.NORTH);
-        controls.add(options, BorderLayout.SOUTH);
-
-        return controls;
-    }
-
-    private JCheckBox getRecursiveCheckbox() {
-        final JCheckBox checkBox = new JCheckBox("Recursive");
-        checkBox.setSelected(true);
-        checkBox.setName(RECURSIVE_CHECKBOX_NAME);
-        return checkBox;
-    }
-
-    private JTextField domainNameField() {
-        JTextField domainNameField = new JTextField();
-        domainNameField.setColumns(30);
-        domainNameField.setName(DOMAIN_TEXTFIELD_NAME);
-        return domainNameField;
-    }
-
-    private JTextField serverIpField() {
-        JTextField serverIpField = new JTextField();
-        serverIpField.setColumns(15);
-        serverIpField.setName(SERVER_IP_COMBOBOX_NAME);
-        return serverIpField;
-    }
-
-    private JTextField serverPortField() {
-        JTextField serverPortField = new JTextField();
-        serverPortField.setColumns(7);
-        serverPortField.setName(SERVER_PORT_TEXTFIELD_NAME);
-        return serverPortField;
-    }
-
-    private JPanel responsePanel() {
-        response = new JTextArea();
-        response.setName(RESPONSE_TEXT_AREA);
-        response.setEditable(false);
-        response.setBackground(Color.WHITE);
-        response.setColumns(50);
-        response.setRows(25);
-
-        JScrollPane scroll = new JScrollPane(response);
-
-        JPanel response = new JPanel(new FlowLayout());
-        response.add(scroll);
-        return response;
+        addResponse("Some Heading", text);
     }
 
     public void addUserRequestListener(UserRequestListener userRequestListener) {
         userRequests.addListener(userRequestListener);
     }
 
-    private void appendTextToResponse(String text) {
-        response.append(horizontalLine());
-        response.append(text);
+    private void setUpComponents() {
+        domain_name.setName(DOMAIN_TEXTFIELD_NAME);
+        dns_servers.setName(SERVER_IP_COMBOBOX_NAME);
+        port.setName(SERVER_PORT_TEXTFIELD_NAME);
+        recursion_desired.setName(RECURSIVE_CHECKBOX_NAME);
+
+        resolve.setName(RESOLVE_BUTTON_NAME);
+
+        resolve.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                userRequests.announce().resolve(domainName(), serverIp(), serverPort(), recursion());
+            }
+
+            private String domainName() {
+                return domain_name.getText();
+            }
+
+            private String serverIp() {
+                return (String) dns_servers.getSelectedItem();
+            }
+
+            private String serverPort() {
+                return port.getText();
+            }
+
+            private boolean recursion() {
+                return recursion_desired.isSelected();
+            }
+
+        });
     }
 
-    private String horizontalLine() {
-        return StringUtils.repeat("=", 50);
+    public void addResponse(String heading, String result) {
+        expandable_result.addItem(heading, result);
+    }
+
+
+    // Intelli Generated Code // Do not touch
+    {
+// GUI initializer generated by IntelliJ IDEA GUI Designer
+// >>> IMPORTANT!! <<<
+// DO NOT EDIT OR ADD ANY CODE HERE!
+        $$$setupUI$$$();
+    }
+
+    /**
+     * Method generated by IntelliJ IDEA GUI Designer
+     * >>> IMPORTANT!! <<<
+     * DO NOT edit this method OR call it in your code!
+     *
+     * @noinspection ALL
+     */
+    private void $$$setupUI$$$() {
+        rootPanel = new JPanel();
+        rootPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        input_panel = new JPanel();
+        input_panel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        rootPanel.add(input_panel, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, true));
+        domain_name = new JTextField();
+        domain_name.setHorizontalAlignment(11);
+        input_panel.add(domain_name, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        dns_servers = new JComboBox();
+        final DefaultComboBoxModel defaultComboBoxModel1 = new DefaultComboBoxModel();
+        defaultComboBoxModel1.addElement("1.1.1.1");
+        defaultComboBoxModel1.addElement("8.8.8.8");
+        defaultComboBoxModel1.addElement("8.8.8.4");
+        defaultComboBoxModel1.addElement("127.0.0.1");
+        dns_servers.setModel(defaultComboBoxModel1);
+        input_panel.add(dns_servers, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        resolve = new JButton();
+        resolve.setText("Resolve");
+        input_panel.add(resolve, new com.intellij.uiDesigner.core.GridConstraints(0, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        result_pane = new JScrollPane();
+        rootPanel.add(result_pane, new com.intellij.uiDesigner.core.GridConstraints(2, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        expandable_result = new ExpandableResult();
+        result_pane.setViewportView(expandable_result);
+        advanced_panel = new JPanel();
+        advanced_panel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
+        rootPanel.add(advanced_panel, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        recursion_desired = new JCheckBox();
+        recursion_desired.setSelected(true);
+        recursion_desired.setText("Recursion Desired");
+        advanced_panel.add(recursion_desired, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
+        advanced_panel.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(0, 2, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        label1.setText("Port: ");
+        advanced_panel.add(label1, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_NONE, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        port = new JTextField();
+        port.setText("53");
+        advanced_panel.add(port, new com.intellij.uiDesigner.core.GridConstraints(1, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(50, -1), null, 0, false));
+        label1.setLabelFor(port);
+    }
+
+    /**
+     * @noinspection ALL
+     */
+    public JComponent $$$getRootComponent$$$() {
+        return rootPanel;
     }
 }

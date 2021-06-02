@@ -34,7 +34,7 @@ public class ApplicationDriver extends JFrameDriver {
 
     private void setRequired(String domainName, String serverIp, String serverPort) {
         textField(MainWindow.DOMAIN_TEXTFIELD_NAME).replaceAllText(domainName);
-        selectLocalAddress(MainWindow.SERVER_IP_COMBOBOX_NAME);
+        selectLocalAddress();
         textField(MainWindow.SERVER_PORT_TEXTFIELD_NAME).replaceAllText(serverPort);
     }
 
@@ -52,8 +52,9 @@ public class ApplicationDriver extends JFrameDriver {
         return newItemId;
     }
 
-    private void selectLocalAddress(String comboBoxName) {
-        JComboBoxDriver driver = new JComboBoxDriver(this, JComboBox.class, ComponentDriver.named(comboBoxName));
+    private void selectLocalAddress() {
+        JComboBoxDriver driver = new JComboBoxDriver(
+                this, JComboBox.class, ComponentDriver.named(MainWindow.SERVER_IP_COMBOBOX_NAME));
         driver.selectItem(3);
     }
 

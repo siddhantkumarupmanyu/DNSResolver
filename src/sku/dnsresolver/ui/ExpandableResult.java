@@ -36,7 +36,7 @@ public class ExpandableResult extends JPanel {
             setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
 
             headingField = createHeadingField(heading);
-            resultArea = createResultTextArea(heading, result);
+            resultArea = createResultTextArea(result);
 
             add(headingField);
 
@@ -79,7 +79,7 @@ public class ExpandableResult extends JPanel {
             return headingField;
         }
 
-        private JTextArea createResultTextArea(String heading, String result) {
+        private JTextArea createResultTextArea(String result) {
             final JTextArea resultArea = new JTextArea(result);
 
             resultArea.setName(MainWindow.RESPONSE_TEXT_AREA);
