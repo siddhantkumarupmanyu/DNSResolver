@@ -5,8 +5,6 @@ domain name, without recursion ==> done
 
 =============================================================
 
-Bug: yahoo.com with recursion desired as false. throwing Array out of bound exception
-
 Add remaining features found on https://digwebinterface.com/
 
 Consider the case when recursion desired is true but server response have recursion available as false
