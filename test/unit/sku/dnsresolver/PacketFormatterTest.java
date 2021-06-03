@@ -48,7 +48,7 @@ public class PacketFormatterTest {
                 .setQuestionCount((short) 1)
                 .setAnswerRRCount((short) 2)
                 .setAuthorityRRCount((short) 2)
-                .setAdditionalRRCount((short) 2)
+                .setAdditionalRRCount((short) 4) // additional count may differ as we are dropping ipv6 while parsing
                 .setQueries(question)
                 .setAnswers(answer1, answer2)
                 .setAuthoritativeNameServers(authoritativeNS1, authoritativeNS2)
@@ -72,7 +72,7 @@ public class PacketFormatterTest {
                 "question count: 1",
                 "answers count: 2",
                 "authority RR count: 2",
-                "additional RR count: 2",
+                "additional RR count: 4",
                 "queries",
                 "+-- query: 1",
                 "    +-- label: cname.example.com",

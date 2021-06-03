@@ -67,11 +67,12 @@ public class PacketFormatter {
 
     private void formatAnswers(String section, String sectionKey, short answersCount, DNSPacket.DNSAnswer[] answers) {
         builder.appendString(section);
-        for (short i = 0; i < answersCount; i++) {
+        int answersSize = answers.length;
+        for (short i = 0; i < answersSize; i++) {
             FormatterOptions options = new FormatterOptions("", listItemPrefix, keyValueSeparator, 0);
             int position = i + 1;
             builder.appendListItem(options, sectionKey, position);
-            formatAnswer(answers[i], options, position == answersCount);
+            formatAnswer(answers[i], options, position == answersSize);
         }
     }
 
