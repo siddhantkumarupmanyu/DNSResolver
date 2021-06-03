@@ -4,13 +4,19 @@ Currently it supports resolving domain name with/without recursion desired. <br 
 As of now, it does not support IPv6. <br />
 SamplePacket.java contains the DNS sample packets captured with Wireshark.
 
+## Side Note
+I think I am done with this project here.
+I do not know where to go from here.
+I can possibly complete the TODO, IDK. <br />
+Maybe later. :\
+
 ## Running Application
 ```
 ./gradlew run
 ```
 
 ## Running Tests
-This will run both end-to-end(acceptence) as well as unit tests.
+This will run both end-to-end(acceptance) and unit tests.
 ```
 ./gradlew test
 ```
